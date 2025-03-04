@@ -1651,6 +1651,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetDefaultTextureScaleMode", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool SDL_GetDefaultTextureScaleMode(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, global::bottlenoselabs.Interop.SDL.SDL_ScaleMode* scale_mode);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetDesktopDisplayMode", ExactSpelling = true)]
         public static extern partial global::bottlenoselabs.Interop.SDL.SDL_DisplayMode* SDL_GetDesktopDisplayMode(global::bottlenoselabs.Interop.SDL.SDL_DisplayID displayID);
     }
@@ -5747,6 +5755,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_RenderTexture9GridTiled", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool SDL_RenderTexture9GridTiled(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, global::bottlenoselabs.Interop.SDL.SDL_Texture* texture, global::bottlenoselabs.Interop.SDL.SDL_FRect* srcrect, float left_width, float right_width, float top_height, float bottom_height, float scale, global::bottlenoselabs.Interop.SDL.SDL_FRect* dstrect, float tileScale);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_RenderTextureAffine", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_RenderTextureAffine(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, global::bottlenoselabs.Interop.SDL.SDL_Texture* texture, global::bottlenoselabs.Interop.SDL.SDL_FRect* srcrect, global::bottlenoselabs.Interop.SDL.SDL_FPoint* origin, global::bottlenoselabs.Interop.SDL.SDL_FPoint* right, global::bottlenoselabs.Interop.SDL.SDL_FPoint* down);
     }
@@ -6037,6 +6053,14 @@ namespace bottlenoselabs.Interop
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetCursor", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_SetCursor(global::bottlenoselabs.Interop.SDL.SDL_Cursor* cursor);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetDefaultTextureScaleMode", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool SDL_SetDefaultTextureScaleMode(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, global::bottlenoselabs.Interop.SDL.SDL_ScaleMode scale_mode);
     }
 }
 namespace bottlenoselabs.Interop
@@ -6381,6 +6405,14 @@ namespace bottlenoselabs.Interop
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetPrimarySelectionText", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_SetPrimarySelectionText(global::Interop.Runtime.CString text);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetRelativeMouseTransform", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool SDL_SetRelativeMouseTransform(global::bottlenoselabs.Interop.SDL.SDL_MouseMotionTransformCallback callback, void* userdata);
     }
 }
 namespace bottlenoselabs.Interop
