@@ -646,7 +646,8 @@ public sealed unsafe class ArenaNativeAllocator
     /// <exception cref="InvalidOperationException">The underlying block of native memory is too small.</exception>
     public IntPtr Allocate(int byteCount)
     {
-        if (_buffer == IntPtr.Zero)
+        var buffer = _buffer;
+        if (buffer == IntPtr.Zero)
         {
             throw new ObjectDisposedException(GetType().FullName);
         }
@@ -657,7 +658,7 @@ public sealed unsafe class ArenaNativeAllocator
                 $"Cannot allocate more than {Capacity} bytes with this instance of {nameof(ArenaNativeAllocator)}.");
         }
 
-        var pointer = _buffer + Used;
+        var pointer = buffer + Used;
         Used += byteCount;
         return pointer;
     }
@@ -682,10 +683,16 @@ public sealed unsafe class ArenaNativeAllocator
     /// </remarks>
     public void Reset()
     {
+        var buffer = _buffer;
+        if (buffer == IntPtr.Zero)
+        {
+            return;
+        }
+
 #if NET6_0_OR_GREATER
-        NativeMemory.Clear((void*)_buffer, (UIntPtr)Used);
+        NativeMemory.Clear((void*)buffer, (UIntPtr)Used);
 #else
-        new Span<byte>((void*)_buffer, Used).Clear();
+        new Span<byte>((void*)buffer, Capacity).Clear();
 #endif
         Used = 0;
     }

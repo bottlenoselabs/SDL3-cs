@@ -235,13 +235,13 @@ public partial struct Rgba8U : IEquatable<Rgba8U>
     }
 
     /// <inheritdoc />
-    public bool Equals(Rgba8U other)
+    public readonly bool Equals(Rgba8U other)
     {
         return R == other.R && G == other.G && B == other.B && A == other.A;
     }
 
     /// <inheritdoc />
-    public override bool Equals(object? obj)
+    public readonly override bool Equals(object? obj)
     {
         return obj is Rgba8U other && Equals(other);
     }

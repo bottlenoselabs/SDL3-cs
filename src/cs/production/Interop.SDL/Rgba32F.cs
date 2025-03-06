@@ -263,13 +263,13 @@ public partial struct Rgba32F : IEquatable<Rgba32F>
     }
 
     /// <inheritdoc />
-    public bool Equals(Rgba32F other)
+    public readonly bool Equals(Rgba32F other)
     {
         return R.Equals(other.R) && G.Equals(other.G) && B.Equals(other.B) && A.Equals(other.A);
     }
 
     /// <inheritdoc />
-    public override bool Equals(object? obj)
+    public readonly override bool Equals(object? obj)
     {
         return obj is Rgba32F other && Equals(other);
     }

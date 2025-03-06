@@ -10,11 +10,19 @@ namespace bottlenoselabs.Interop;
 // ReSharper disable once InconsistentNaming
 public static partial class SDL_image
 {
+    private static bool _isInitialized;
+
     /// <summary>
     ///     Initializes SDL native interoperability.
     /// </summary>
     public static void Initialize()
     {
+        var isInitialized = Interlocked.CompareExchange(ref _isInitialized, true, false);
+        if (isInitialized)
+        {
+            return;
+        }
+
         NativeLibrary.SetDllImportResolver(
             Assembly.GetExecutingAssembly(),
             static (libraryName, assembly, searchPath) =>

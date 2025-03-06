@@ -3,6 +3,7 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Interop.Runtime;
 
 // ReSharper disable once CheckNamespace
 namespace bottlenoselabs.Interop;
@@ -10,15 +11,36 @@ namespace bottlenoselabs.Interop;
 // ReSharper disable once InconsistentNaming
 public static partial class SDL
 {
+    private static bool _isInitialized;
+
+    /// <summary>
+    ///     Gets the name of the platform reported by SDL.
+    /// </summary>
+    /// <remarks>
+    ///     <para>If the correct platform name is not available, returns "Unknown".</para>
+    ///     <para>Some (but not all) supported platforms: "Windows", "macOS", "Linux", "iOS", "Android".</para>
+    /// </remarks>
+    public static string PlatformName { get; private set; } = string.Empty;
+
     /// <summary>
     ///     Initializes SDL native interoperability.
     /// </summary>
     public static void Initialize()
     {
+        var isInitialized = Interlocked.CompareExchange(ref _isInitialized, true, false);
+        if (isInitialized)
+        {
+            return;
+        }
+
         NativeLibrary.SetDllImportResolver(
             Assembly.GetExecutingAssembly(),
             static (libraryName, assembly, searchPath) =>
                 ResolveNativeLibrary(libraryName, assembly, searchPath, "SDL3"));
+
+        var platformNameC = SDL_GetPlatform();
+        var platformName = CString.ToString(platformNameC);
+        PlatformName = platformName;
     }
 
     internal static IntPtr ResolveNativeLibrary(

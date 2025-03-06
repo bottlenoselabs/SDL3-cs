@@ -1,48 +1,53 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using bottlenoselabs.Interop;
+using Microsoft.Extensions.Logging;
+using SDL;
 
 namespace Common;
 
-public abstract unsafe class ExampleBase
+public abstract class ExampleBase
 {
-    // NOTE: It's important that this memory is allocated only once (per thread) or else the application can crash with exit code 137 (out of memory).
-    private static readonly ThreadLocal<ArenaNativeAllocator> GlobalInitializeAllocator = new(() => new((int)Math.Pow(1024, 2))); // 1 KB should be plenty of space for initialization related memory such as various "createinfo" data structures
+    protected readonly ILoggerFactory LoggerFactory;
 
-    public SDL_Window* Window { get; private set; }
+    public Window Window { get; private set; }
+
+    public FileSystem FileSystem { get; private set; }
 
     public string AssetsDirectory { get; set; }
 
-    public WindowOptions WindowOptions { get; }
-
     private bool _hasQuit;
 
-    public string Name { get; protected set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-    public int ScreenWidth { get; private set; }
+    public int ScreenWidth => Window.Width;
 
-    public int ScreenHeight { get; private set; }
+    public int ScreenHeight => Window.Height;
 
-    protected ExampleBase(WindowOptions? windowOptions = null)
+    protected ExampleBase(
+        WindowOptions? windowOptions = null,
+        LogLevel logLevel = LogLevel.Warning)
     {
-        AssetsDirectory = AppContext.BaseDirectory;
-        WindowOptions = windowOptions ?? new WindowOptions
+        LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
         {
-            Width = 640,
-            Height = 480
-        };
+            builder.AddConsole();
+            builder.SetMinimumLevel(logLevel);
+        });
+
+        AssetsDirectory = AppContext.BaseDirectory;
+        Window = new Window(windowOptions);
+        FileSystem = new FileSystem(new Logger<FileSystem>(LoggerFactory));
     }
 
     public abstract bool Initialize(INativeAllocator allocator);
 
     public abstract void Quit();
 
-    public abstract void KeyboardEvent(SDL_KeyboardEvent e);
+    public abstract void KeyboardEvent(in SDL_KeyboardEvent e);
 
-    public abstract bool Update(float deltaTime);
+    public abstract void Update(float deltaTime);
 
-    public abstract bool Draw(float deltaTime);
+    public abstract void Draw(float deltaTime);
 
     internal void QuitInternal()
     {
@@ -53,33 +58,16 @@ public abstract unsafe class ExampleBase
         }
 
         Quit();
-
-        SDL_DestroyWindow(Window);
-        Window = null;
+        Window.Dispose();
+        Window = null!;
+        FileSystem.Dispose();
+        FileSystem = null!;
     }
 
-    internal bool InitializeInternal()
+    internal bool InitializeInternal(ArenaNativeAllocator allocator)
     {
-        var allocator = GlobalInitializeAllocator.Value!;
-
-        var exampleNameCString = GlobalInitializeAllocator.Value.AllocateCString(Name);
-        Window = SDL_CreateWindow(
-            exampleNameCString,
-            WindowOptions.Width,
-            WindowOptions.Height,
-            0);
-        if (Window == null)
-        {
-            Console.Error.WriteLine("CreateWindow failed: " + SDL_GetError());
-            return false;
-        }
-
-        int windowWidth;
-        int windowHeight;
-        SDL_GetWindowSize(Window, &windowWidth, &windowHeight);
-        ScreenWidth = windowWidth;
-        ScreenHeight = windowHeight;
-
+        Window.TrySetTitle(Name);
+        allocator.Reset();
         var isInitialized = Initialize(allocator);
         allocator.Reset();
         return isInitialized;
