@@ -128,14 +128,48 @@ public sealed unsafe class Window : NativeHandle
     }
 
     /// <summary>
-    ///    Sets the size of the window.
+    ///     Attempts to get the <see cref="Surface" /> of the window.
     /// </summary>
-    /// <param name="width">The new width.</param>
-    /// <param name="height">The new height.</param>
-    public void OnSizeChanged(int width, int height)
+    /// <param name="surface">The surface.</param>
+    /// <returns><c>true</c> if the surface was successfully acquired; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         The surface will be invalidated if the window is resized. After resizing a window
+    ///         <see cref="TryGetSurface" /> must be called again to return a valid surface.
+    ///     </para>
+    ///     <para>
+    ///         <see cref="TryGetSurface" /> should only be called on the main thread.
+    ///     </para>
+    /// </remarks>
+    public bool TryGetSurface(out Surface? surface)
     {
-        Width = width;
-        Height = height;
+        var handle = SDL_GetWindowSurface((SDL_Window*)Handle);
+        if (handle == null)
+        {
+            surface = null;
+            return false;
+        }
+
+        surface = new Surface((IntPtr)handle);
+        return true;
+    }
+
+    /// <summary>
+    ///     Attempts to copy the window's surface to the screen.
+    /// </summary>
+    /// <returns><c>true</c> if the window's surface was successfully copied to the screen; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         Use <see cref="TryUpdateFromSurface" /> to reflect any changes made to the surface on the screen.
+    ///     </para>
+    ///     <para>
+    ///         <see cref="TryUpdateFromSurface" /> should only be called on the main thread.
+    ///     </para>
+    /// </remarks>
+    public bool TryUpdateFromSurface()
+    {
+        var result = SDL_UpdateWindowSurface((SDL_Window*)Handle);
+        return result;
     }
 
     /// <inheritdoc />

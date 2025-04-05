@@ -23,12 +23,11 @@ public sealed unsafe class E001_Hello : ExampleLazyFoo
             return false;
         }
 
-        var window = (SDL_Window*)Window.Handle;
-        var screenSurface = SDL_GetWindowSurface(window);
-        var (r, g, b) = (100, 149, 237);
-        var color = SDL_MapSurfaceRGB(screenSurface, (byte)r, (byte)g, (byte)b);
-        _ = SDL_FillSurfaceRect(screenSurface, null, color);
-        _ = SDL_UpdateWindowSurface(window);
+        _ = Window.TryGetSurface(out var surface);
+        var color = Rgb8U.CornflowerBlue;
+        var pixelColor = surface!.MapRgb(color);
+        _ = surface.TryFill(pixelColor);
+        _ = Window.TryUpdateFromSurface();
 
         return true;
     }
