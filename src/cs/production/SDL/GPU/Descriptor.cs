@@ -57,8 +57,8 @@ public abstract class Descriptor : Disposable
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
+        Reset();
         var allocatorDisposable = _ownedAllocator as IDisposable;
         allocatorDisposable?.Dispose();
-        Reset();
     }
 }
