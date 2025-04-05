@@ -15,7 +15,7 @@ public partial struct Rgba32F
     /// <summary>
     ///     Gets a <see cref="Rgba32F" /> that has a RGBA value of #000000FF.
     /// </summary>
-    public static readonly Rgba32F Transparent = 0x00000000;
+    public static readonly Rgba32F Transparent = 0x000000FF;
 
     /// <summary>
     ///     Gets a <see cref="Rgba32F" /> that has a RGBA value of #E73C00FF.

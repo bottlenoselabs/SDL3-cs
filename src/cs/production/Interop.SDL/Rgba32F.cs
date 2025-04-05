@@ -82,7 +82,7 @@ public partial struct Rgba32F : IEquatable<Rgba32F>
         var span = value.AsSpan();
         if (span[0] == '#')
         {
-            span = span.Slice(1);
+            span = span[1..];
         }
 
         if (!uint.TryParse(span, NumberStyles.HexNumber, null, out var u))
