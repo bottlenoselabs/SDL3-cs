@@ -643,6 +643,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_CreateGPURenderer", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Renderer* SDL_CreateGPURenderer(global::bottlenoselabs.Interop.SDL.SDL_Window* window, global::bottlenoselabs.Interop.SDL.SDL_GPUShaderFormat format_flags, global::bottlenoselabs.Interop.SDL.SDL_GPUDevice** device);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_CreateGPURenderState", ExactSpelling = true)]
         public static extern partial global::bottlenoselabs.Interop.SDL.SDL_GPURenderState* SDL_CreateGPURenderState(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, global::bottlenoselabs.Interop.SDL.SDL_GPURenderStateDesc* desc);
     }
@@ -3284,7 +3292,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetRGB", ExactSpelling = true)]
-        public static extern partial void SDL_GetRGB(uint pixel, global::bottlenoselabs.Interop.SDL.SDL_PixelFormatDetails* format, global::bottlenoselabs.Interop.SDL.SDL_Palette* palette, byte* r, byte* g, byte* b);
+        public static extern partial void SDL_GetRGB(uint pixelvalue, global::bottlenoselabs.Interop.SDL.SDL_PixelFormatDetails* format, global::bottlenoselabs.Interop.SDL.SDL_Palette* palette, byte* r, byte* g, byte* b);
     }
 }
 namespace bottlenoselabs.Interop
@@ -3292,7 +3300,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetRGBA", ExactSpelling = true)]
-        public static extern partial void SDL_GetRGBA(uint pixel, global::bottlenoselabs.Interop.SDL.SDL_PixelFormatDetails* format, global::bottlenoselabs.Interop.SDL.SDL_Palette* palette, byte* r, byte* g, byte* b, byte* a);
+        public static extern partial void SDL_GetRGBA(uint pixelvalue, global::bottlenoselabs.Interop.SDL.SDL_PixelFormatDetails* format, global::bottlenoselabs.Interop.SDL.SDL_Palette* palette, byte* r, byte* g, byte* b, byte* a);
     }
 }
 namespace bottlenoselabs.Interop
