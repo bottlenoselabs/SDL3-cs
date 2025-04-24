@@ -692,7 +692,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_CreateHapticEffect", ExactSpelling = true)]
-        public static extern partial int SDL_CreateHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, global::bottlenoselabs.Interop.SDL.SDL_HapticEffect* effect);
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_HapticEffectID SDL_CreateHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, global::bottlenoselabs.Interop.SDL.SDL_HapticEffect* effect);
     }
 }
 namespace bottlenoselabs.Interop
@@ -956,7 +956,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_DestroyHapticEffect", ExactSpelling = true)]
-        public static extern partial void SDL_DestroyHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, int effect);
+        public static extern partial void SDL_DestroyHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, global::bottlenoselabs.Interop.SDL.SDL_HapticEffectID effect);
     }
 }
 namespace bottlenoselabs.Interop
@@ -2268,7 +2268,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetHapticEffectStatus", ExactSpelling = true)]
-        public static extern partial global::Interop.Runtime.CBool SDL_GetHapticEffectStatus(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, int effect);
+        public static extern partial global::Interop.Runtime.CBool SDL_GetHapticEffectStatus(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, global::bottlenoselabs.Interop.SDL.SDL_HapticEffectID effect);
     }
 }
 namespace bottlenoselabs.Interop
@@ -5956,7 +5956,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_RunHapticEffect", ExactSpelling = true)]
-        public static extern partial global::Interop.Runtime.CBool SDL_RunHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, int effect, uint iterations);
+        public static extern partial global::Interop.Runtime.CBool SDL_RunHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, global::bottlenoselabs.Interop.SDL.SDL_HapticEffectID effect, uint iterations);
     }
 }
 namespace bottlenoselabs.Interop
@@ -7084,7 +7084,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_StopHapticEffect", ExactSpelling = true)]
-        public static extern partial global::Interop.Runtime.CBool SDL_StopHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, int effect);
+        public static extern partial global::Interop.Runtime.CBool SDL_StopHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, global::bottlenoselabs.Interop.SDL.SDL_HapticEffectID effect);
     }
 }
 namespace bottlenoselabs.Interop
@@ -7308,7 +7308,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_UpdateHapticEffect", ExactSpelling = true)]
-        public static extern partial global::Interop.Runtime.CBool SDL_UpdateHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, int effect, global::bottlenoselabs.Interop.SDL.SDL_HapticEffect* data);
+        public static extern partial global::Interop.Runtime.CBool SDL_UpdateHapticEffect(global::bottlenoselabs.Interop.SDL.SDL_Haptic* haptic, global::bottlenoselabs.Interop.SDL.SDL_HapticEffectID effect, global::bottlenoselabs.Interop.SDL.SDL_HapticEffect* data);
     }
 }
 namespace bottlenoselabs.Interop
