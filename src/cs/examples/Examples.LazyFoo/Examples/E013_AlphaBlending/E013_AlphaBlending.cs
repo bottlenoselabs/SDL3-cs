@@ -22,7 +22,7 @@ public sealed class E013_AlphaBlending : ExampleLazyFoo
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        return TryLoadAssets(allocator);
+        return TryLoadAssets();
     }
 
     public override void Quit()
@@ -85,7 +85,7 @@ public sealed class E013_AlphaBlending : ExampleLazyFoo
         renderer.Present();
     }
 
-    private bool TryLoadAssets(INativeAllocator allocator)
+    private bool TryLoadAssets()
     {
         var assetsDirectory = Path.Combine(
             AppContext.BaseDirectory, "Examples", nameof(E013_AlphaBlending));
