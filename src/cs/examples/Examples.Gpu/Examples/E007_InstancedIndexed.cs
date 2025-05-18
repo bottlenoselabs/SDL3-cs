@@ -9,9 +9,9 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed unsafe class E007_InstancedIndex : ExampleGpu
 {
-    private GraphicsPipeline? _pipeline;
-    private DataBuffer? _vertexBuffer;
-    private DataBuffer? _indexBuffer;
+    private GpuGraphicsPipeline? _pipeline;
+    private GpuDataBuffer? _vertexBuffer;
+    private GpuDataBuffer? _indexBuffer;
 
     private bool _isEnabledVertexOffset;
     private bool _isEnabledIndexOffset;
@@ -36,8 +36,8 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
             return false;
         }
 
-        using var pipelineDescriptor = new GraphicsPipelineDescriptor();
-        pipelineDescriptor.PrimitiveType = GraphicsPipelineVertexPrimitiveType.TriangleList;
+        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
+        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
         pipelineDescriptor.VertexShader = vertexShader;
         pipelineDescriptor.FragmentShader = fragmentShader;
         pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
@@ -178,11 +178,11 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
 
         renderPass.BindPipeline(_pipeline);

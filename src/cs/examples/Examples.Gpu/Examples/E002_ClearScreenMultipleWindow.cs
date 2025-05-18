@@ -9,7 +9,7 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
 {
-    private readonly Window _secondWindow = new();
+    private Window _secondWindow = null!;
 
     public override bool Initialize(INativeAllocator allocator)
     {
@@ -18,6 +18,8 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
             return false;
         }
 
+        using var windowOptions = new WindowOptions();
+        _secondWindow = Application.CreateWindow(windowOptions);
         _ = _secondWindow.TrySetPosition(0, 0);
         _ = Device.TryClaimWindow(_secondWindow);
         return true;
@@ -27,6 +29,7 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
     {
         Device.ReleaseWindow(_secondWindow);
         _secondWindow.Dispose();
+        _secondWindow = null!;
 
         base.Quit();
     }
@@ -44,10 +47,10 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
         var commandBuffer = Device.GetCommandBuffer();
         if (commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTextureMainWindow))
         {
-            var renderTargetInfoColor = default(RenderTargetInfoColor);
+            var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
             renderTargetInfoColor.Texture = swapchainTextureMainWindow!;
-            renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-            renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+            renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+            renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
             renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
             var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
             // No rendering in this example!
@@ -56,10 +59,10 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
 
         if (commandBuffer.TryGetSwapchainTexture(_secondWindow, out var swapchainTextureSecondWindow))
         {
-            var renderTargetInfoColor = default(RenderTargetInfoColor);
+            var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
             renderTargetInfoColor.Texture = swapchainTextureSecondWindow!;
-            renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-            renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+            renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+            renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
             renderTargetInfoColor.ClearColor = Rgba32F.Indigo;
             var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
             // No rendering in this example!

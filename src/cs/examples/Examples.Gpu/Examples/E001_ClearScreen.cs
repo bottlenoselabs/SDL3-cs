@@ -26,10 +26,10 @@ public sealed class E001_ClearScreen : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
         // No rendering in this example!

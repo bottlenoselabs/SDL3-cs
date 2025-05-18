@@ -19,11 +19,11 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         "AnisotropicWrap"
     ];
 
-    private GraphicsPipeline? _pipeline;
-    private DataBuffer? _vertexBuffer;
-    private DataBuffer? _indexBuffer;
-    private Texture? _texture;
-    private readonly Sampler?[] _samplers = new Sampler[SamplerNames.Length];
+    private GpuGraphicsPipeline? _pipeline;
+    private GpuDataBuffer? _vertexBuffer;
+    private GpuDataBuffer? _indexBuffer;
+    private GpuTexture? _texture;
+    private readonly GpuSampler?[] _samplers = new GpuSampler[SamplerNames.Length];
 
     private int _currentSamplerIndex;
 
@@ -49,8 +49,8 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
-        using var pipelineDescriptor = new GraphicsPipelineDescriptor();
-        pipelineDescriptor.PrimitiveType = GraphicsPipelineVertexPrimitiveType.TriangleList;
+        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
+        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
         pipelineDescriptor.VertexShader = vertexShader;
         pipelineDescriptor.FragmentShader = fragmentShader;
         pipelineDescriptor.SetVertexAttributes<VertexPositionTexture>();
@@ -72,15 +72,15 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
-        var textureDescriptor = new TextureDescriptor();
+        var textureDescriptor = new GpuTextureOptions();
         textureDescriptor.Name = "Ravioli Texture 🖼️";
-        textureDescriptor.Type = TextureType.TwoDimensional;
-        textureDescriptor.Format = TextureFormat.R8G8B8A8_UNORM;
+        textureDescriptor.Type = GpuTextureType.TwoDimensional;
+        textureDescriptor.Format = GpuTextureFormat.R8G8B8A8_UNORM;
         textureDescriptor.Width = surface!.Width;
         textureDescriptor.Height = surface.Height;
         textureDescriptor.LayerCountOrDepth = 1;
         textureDescriptor.MipmapLevelCount = 1;
-        textureDescriptor.Usage = TextureUsages.Sampler;
+        textureDescriptor.Usage = GpuTextureUsages.Sampler;
 
         if (!Device.TryCreateTexture(textureDescriptor, out _texture))
         {
@@ -88,13 +88,13 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         }
 
         // PointClamp
-        using var samplerDescriptor = new SamplerDescriptor();
-        samplerDescriptor.MinificationFilter = SamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = SamplerFilter.Nearest;
-        samplerDescriptor.MipMapMode = SamplerMipmapMode.Nearest;
-        samplerDescriptor.AddressModeU = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = SamplerAddressMode.ClampToEdge;
+        using var samplerDescriptor = new GpuSamplerOptions();
+        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
+        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
         if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[0]))
         {
             return false;
@@ -102,12 +102,12 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // PointWrap
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = SamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = SamplerFilter.Nearest;
-        samplerDescriptor.MipMapMode = SamplerMipmapMode.Nearest;
-        samplerDescriptor.AddressModeU = SamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeV = SamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeW = SamplerAddressMode.Repeat;
+        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
+        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
+        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
+        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.Repeat;
         if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[1]))
         {
             return false;
@@ -115,12 +115,12 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // LinearClamp
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = SamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = SamplerAddressMode.ClampToEdge;
+        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
         if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[2]))
         {
             return false;
@@ -128,12 +128,12 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // LinearWrap
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = SamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = SamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeV = SamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeW = SamplerAddressMode.Repeat;
+        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
+        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
+        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.Repeat;
         if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[3]))
         {
             return false;
@@ -141,12 +141,12 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // AnisotropicClamp
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = SamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = SamplerAddressMode.ClampToEdge;
+        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
         samplerDescriptor.IsEnabledAnisotropy = true;
         samplerDescriptor.MaximumAnisotropy = 4;
         if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[4]))
@@ -156,12 +156,12 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // AnisotropicWrap
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = SamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = SamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = SamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeV = SamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeW = SamplerAddressMode.Repeat;
+        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
+        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
+        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.Repeat;
         samplerDescriptor.IsEnabledAnisotropy = true;
         samplerDescriptor.MaximumAnisotropy = 4;
         if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[5]))
@@ -316,11 +316,11 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
 
         renderPass.BindPipeline(_pipeline);

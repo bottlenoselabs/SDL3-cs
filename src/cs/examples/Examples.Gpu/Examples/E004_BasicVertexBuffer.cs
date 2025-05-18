@@ -9,8 +9,8 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
 {
-    private GraphicsPipeline? _pipeline;
-    private DataBuffer? _vertexBuffer;
+    private GpuGraphicsPipeline? _pipeline;
+    private GpuDataBuffer? _vertexBuffer;
 
     public override bool Initialize(INativeAllocator allocator)
     {
@@ -32,11 +32,11 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
         }
 
         // Create the pipeline
-        using var pipelineDescriptor = new GraphicsPipelineDescriptor();
-        pipelineDescriptor.PrimitiveType = GraphicsPipelineVertexPrimitiveType.TriangleList;
+        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
+        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
         pipelineDescriptor.VertexShader = vertexShader;
         pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.RasterizerState.FillMode = GraphicsPipelineFillMode.Fill;
+        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
         pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
         pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
         pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
@@ -115,10 +115,10 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
         renderPass.BindPipeline(_pipeline!);

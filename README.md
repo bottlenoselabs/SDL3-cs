@@ -47,7 +47,7 @@ These goals might not align to your goals or your organization's goals to which 
 
 There exists a higher level API that is more idiomatic to C# which does not require usage of the `unsafe` keyword. Basically, it's a wrapper over the direct native C# bindings. There are however some decisions made that differ from the native bindings.
 
-1. `Descriptor` objects. These are C# classes that are intended to be allocated normally and then disposed using `IDisposable` pattern after the GPU resource is created. They wrap the `SDL_gpu` `XYZCreateInfo` structs and are used to properly fill these structs. E.g., `GraphicsPipelineDescriptor`, `GraphicsShaderDescriptor`, `SamplerDescriptor`, `TextureDescriptor`, etc.
+1. `Options` objects. These are C# classes that are used to create objects. They are intended to be allocated normally and then disposed using `IDisposable` pattern after the object is created. For example, there are `GpuXYZOptions` to properly fill in the `XYZCreateInfo` structs such as `GpuGraphicsPipelineOptions`, `GpuGraphicsShaderOptions`, `GpuSamplerOptios`, `GpuTextureOptions`, etc.
 
 ### "Unsafe" API
 

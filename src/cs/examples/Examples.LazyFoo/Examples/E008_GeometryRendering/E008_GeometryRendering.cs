@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
+using SDL;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
@@ -9,10 +9,19 @@ namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E008_GeometryRendering : ExampleLazyFoo
+public sealed class E008_GeometryRendering : ExampleLazyFoo
 {
     public E008_GeometryRendering()
-        : base("8 - Geometry Rendering")
+        : base("8 - Geometry Rendering", isEnabledCreateRenderer2D: true)
+    {
+    }
+
+    public override bool Initialize(INativeAllocator allocator)
+    {
+        return true;
+    }
+
+    public override void Quit()
     {
     }
 
@@ -26,40 +35,42 @@ public sealed unsafe class E008_GeometryRendering : ExampleLazyFoo
 
     public override void Draw(float deltaTime)
     {
+        var renderer = Window.Renderer!;
+
         // Clear screen
-        SDL_SetRenderDrawColor(Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(Renderer);
+        renderer.DrawColor = Rgba8U.White;
+        renderer.Clear();
 
         // Render red filled quad
-        SDL_FRect fillRect = default;
-        fillRect.x = ScreenWidth / 4.0f;
-        fillRect.y = ScreenHeight / 4.0f;
-        fillRect.w = ScreenWidth / 2.0f;
-        fillRect.h = ScreenHeight / 2.0f;
-        SDL_SetRenderDrawColor(Renderer, 0xFF, 0x00, 0x00, 0xFF);
-        SDL_RenderFillRect(Renderer, &fillRect);
+        RectangleF fillRect = default;
+        fillRect.X = ScreenWidth / 4.0f;
+        fillRect.Y = ScreenHeight / 4.0f;
+        fillRect.Width = ScreenWidth / 2.0f;
+        fillRect.Height = ScreenHeight / 2.0f;
+        renderer.DrawColor = Rgba8U.Red;
+        renderer.RenderRectangleFill(fillRect);
 
         // Render green outlined quad
-        SDL_FRect outlineRect = default;
-        outlineRect.x = ScreenWidth / 6.0f;
-        outlineRect.y = ScreenHeight / 6.0f;
-        outlineRect.w = ScreenWidth * 2.0f / 3.0f;
-        outlineRect.h = ScreenHeight * 2.0f / 3.0f;
-        SDL_SetRenderDrawColor(Renderer, 0x00, 0xFF, 0x00, 0xFF);
-        SDL_RenderRect(Renderer, &outlineRect);
+        RectangleF outlineRect = default;
+        outlineRect.X = ScreenWidth / 6.0f;
+        outlineRect.Y = ScreenHeight / 6.0f;
+        outlineRect.Width = ScreenWidth * 2.0f / 3.0f;
+        outlineRect.Height = ScreenHeight * 2.0f / 3.0f;
+        renderer.DrawColor = Rgba8U.Lime;
+        renderer.RenderRectangle(outlineRect);
 
         // Draw blue horizontal line
-        SDL_SetRenderDrawColor(Renderer, 0x00, 0x00, 0xFF, 0xFF);
-        SDL_RenderLine(Renderer, 0, ScreenHeight / 2.0f, ScreenWidth, ScreenHeight / 2.0f);
+        renderer.DrawColor = Rgba8U.Blue;
+        renderer.RenderLine(0, ScreenHeight / 2.0f, ScreenWidth, ScreenHeight / 2.0f);
 
         // Draw vertical line of yellow dots
-        SDL_SetRenderDrawColor(Renderer, 0xFF, 0xFF, 0x00, 0xFF);
+        renderer.DrawColor = Rgba8U.Yellow;
         for (var i = 0; i < ScreenHeight; i += 4)
         {
-            SDL_RenderPoint(Renderer, ScreenWidth / 2.0f, i);
+            renderer.RenderPoint(ScreenWidth / 2.0f, i);
         }
 
         // Update screen
-        SDL_RenderPresent(Renderer);
+        renderer.Present();
     }
 }

@@ -3,5 +3,6 @@
 
 global using bottlenoselabs.Interop;
 global using Interop.Runtime;
+global using JetBrains.Annotations;
 global using static bottlenoselabs.Interop.SDL;
 global using static bottlenoselabs.Interop.SDL_image;

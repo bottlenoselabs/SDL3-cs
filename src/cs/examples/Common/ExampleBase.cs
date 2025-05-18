@@ -1,18 +1,18 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using Microsoft.Extensions.Logging;
 using SDL;
+using SDL.IO;
 
 namespace Common;
 
 public abstract class ExampleBase
 {
-    protected readonly ILoggerFactory LoggerFactory;
-
-    public Window Window { get; private set; }
+    public Application Application { get; private set; }
 
     public FileSystem FileSystem { get; private set; }
+
+    public Window Window { get; private set; }
 
     public string AssetsDirectory { get; set; }
 
@@ -25,18 +25,21 @@ public abstract class ExampleBase
     public int ScreenHeight => Window.Height;
 
     protected ExampleBase(
-        WindowOptions? windowOptions = null,
-        LogLevel logLevel = LogLevel.Warning)
+        bool isEnabledCreateSurface = false,
+        bool isEnabledCreateRenderer2D = false)
     {
-        LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-            builder.SetMinimumLevel(logLevel);
-        });
-
+        Application = Application.Current;
+        FileSystem = Application.FileSystem;
         AssetsDirectory = AppContext.BaseDirectory;
-        Window = new Window(windowOptions);
-        FileSystem = new FileSystem(new Logger<FileSystem>(LoggerFactory));
+
+        using var windowOptions = new WindowOptions();
+        windowOptions.Title = Name;
+        windowOptions.Width = 640;
+        windowOptions.Height = 480;
+        windowOptions.IsResizable = true;
+        windowOptions.IsEnabledCreateSurface = isEnabledCreateSurface;
+        windowOptions.IsEnabledCreateRenderer = isEnabledCreateRenderer2D;
+        Window = Application.CreateWindow(windowOptions);
     }
 
     public abstract bool Initialize(INativeAllocator allocator);
@@ -60,13 +63,13 @@ public abstract class ExampleBase
         Quit();
         Window.Dispose();
         Window = null!;
-        FileSystem.Dispose();
+
         FileSystem = null!;
     }
 
     internal bool InitializeInternal(ArenaNativeAllocator allocator)
     {
-        Window.TrySetTitle(Name);
+        Window.Title = Name;
         allocator.Reset();
         var isInitialized = Initialize(allocator);
         allocator.Reset();

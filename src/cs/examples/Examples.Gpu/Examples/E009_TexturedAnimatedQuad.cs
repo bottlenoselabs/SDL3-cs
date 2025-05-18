@@ -9,11 +9,11 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
 {
-    private GraphicsPipeline? _pipeline;
-    private DataBuffer? _vertexBuffer;
-    private DataBuffer? _indexBuffer;
-    private Texture? _texture;
-    private Sampler? _sampler;
+    private GpuGraphicsPipeline? _pipeline;
+    private GpuDataBuffer? _vertexBuffer;
+    private GpuDataBuffer? _indexBuffer;
+    private GpuTexture? _texture;
+    private GpuSampler? _sampler;
 
     private float _t;
 
@@ -50,8 +50,8 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
             return false;
         }
 
-        using var pipelineDescriptor = new GraphicsPipelineDescriptor();
-        pipelineDescriptor.PrimitiveType = GraphicsPipelineVertexPrimitiveType.TriangleList;
+        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
+        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
         pipelineDescriptor.VertexShader = vertexShader;
         pipelineDescriptor.FragmentShader = fragmentShader;
         pipelineDescriptor.SetVertexAttributes<VertexPositionTexture>();
@@ -62,10 +62,10 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         blendState.IsEnabledBlend = true;
         blendState.AlphaBlendOp = SDL_GPUBlendOp.SDL_GPU_BLENDOP_ADD;
         blendState.ColorBlendOp = SDL_GPUBlendOp.SDL_GPU_BLENDOP_ADD;
-        blendState.SourceColorBlendFactor = BlendFactor.SourceAlpha;
-        blendState.SourceAlphaBlendFactor = BlendFactor.SourceAlpha;
-        blendState.DestinationColorBlendFactor = BlendFactor.OneMinusSourceAlpha;
-        blendState.DestinationAlphaBlendFactor = BlendFactor.OneMinusSourceAlpha;
+        blendState.SourceColorBlendFactor = GpuBlendFactor.SourceAlpha;
+        blendState.SourceAlphaBlendFactor = GpuBlendFactor.SourceAlpha;
+        blendState.DestinationColorBlendFactor = GpuBlendFactor.OneMinusSourceAlpha;
+        blendState.DestinationAlphaBlendFactor = GpuBlendFactor.OneMinusSourceAlpha;
         if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
         {
             return false;
@@ -74,27 +74,27 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         vertexShader?.Dispose();
         fragmentShader?.Dispose();
 
-        using var textureDescriptor = new TextureDescriptor();
-        textureDescriptor.Type = TextureType.TwoDimensional;
-        textureDescriptor.Format = TextureFormat.R8G8B8A8_UNORM;
+        using var textureDescriptor = new GpuTextureOptions();
+        textureDescriptor.Type = GpuTextureType.TwoDimensional;
+        textureDescriptor.Format = GpuTextureFormat.R8G8B8A8_UNORM;
         textureDescriptor.Width = surface!.Width;
         textureDescriptor.Height = surface.Height;
         textureDescriptor.LayerCountOrDepth = 1;
         textureDescriptor.MipmapLevelCount = 1;
-        textureDescriptor.Usage = TextureUsages.Sampler;
+        textureDescriptor.Usage = GpuTextureUsages.Sampler;
         if (!Device.TryCreateTexture(textureDescriptor, out _texture))
         {
             return false;
         }
 
         // PointClamp
-        var samplerDescriptor = new SamplerDescriptor();
-        samplerDescriptor.MinificationFilter = SamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = SamplerFilter.Nearest;
-        samplerDescriptor.MipMapMode = SamplerMipmapMode.Nearest;
-        samplerDescriptor.AddressModeU = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = SamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = SamplerAddressMode.ClampToEdge;
+        var samplerDescriptor = new GpuSamplerOptions();
+        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
+        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
         if (!Device.TryCreateSampler(samplerDescriptor, out _sampler))
         {
             return false;
@@ -213,11 +213,11 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
 
         renderPass.BindPipeline(_pipeline);

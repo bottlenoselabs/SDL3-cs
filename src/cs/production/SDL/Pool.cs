@@ -45,7 +45,7 @@ public partial class Pool<T> : Disposable
     private readonly Func<T> _createFunc;
     private readonly BlockingCollection<T> _availableInstances;
     private readonly ConditionalWeakTable<T, Tracker> _trackers;
-    private bool _isEnabledTrackLeaks;
+    private readonly bool _isEnabledTrackLeaks;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="Pool{T}" /> class.
@@ -67,7 +67,7 @@ public partial class Pool<T> : Disposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity" /> is less than <c>0</c>.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="createFunc" /> returned a <c>null</c> instance.</exception>
     public Pool(
-        ILogger logger,
+        ILogger? logger,
         Func<T> createFunc,
         string? name,
         int initialCapacity = 0,

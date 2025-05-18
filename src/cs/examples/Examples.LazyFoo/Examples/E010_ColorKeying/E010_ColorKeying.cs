@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
+using SDL;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
@@ -9,30 +9,28 @@ namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E010_ColorKeying : ExampleLazyFoo
+public sealed class E010_ColorKeying : ExampleLazyFoo
 {
-    private readonly Texture _textureFoo = new();
-    private readonly Texture _textureBackground = new();
+    private Texture? _textureFoo;
+    private Texture? _textureBackground;
 
     public E010_ColorKeying()
-        : base("10 - Color Keying")
+        : base("10 - Color Keying", isEnabledCreateRenderer2D: true)
     {
     }
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        if (!base.Initialize(allocator))
-        {
-            return false;
-        }
-
-        return LoadAssets(allocator);
+        return TryLoadAssets();
     }
 
     public override void Quit()
     {
-        _textureFoo.Dispose();
-        _textureBackground.Dispose();
+        _textureFoo?.Dispose();
+        _textureFoo = null;
+
+        _textureBackground?.Dispose();
+        _textureBackground = null;
     }
 
     public override void KeyboardEvent(in SDL_KeyboardEvent e)
@@ -45,31 +43,51 @@ public sealed unsafe class E010_ColorKeying : ExampleLazyFoo
 
     public override void Draw(float deltaTime)
     {
-        // Clear screen
-        SDL_SetRenderDrawColor(Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(Renderer);
+        var renderer = Window.Renderer!;
 
-        // Render background texture to screen
-        _textureBackground.Render(0, 0);
+        // Clear
+        renderer.DrawColor = Rgba8U.White;
+        renderer.Clear();
 
-        // Render Foo' to the screen
-        _textureFoo.Render(240, 190);
+        // Render background texture
+        renderer.RenderTexture(_textureBackground!);
+
+        // Render Foo'
+        var fooRectangle = default(RectangleF);
+        fooRectangle.X = 240;
+        fooRectangle.Y = 190;
+        fooRectangle.Width = _textureFoo!.Width;
+        fooRectangle.Height = _textureFoo.Height;
+        renderer.RenderTexture(_textureFoo, null, fooRectangle);
 
         // Update screen
-        SDL_RenderPresent(Renderer);
+        renderer.Present();
     }
 
-    private bool LoadAssets(INativeAllocator allocator)
+    private bool TryLoadAssets()
     {
-        if (!_textureFoo.LoadFromFile(allocator, Renderer, AssetsDirectory, "foo.png", Rgba8U.Cyan))
+        var assetsDirectory = Path.Combine(
+            AppContext.BaseDirectory, "Examples", nameof(E010_ColorKeying));
+
+        if (!FileSystem.TryLoadImage(
+                Path.Combine(assetsDirectory, "foo.png"), out var imageSurfaceFoo))
         {
             return false;
         }
 
-        if (!_textureBackground.LoadFromFile(allocator, Renderer, AssetsDirectory, "background.png"))
+        imageSurfaceFoo!.ColorKey = Rgb8U.Aqua;
+
+        _textureFoo = Window.Renderer!.CreateTextureFrom(imageSurfaceFoo!);
+        imageSurfaceFoo.Dispose();
+
+        if (!FileSystem.TryLoadImage(
+                Path.Combine(assetsDirectory, "background.png"), out var imageSurfaceBackground))
         {
             return false;
         }
+
+        _textureBackground = Window.Renderer!.CreateTextureFrom(imageSurfaceBackground!);
+        imageSurfaceBackground!.Dispose();
 
         return true;
     }

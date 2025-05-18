@@ -3,17 +3,15 @@
 
 using System.Text.RegularExpressions;
 using Common;
-using Microsoft.Extensions.Logging;
 using SDL.GPU;
 
 namespace Gpu;
 
-public abstract unsafe partial class ExampleGpu : ExampleBase
+public abstract partial class ExampleGpu : ExampleBase
 {
-    public Device Device { get; private set; }
+    protected GpuDevice Device { get; private set; }
 
-    protected ExampleGpu(WindowOptions? windowOptions = null, LogLevel logLevel = LogLevel.Warning)
-        : base(windowOptions, logLevel)
+    protected ExampleGpu()
     {
         Name = RegexExampleTypeName().Replace(GetType().Name, match =>
         {
@@ -22,9 +20,7 @@ public abstract unsafe partial class ExampleGpu : ExampleBase
             var words = RegexWords().Replace(match.Groups[2].Value, "$1 $2");
             return $"{number} - {words}";
         });
-        Device = new Device(
-            new Logger<Device>(LoggerFactory),
-            GraphicsShaderFormats.SPIRV | GraphicsShaderFormats.DXIL | GraphicsShaderFormats.MSL);
+        Device = Application.CreateGpuDevice();
         AssetsDirectory = Path.Combine(AppContext.BaseDirectory, "Assets");
     }
 

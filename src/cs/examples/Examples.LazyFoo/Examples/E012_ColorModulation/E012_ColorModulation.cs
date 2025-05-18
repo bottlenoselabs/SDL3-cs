@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
+using SDL;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
@@ -9,31 +9,25 @@ namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E012_ColorModulation : ExampleLazyFoo
+public sealed class E012_ColorModulation : ExampleLazyFoo
 {
-    private readonly Texture _texture = new();
-    private byte _r = 255;
-    private byte _g = 255;
-    private byte _b = 255;
+    private Texture? _texture;
+    private Rgb8U _color = Rgb8U.White;
 
     public E012_ColorModulation()
-        : base("12 - Color Modulation")
+        : base("12 - Color Modulation", isEnabledCreateRenderer2D: true)
     {
     }
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        if (!base.Initialize(allocator))
-        {
-            return false;
-        }
-
-        return LoadAssets(allocator);
+        return LoadAssets();
     }
 
     public override void Quit()
     {
-        _texture.Dispose();
+        _texture?.Dispose();
+        _texture = null;
     }
 
     public override void KeyboardEvent(in SDL_KeyboardEvent e)
@@ -42,22 +36,22 @@ public sealed unsafe class E012_ColorModulation : ExampleLazyFoo
         switch (key)
         {
             case SDL_Scancode.SDL_SCANCODE_Q:
-                _r += 32;
+                _color.R += 32;
                 break;
             case SDL_Scancode.SDL_SCANCODE_W:
-                _g += 32;
+                _color.G += 32;
                 break;
             case SDL_Scancode.SDL_SCANCODE_E:
-                _b += 32;
+                _color.B += 32;
                 break;
             case SDL_Scancode.SDL_SCANCODE_A:
-                _r -= 32;
+                _color.B -= 32;
                 break;
             case SDL_Scancode.SDL_SCANCODE_S:
-                _g -= 32;
+                _color.G -= 32;
                 break;
             case SDL_Scancode.SDL_SCANCODE_D:
-                _b -= 32;
+                _color.G -= 32;
                 break;
         }
     }
@@ -68,23 +62,32 @@ public sealed unsafe class E012_ColorModulation : ExampleLazyFoo
 
     public override void Draw(float deltaTime)
     {
-        // Clear screen
-        SDL_SetRenderDrawColor(Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(Renderer);
+        var renderer = Window.Renderer!;
 
-        _texture.SetColor(_r, _g, _b);
-        _texture.Render(0, 0);
+        // Clear screen
+        renderer.DrawColor = Rgba8U.White;
+        renderer.Clear();
+
+        _texture!.Color = _color;
+        renderer.RenderTexture(_texture);
 
         // Update screen
-        SDL_RenderPresent(Renderer);
+        renderer.Present();
     }
 
-    private bool LoadAssets(INativeAllocator allocator)
+    private bool LoadAssets()
     {
-        if (!_texture.LoadFromFile(allocator, Renderer, AssetsDirectory, "colors.png", Rgba8U.Cyan))
+        var assetsDirectory = Path.Combine(
+            AppContext.BaseDirectory, "Examples", nameof(E012_ColorModulation));
+
+        if (!FileSystem.TryLoadImage(
+                Path.Combine(assetsDirectory, "colors.png"), out var imageSurface))
         {
             return false;
         }
+
+        _texture = Window.Renderer!.CreateTextureFrom(imageSurface!);
+        imageSurface!.Dispose();
 
         return true;
     }

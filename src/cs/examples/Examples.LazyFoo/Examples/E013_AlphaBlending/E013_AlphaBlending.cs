@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
+using SDL;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
@@ -9,31 +9,29 @@ namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E013_AlphaBlending : ExampleLazyFoo
+public sealed class E013_AlphaBlending : ExampleLazyFoo
 {
-    private readonly Texture _textureFadeout = new();
-    private readonly Texture _textureFadein = new();
+    private Texture? _textureFadeOut;
+    private Texture? _textureFadeIn;
     private byte _a = 255;
 
     public E013_AlphaBlending()
-        : base("13 - Alpha Blending")
+        : base("13 - Alpha Blending", isEnabledCreateRenderer2D: true)
     {
     }
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        if (!base.Initialize(allocator))
-        {
-            return false;
-        }
-
-        return LoadAssets(allocator);
+        return TryLoadAssets(allocator);
     }
 
     public override void Quit()
     {
-        _textureFadeout.Dispose();
-        _textureFadein.Dispose();
+        _textureFadeOut?.Dispose();
+        _textureFadeOut = null;
+
+        _textureFadeIn?.Dispose();
+        _textureFadeIn = null;
     }
 
     public override void KeyboardEvent(in SDL_KeyboardEvent e)
@@ -72,32 +70,45 @@ public sealed unsafe class E013_AlphaBlending : ExampleLazyFoo
 
     public override void Draw(float deltaTime)
     {
+        var renderer = Window.Renderer!;
+
         // Clear screen
-        SDL_SetRenderDrawColor(Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(Renderer);
+        renderer.DrawColor = Rgba8U.White;
+        renderer.Clear();
 
-        _textureFadein.Render(0, 0);
+        renderer.RenderTexture(_textureFadeIn!);
 
-        _textureFadeout.SetAlpha(_a);
-        _textureFadeout.Render(0, 0);
+        _textureFadeOut!.Alpha = _a;
+        renderer.RenderTexture(_textureFadeOut);
 
         // Update screen
-        SDL_RenderPresent(Renderer);
+        renderer.Present();
     }
 
-    private bool LoadAssets(INativeAllocator allocator)
+    private bool TryLoadAssets(INativeAllocator allocator)
     {
-        if (!_textureFadeout.LoadFromFile(allocator, Renderer, AssetsDirectory, "fadeout.png"))
+        var assetsDirectory = Path.Combine(
+            AppContext.BaseDirectory, "Examples", nameof(E013_AlphaBlending));
+
+        if (!FileSystem.TryLoadImage(
+                Path.Combine(assetsDirectory, "fadein.png"), out var imageSurfaceFadeIn))
         {
             return false;
         }
 
-        _textureFadeout.SetBlendMode(SDL_BLENDMODE_BLEND);
+        _textureFadeIn = Window.Renderer!.CreateTextureFrom(imageSurfaceFadeIn!);
+        imageSurfaceFadeIn!.Dispose();
 
-        if (!_textureFadein.LoadFromFile(allocator, Renderer, AssetsDirectory, "fadein.png"))
+        if (!FileSystem.TryLoadImage(
+                Path.Combine(assetsDirectory, "fadeout.png"), out var imageSurfaceFadeOut))
         {
             return false;
         }
+
+        _textureFadeOut = Window.Renderer!.CreateTextureFrom(imageSurfaceFadeOut!);
+        imageSurfaceFadeOut!.Dispose();
+
+        _textureFadeOut.BlendMode = BlendMode.Alpha;
 
         return true;
     }

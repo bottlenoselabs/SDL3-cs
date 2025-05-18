@@ -27,6 +27,9 @@
     <Compile Update="Rgba32F.Colors.cs">
       <DependentUpon>Rgba32F.cs</DependentUpon>
     </Compile>
+    <Compile Update="Rgb8U.Colors.cs">
+      <DependentUpon>Rgb8U.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <!-- C# Source Generators -->

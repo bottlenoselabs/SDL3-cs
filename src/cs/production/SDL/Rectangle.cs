@@ -6,8 +6,9 @@ namespace SDL;
 #pragma warning disable CA1815
 
 /// <summary>
-///     Defines a rectangle.
+///     Defines a rectangle with 32-bit integer components.
 /// </summary>
+[PublicAPI]
 public struct Rectangle
 {
     /// <summary>

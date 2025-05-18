@@ -19,10 +19,10 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         "CCW_CullBack"
     };
 
-    private GraphicsPipeline?[] _pipelines = new GraphicsPipeline?[ModeNames.Length];
+    private GpuGraphicsPipeline?[] _pipelines = new GpuGraphicsPipeline?[ModeNames.Length];
     private int _currentModeIndex;
-    private DataBuffer? _vertexBufferCw;
-    private DataBuffer? _vertexBufferCcw;
+    private GpuDataBuffer? _vertexBufferCw;
+    private GpuDataBuffer? _vertexBufferCcw;
 
     public override bool Initialize(INativeAllocator allocator)
     {
@@ -44,23 +44,23 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         }
 
         // Create pipelines
-        using var pipelineDescriptor = new GraphicsPipelineDescriptor();
-        pipelineDescriptor.PrimitiveType = GraphicsPipelineVertexPrimitiveType.TriangleList;
+        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
+        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
         pipelineDescriptor.VertexShader = vertexShader;
         pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.RasterizerState.FillMode = GraphicsPipelineFillMode.Fill;
+        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
         pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
         pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
         pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
 
         var pipelineCount = ModeNames.Length;
-        _pipelines = new GraphicsPipeline[pipelineCount];
+        _pipelines = new GpuGraphicsPipeline[pipelineCount];
         for (var i = 0; i < pipelineCount; i += 1)
         {
-            pipelineDescriptor.RasterizerState.CullMode = (GraphicsPipelineCullMode)(i % 3);
+            pipelineDescriptor.RasterizerState.CullMode = (GpuGraphicsPipelineCullMode)(i % 3);
             pipelineDescriptor.RasterizerState.FrontFace = i > 2 ?
-                GraphicsPipelineFrontFace.Clockwise :
-                GraphicsPipelineFrontFace.CounterClockwise;
+                GpuGraphicsPipelineFrontFace.Clockwise :
+                GpuGraphicsPipelineFrontFace.CounterClockwise;
 
             if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelines[i]))
             {
@@ -190,16 +190,16 @@ public sealed unsafe class E005_CullMode : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
         renderPass.BindPipeline(_pipelines[_currentModeIndex]);
 
         var swapchainTextureHalfWidth = swapchainTexture!.Width / 2;
-        var viewport1 = new Viewport
+        var viewport1 = new GpuViewport
         {
             X = 0, Y = 0, Width = swapchainTextureHalfWidth, Height = swapchainTexture.Height
         };
@@ -207,7 +207,7 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         renderPass.BindVertexBuffer(_vertexBufferCw);
         renderPass.DrawPrimitives(3, 1, 0, 0);
 
-        var viewport2 = new Viewport
+        var viewport2 = new GpuViewport
         {
             X = swapchainTextureHalfWidth, Y = 0, Width = swapchainTextureHalfWidth, Height = swapchainTexture.Height
         };

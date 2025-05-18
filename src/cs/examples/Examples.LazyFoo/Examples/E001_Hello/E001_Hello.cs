@@ -1,33 +1,26 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
-
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
 namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E001_Hello : ExampleLazyFoo
+public sealed class E001_Hello : ExampleLazyFoo
 {
     public E001_Hello()
-        : base("1 - Hello", createRenderer: false)
+        : base("1 - Hello", isEnabledCreateSurface: true)
     {
     }
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        if (!base.Initialize(allocator))
-        {
-            return false;
-        }
-
-        _ = Window.TryGetSurface(out var surface);
+        var surface = Window.Surface!;
         var color = Rgb8U.CornflowerBlue;
-        var pixelColor = surface!.MapRgb(color);
-        _ = surface.TryFill(pixelColor);
-        _ = Window.TryUpdateFromSurface();
+        var pixelColor = surface.MapRgb(color);
+        surface.Fill(pixelColor);
+        Window.Present();
 
         return true;
     }

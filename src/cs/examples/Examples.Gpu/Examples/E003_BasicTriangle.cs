@@ -9,10 +9,10 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed class E003_BasicTriangle : ExampleGpu
 {
-    private GraphicsPipeline? _pipelineFill;
-    private GraphicsPipeline? _pipelineLine;
+    private GpuGraphicsPipeline? _pipelineFill;
+    private GpuGraphicsPipeline? _pipelineLine;
 
-    private Viewport _viewportSmall;
+    private GpuViewport _viewportSmall;
     private Rectangle _rectangleScissor;
 
     private bool _isEnabledWireframeMode;
@@ -39,11 +39,11 @@ public sealed class E003_BasicTriangle : ExampleGpu
         }
 
         // Create the pipeline
-        using var pipelineDescriptor = new GraphicsPipelineDescriptor();
-        pipelineDescriptor.PrimitiveType = GraphicsPipelineVertexPrimitiveType.TriangleList;
+        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
+        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
         pipelineDescriptor.VertexShader = vertexShader;
         pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.RasterizerState.FillMode = GraphicsPipelineFillMode.Fill;
+        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
         pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
 
         if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineFill))
@@ -52,7 +52,7 @@ public sealed class E003_BasicTriangle : ExampleGpu
             return false;
         }
 
-        pipelineDescriptor.RasterizerState.FillMode = GraphicsPipelineFillMode.Line;
+        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Line;
         if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineLine))
         {
             Console.Error.WriteLine("Failed to create line pipeline!");
@@ -128,10 +128,10 @@ public sealed class E003_BasicTriangle : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
         renderPass.BindPipeline(_isEnabledWireframeMode ? _pipelineLine! : _pipelineFill!);

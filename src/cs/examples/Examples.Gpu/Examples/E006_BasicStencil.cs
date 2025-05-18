@@ -10,10 +10,10 @@ namespace Gpu.Examples;
 public sealed unsafe class E006_BasicStencil : ExampleGpu
 {
     private bool _isSupported = true;
-    private GraphicsPipeline? _pipelineMasker;
-    private GraphicsPipeline? _pipelineMaskee;
-    private DataBuffer? _vertexBuffer;
-    private Texture? _textureDepthStencilTarget;
+    private GpuGraphicsPipeline? _pipelineMasker;
+    private GpuGraphicsPipeline? _pipelineMaskee;
+    private GpuDataBuffer? _vertexBuffer;
+    private GpuTexture? _textureDepthStencilTarget;
 
     public override bool Initialize(INativeAllocator allocator)
     {
@@ -23,7 +23,7 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         }
 
         var depthStencilFormat = Device.SupportedDepthStencilTargetFormat;
-        if (depthStencilFormat == TextureFormat.Invalid)
+        if (depthStencilFormat == GpuTextureFormat.Invalid)
         {
             Console.WriteLine("Stencil formats not supported!");
             _isSupported = false;
@@ -33,15 +33,15 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         int width, height;
         SDL_GetWindowSizeInPixels((SDL_Window*)Window.Handle, &width, &height);
 
-        var textureDescriptor = new TextureDescriptor();
-        textureDescriptor.Type = TextureType.TwoDimensional;
+        var textureDescriptor = new GpuTextureOptions();
+        textureDescriptor.Type = GpuTextureType.TwoDimensional;
         textureDescriptor.Width = width;
         textureDescriptor.Height = height;
         textureDescriptor.LayerCountOrDepth = 1;
         textureDescriptor.MipmapLevelCount = 1;
         textureDescriptor.SampleCount = 1;
         textureDescriptor.Format = depthStencilFormat;
-        textureDescriptor.Usage = TextureUsages.DepthStencilRenderTarget;
+        textureDescriptor.Usage = GpuTextureUsages.DepthStencilRenderTarget;
         if (!Device.TryCreateTexture(textureDescriptor, out _textureDepthStencilTarget))
         {
             Console.Error.WriteLine("Failed to create texture!");
@@ -60,8 +60,8 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
             return false;
         }
 
-        using var pipelineDescriptor = new GraphicsPipelineDescriptor();
-        pipelineDescriptor.PrimitiveType = GraphicsPipelineVertexPrimitiveType.TriangleList;
+        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
+        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
         pipelineDescriptor.VertexShader = vertexShader;
         pipelineDescriptor.FragmentShader = fragmentShader;
         pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
@@ -75,15 +75,15 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         depthStencilState.IsEnabledStencilTest = true;
         depthStencilState.WriteMask = 0xFF;
         var frontStencilState = depthStencilState.FrontStencilState;
-        frontStencilState.CompareOp = CompareOp.Never;
-        frontStencilState.FailOp = StencilOp.Replace;
-        frontStencilState.PassOp = StencilOp.Keep;
-        frontStencilState.DepthFailOp = StencilOp.Keep;
+        frontStencilState.CompareOp = GpuCompareOp.Never;
+        frontStencilState.FailOp = GpuStencilOp.Replace;
+        frontStencilState.PassOp = GpuStencilOp.Keep;
+        frontStencilState.DepthFailOp = GpuStencilOp.Keep;
         var backStencilState = depthStencilState.BackStencilState;
-        backStencilState.CompareOp = CompareOp.Never;
-        backStencilState.FailOp = StencilOp.Replace;
-        backStencilState.PassOp = StencilOp.Keep;
-        backStencilState.DepthFailOp = StencilOp.Keep;
+        backStencilState.CompareOp = GpuCompareOp.Never;
+        backStencilState.FailOp = GpuStencilOp.Replace;
+        backStencilState.PassOp = GpuStencilOp.Keep;
+        backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
         if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineMasker))
         {
@@ -94,14 +94,14 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         depthStencilState.IsEnabledStencilTest = true;
         depthStencilState.ReadMask = 0xFF;
         depthStencilState.WriteMask = 0;
-        frontStencilState.CompareOp = CompareOp.Equal;
-        frontStencilState.FailOp = StencilOp.Keep;
-        frontStencilState.PassOp = StencilOp.Keep;
-        frontStencilState.DepthFailOp = StencilOp.Keep;
-        backStencilState.CompareOp = CompareOp.Never;
-        backStencilState.FailOp = StencilOp.Keep;
-        backStencilState.PassOp = StencilOp.Keep;
-        backStencilState.DepthFailOp = StencilOp.Keep;
+        frontStencilState.CompareOp = GpuCompareOp.Equal;
+        frontStencilState.FailOp = GpuStencilOp.Keep;
+        frontStencilState.PassOp = GpuStencilOp.Keep;
+        frontStencilState.DepthFailOp = GpuStencilOp.Keep;
+        backStencilState.CompareOp = GpuCompareOp.Never;
+        backStencilState.FailOp = GpuStencilOp.Keep;
+        backStencilState.PassOp = GpuStencilOp.Keep;
+        backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
         if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineMaskee))
         {
@@ -192,21 +192,21 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
             return;
         }
 
-        var renderTargetInfoColor = default(RenderTargetInfoColor);
+        var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
-        renderTargetInfoColor.LoadOp = RenderTargetLoadOp.Clear;
-        renderTargetInfoColor.StoreOp = RenderTargetStoreOp.Store;
+        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
 
-        var depthStencil = default(RenderTargetInfoDepthStencil);
+        var depthStencil = default(GpuRenderTargetInfoDepthStencil);
         depthStencil.Texture = _textureDepthStencilTarget;
         depthStencil.IsTextureCycled = true;
         depthStencil.ClearDepth = 0;
         depthStencil.ClearStencil = 0;
-        depthStencil.LoadOp = RenderTargetLoadOp.Clear;
-        depthStencil.StoreOp = RenderTargetStoreOp.DontCare;
-        depthStencil.StencilLoadOp = RenderTargetLoadOp.Clear;
-        depthStencil.StencilStoreOp = RenderTargetStoreOp.DontCare;
+        depthStencil.LoadOp = GpuRenderTargetLoadOp.Clear;
+        depthStencil.StoreOp = GpuRenderTargetStoreOp.DontCare;
+        depthStencil.StencilLoadOp = GpuRenderTargetLoadOp.Clear;
+        depthStencil.StencilStoreOp = GpuRenderTargetStoreOp.DontCare;
 
         var renderPass = commandBuffer.BeginRenderPass(depthStencil, renderTargetInfoColor);
 

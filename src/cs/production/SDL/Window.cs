@@ -11,12 +11,18 @@ namespace SDL;
 [PublicAPI]
 public sealed unsafe class Window : NativeHandle
 {
+    private string _title = string.Empty;
+
     private readonly ArenaNativeAllocator _allocator = new(1024);
 
     /// <summary>
-    ///     Gets the text title of the window.
+    ///     Gets or sets the text title of the window.
     /// </summary>
-    public string Title { get; private set; } = string.Empty;
+    public string Title
+    {
+        get => _title;
+        set => TrySetTitle(value);
+    }
 
     /// <summary>
     ///     Gets the width of the window.
@@ -29,34 +35,28 @@ public sealed unsafe class Window : NativeHandle
     public int Height { get; private set; }
 
     /// <summary>
-    ///     Gets a value indicating whether the window is claimed by a <see cref="Device" />.
+    ///     Gets a value indicating whether the window is claimed by a <see cref="GpuDevice" />.
     /// </summary>
     public bool IsClaimed => Swapchain != null;
 
     /// <summary>
-    ///     Gets the <see cref="GPU.Swapchain" /> instance associated with the window.
+    ///     Gets the surface associated with the window.
     /// </summary>
-    public Swapchain? Swapchain { get; internal set; }
+    public Surface? Surface { get; internal set; }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Window" /> class.
+    ///     Gets the renderer associated with the window.
     /// </summary>
-    /// <param name="options">
-    ///     The parameters used to create the window. If <c>null</c>, uses a width of 640, a height of 480,
-    ///     positioned on the screen's center.
-    /// </param>
-    /// <exception cref="InvalidOperationException">Failed to create the window.</exception>
-    public Window(WindowOptions? options = null)
+    public Renderer2D? Renderer { get; internal set; }
+
+    /// <summary>
+    ///     Gets the swapchain instance associated with the window.
+    /// </summary>
+    public GpuSwapchain? Swapchain { get; internal set; }
+
+    internal Window(WindowOptions options)
         : base(IntPtr.Zero)
     {
-        options ??= new WindowOptions
-        {
-            Width = 640,
-            Height = 480,
-            IsResizable = true,
-            IsStartingMaximized = false
-        };
-
         var flags = default(SDL_WindowFlags);
 
         if (options.IsResizable)
@@ -69,50 +69,57 @@ public sealed unsafe class Window : NativeHandle
             flags |= SDL_WINDOW_MAXIMIZED;
         }
 
-        _allocator.Reset();
-        var windowTitleC = _allocator.AllocateCString(options.Title);
         Handle = (IntPtr)SDL_CreateWindow(
-            windowTitleC,
+            options.TitleCString,
             options.Width,
             options.Height,
             flags);
+
         if (Handle == IntPtr.Zero)
         {
-            var errorMessage = Error.GetMessage();
-            throw new InvalidOperationException(errorMessage);
+            Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
         }
 
-        _allocator.Reset();
+        if (options is { IsEnabledCreateSurface: true, IsEnabledCreateRenderer: true })
+        {
+            throw new InvalidOperationException(
+                "Can not have window create surface and create renderer at the same time.");
+        }
+
+        if (options.IsEnabledCreateSurface)
+        {
+            var surfaceHandle = SDL_GetWindowSurface((SDL_Window*)Handle);
+            if (surfaceHandle == null)
+            {
+                Error.NativeFunctionFailed(nameof(SDL_GetWindowSurface), isExceptionThrown: true);
+            }
+            else
+            {
+                Surface = new Surface((IntPtr)surfaceHandle);
+            }
+        }
+
+        if (options.IsEnabledCreateRenderer)
+        {
+            var rendererHandle = SDL_CreateRenderer((SDL_Window*)Handle, null);
+            if (rendererHandle == null)
+            {
+                Error.NativeFunctionFailed(nameof(SDL_CreateRenderer), isExceptionThrown: true);
+            }
+            else
+            {
+                Renderer = new Renderer2D((IntPtr)rendererHandle);
+            }
+        }
 
         int widthActual, heightActual;
-        SDL_GetWindowSize((SDL_Window*)Handle, &widthActual, &heightActual);
+        if (!SDL_GetWindowSize((SDL_Window*)Handle, &widthActual, &heightActual))
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
+        }
+
         Width = widthActual;
         Height = heightActual;
-    }
-
-    /// <summary>
-    ///     Attempts to set the text title of the window.
-    /// </summary>
-    /// <param name="title">The new text title.</param>
-    /// <returns><c>true</c> if the window's title was successfully set; otherwise, <c>false</c>.</returns>
-    public bool TrySetTitle(string? title)
-    {
-        if (string.IsNullOrEmpty(title))
-        {
-            title = string.Empty;
-        }
-
-        _allocator.Reset();
-        var titleC = _allocator.AllocateCString(title);
-        var isSuccess = SDL_SetWindowTitle((SDL_Window*)Handle, titleC);
-        _allocator.Reset();
-        if (!isSuccess)
-        {
-            return false;
-        }
-
-        Title = title;
-        return true;
     }
 
     /// <summary>
@@ -128,48 +135,21 @@ public sealed unsafe class Window : NativeHandle
     }
 
     /// <summary>
-    ///     Attempts to get the <see cref="Surface" /> of the window.
+    ///     Presents the window's surface.
     /// </summary>
-    /// <param name="surface">The surface.</param>
-    /// <returns><c>true</c> if the surface was successfully acquired; otherwise, <c>false</c>.</returns>
     /// <remarks>
     ///     <para>
-    ///         The surface will be invalidated if the window is resized. After resizing a window
-    ///         <see cref="TryGetSurface" /> must be called again to return a valid surface.
-    ///     </para>
-    ///     <para>
-    ///         <see cref="TryGetSurface" /> should only be called on the main thread.
+    ///         <see cref="Present" /> should only be called on the main thread.
     ///     </para>
     /// </remarks>
-    public bool TryGetSurface(out Surface? surface)
+    /// <exception cref="NativeFunctionFailedException">Native function failed.</exception>
+    public void Present()
     {
-        var handle = SDL_GetWindowSurface((SDL_Window*)Handle);
-        if (handle == null)
+        var isSuccess = SDL_UpdateWindowSurface((SDL_Window*)Handle);
+        if (!isSuccess)
         {
-            surface = null;
-            return false;
+            Error.NativeFunctionFailed(nameof(SDL_UpdateWindowSurface));
         }
-
-        surface = new Surface((IntPtr)handle);
-        return true;
-    }
-
-    /// <summary>
-    ///     Attempts to copy the window's surface to the screen.
-    /// </summary>
-    /// <returns><c>true</c> if the window's surface was successfully copied to the screen; otherwise, <c>false</c>.</returns>
-    /// <remarks>
-    ///     <para>
-    ///         Use <see cref="TryUpdateFromSurface" /> to reflect any changes made to the surface on the screen.
-    ///     </para>
-    ///     <para>
-    ///         <see cref="TryUpdateFromSurface" /> should only be called on the main thread.
-    ///     </para>
-    /// </remarks>
-    public bool TryUpdateFromSurface()
-    {
-        var result = SDL_UpdateWindowSurface((SDL_Window*)Handle);
-        return result;
     }
 
     /// <inheritdoc />
@@ -185,5 +165,22 @@ public sealed unsafe class Window : NativeHandle
 
         SDL_DestroyWindow((SDL_Window*)Handle);
         base.Dispose(isDisposing);
+    }
+
+    private void TrySetTitle(string value)
+    {
+        _allocator.Reset();
+        var cString = _allocator.AllocateCString(value);
+        var isSuccess = SDL_SetWindowTitle((SDL_Window*)Handle, cString);
+        _allocator.Reset();
+
+        if (isSuccess)
+        {
+            _title = value;
+        }
+        else
+        {
+            Error.NativeFunctionFailed(nameof(SDL_SetWindowTitle));
+        }
     }
 }

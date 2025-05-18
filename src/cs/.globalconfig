@@ -4,6 +4,7 @@ is_global = true
 ## Description: Microsoft code analysis rules for C# projects.
 dotnet_diagnostic.IDE0017.severity = none
 dotnet_diagnostic.IDE0290.severity = none
+dotnet_diagnostic.CA1308.severity = none
 dotnet_diagnostic.CA1806.severity = none
 dotnet_diagnostic.CA2000.severity = none
 

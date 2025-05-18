@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
+using SDL;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
@@ -9,28 +9,23 @@ namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E009_Viewport : ExampleLazyFoo
+public sealed class E009_Viewport : ExampleLazyFoo
 {
-    private SDL_Texture* _texture;
+    private Texture? _texture;
 
     public E009_Viewport()
-        : base("9 - Viewport")
+        : base("9 - Viewport", isEnabledCreateRenderer2D: true)
     {
     }
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        if (!base.Initialize(allocator))
-        {
-            return false;
-        }
-
-        return LoadAssets(allocator);
+        return TryLoadAssets();
     }
 
     public override void Quit()
     {
-        SDL_DestroyTexture(_texture);
+        _texture?.Dispose();
         _texture = null;
     }
 
@@ -44,69 +39,60 @@ public sealed unsafe class E009_Viewport : ExampleLazyFoo
 
     public override void Draw(float deltaTime)
     {
+        var renderer = Window.Renderer!;
+
         // Clear screen
-        SDL_SetRenderDrawColor(Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(Renderer);
+        renderer.DrawColor = Rgba8U.White;
+        renderer.Clear();
 
         // Top left corner viewport
-        SDL_Rect topLeftViewport;
-        topLeftViewport.x = 0;
-        topLeftViewport.y = 0;
-        topLeftViewport.w = ScreenWidth / 2;
-        topLeftViewport.h = ScreenHeight / 2;
-        SDL_SetRenderViewport(Renderer, &topLeftViewport);
+        Rectangle topLeftViewport;
+        topLeftViewport.X = 0;
+        topLeftViewport.Y = 0;
+        topLeftViewport.Width = ScreenWidth / 2;
+        topLeftViewport.Height = ScreenHeight / 2;
+        renderer.Viewport = topLeftViewport;
         // Render texture to screen
-        SDL_RenderTexture(Renderer, _texture, null, null);
+        renderer.RenderTexture(_texture!);
 
         // Top right viewport
-        SDL_Rect topRightViewport;
-        topRightViewport.x = ScreenWidth / 2;
-        topRightViewport.y = 0;
-        topRightViewport.w = ScreenWidth / 2;
-        topRightViewport.h = ScreenHeight / 2;
-        SDL_SetRenderViewport(Renderer, &topRightViewport);
+        Rectangle topRightViewport;
+        topRightViewport.X = ScreenWidth / 2;
+        topRightViewport.Y = 0;
+        topRightViewport.Width = ScreenWidth / 2;
+        topRightViewport.Height = ScreenHeight / 2;
+        renderer.Viewport = topRightViewport;
         // Render texture to screen
-        SDL_RenderTexture(Renderer, _texture, null, null);
+        renderer.RenderTexture(_texture!);
 
         // Bottom viewport
-        SDL_Rect bottomViewport;
-        bottomViewport.x = 0;
-        bottomViewport.y = ScreenHeight / 2;
-        bottomViewport.w = ScreenWidth;
-        bottomViewport.h = ScreenHeight / 2;
-        SDL_SetRenderViewport(Renderer, &bottomViewport);
+        Rectangle bottomViewport;
+        bottomViewport.X = 0;
+        bottomViewport.Y = ScreenHeight / 2;
+        bottomViewport.Width = ScreenWidth;
+        bottomViewport.Height = ScreenHeight / 2;
+        renderer.Viewport = bottomViewport;
         // Render texture to screen
-        SDL_RenderTexture(Renderer, _texture, null, null);
+        renderer.RenderTexture(_texture!);
 
         // Update screen
-        SDL_RenderPresent(Renderer);
+        renderer.Present();
     }
 
-    private bool LoadAssets(INativeAllocator allocator)
+    private bool TryLoadAssets()
     {
-        _texture = LoadTexture(allocator, "viewport.png");
-        return _texture != null;
-    }
+        var assetsDirectory = Path.Combine(
+            AppContext.BaseDirectory, "Examples", nameof(E009_Viewport));
 
-    private SDL_Texture* LoadTexture(INativeAllocator allocator, string fileName)
-    {
-        var filePath = Path.Combine(AssetsDirectory, fileName);
-        var filePathC = allocator.AllocateCString(filePath);
-        var surface = IMG_Load(filePathC);
-        if (surface == null)
+        if (!FileSystem.TryLoadImage(
+                Path.Combine(assetsDirectory, "viewport.png"), out var imageSurface))
         {
-            Console.Error.WriteLine("Failed to load image '{0}': {1}", filePath, SDL_GetError());
-            return null;
+            return false;
         }
 
-        var texture = SDL_CreateTextureFromSurface(Renderer, surface);
-        SDL_DestroySurface(surface);
-        if (texture == null)
-        {
-            Console.Error.WriteLine("Failed to create texture from file '{0}': {1}", filePath, SDL_GetError());
-            return null;
-        }
+        _texture = Window.Renderer!.CreateTextureFrom(imageSurface!);
+        imageSurface!.Dispose();
 
-        return texture;
+        return true;
     }
 }

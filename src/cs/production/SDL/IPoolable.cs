@@ -7,6 +7,7 @@ namespace SDL;
 ///     Provides a mechanism for an object to be pooled.
 /// </summary>
 /// <typeparam name="TSelf">The type of object being pooled.</typeparam>
+[PublicAPI]
 public interface IPoolable<TSelf>
     where TSelf : class, IPoolable<TSelf>
 {

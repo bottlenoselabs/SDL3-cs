@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
+using SDL;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
@@ -9,37 +9,24 @@ namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E006_OtherImageFormats : ExampleLazyFoo
+public sealed class E006_OtherImageFormats : ExampleLazyFoo
 {
-    private SDL_Surface* _screenSurface;
-    private SDL_Surface* _surface;
+    private Surface? _imageSurface;
 
     public E006_OtherImageFormats()
-        : base("6 - Other Image Formats", createRenderer: false)
+        : base("6 - Other Image Formats", isEnabledCreateSurface: true)
     {
     }
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        if (!base.Initialize(allocator))
-        {
-            return false;
-        }
-
-        if (!LoadAssets(allocator))
-        {
-            return false;
-        }
-
-        var window = (SDL_Window*)Window.Handle;
-        _screenSurface = SDL_GetWindowSurface(window);
-        return true;
+        return TryLoadAssets();
     }
 
     public override void Quit()
     {
-        SDL_DestroySurface(_surface);
-        _surface = null;
+        _imageSurface?.Dispose();
+        _imageSurface = null;
     }
 
     public override void KeyboardEvent(in SDL_KeyboardEvent e)
@@ -52,41 +39,16 @@ public sealed unsafe class E006_OtherImageFormats : ExampleLazyFoo
 
     public override void Draw(float deltaTime)
     {
-        // Apply the image stretched
-        SDL_Rect stretchRectangle;
-        stretchRectangle.x = 0;
-        stretchRectangle.y = 0;
-        stretchRectangle.w = ScreenWidth;
-        stretchRectangle.h = ScreenHeight;
-        _ = SDL_BlitSurfaceScaled(
-            _surface,
-            null,
-            _screenSurface,
-            &stretchRectangle,
-            SDL_ScaleMode.SDL_SCALEMODE_NEAREST);
-
-        // flip back and front buffer
-        var window = (SDL_Window*)Window.Handle;
-        _ = SDL_UpdateWindowSurface(window);
+        _imageSurface!.BlitTo(Window.Surface!, ScaleMode.Nearest);
+        Window.Present();
     }
 
-    private bool LoadAssets(INativeAllocator allocator)
+    private bool TryLoadAssets()
     {
-        _surface = LoadSurface(allocator, "loaded.png");
-        return _surface != null;
-    }
+        var assetsDirectory = Path.Combine(
+            AppContext.BaseDirectory, "Examples", nameof(E006_OtherImageFormats));
 
-    private SDL_Surface* LoadSurface(INativeAllocator allocator, string fileName)
-    {
-        var filePath = Path.Combine(AssetsDirectory, fileName);
-        var filePathC = allocator.AllocateCString(filePath);
-        var surface = IMG_Load(filePathC);
-        if (surface == null)
-        {
-            Console.Error.WriteLine("Failed to load image '{0}': {1}", filePath, SDL_GetError());
-            return null;
-        }
-
-        return surface;
+        return FileSystem.TryLoadImage(
+            Path.Combine(assetsDirectory, "loaded.png"), out _imageSurface);
     }
 }

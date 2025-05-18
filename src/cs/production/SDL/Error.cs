@@ -6,8 +6,11 @@ namespace SDL;
 /// <summary>
 ///     Utility for dealing with SDL errors.
 /// </summary>
-public static class Error
+[PublicAPI]
+public static partial class Error
 {
+    internal static ILogger LoggerNativeFunction = null!;
+
     /// <summary>
     ///     Gets the last SDL error message.
     /// </summary>
@@ -18,4 +21,18 @@ public static class Error
         var errorMessage = CString.ToString(errorMessageC);
         return errorMessage;
     }
+
+    internal static void NativeFunctionFailed(string functionName, bool isExceptionThrown = false)
+    {
+        var errorMessage = GetMessage();
+        LogNativeFunctionFailed(LoggerNativeFunction, functionName, errorMessage);
+
+        if (isExceptionThrown)
+        {
+            throw new NativeFunctionFailedException(functionName, $"Native function failed: '{functionName}'. Message: {errorMessage}");
+        }
+    }
+
+    [LoggerMessage(LogEventId.NativeFunctionFailed, LogLevel.Error, "Native function failed: '{FunctionName}'. Message: {ErrorMessage}")]
+    internal static partial void LogNativeFunctionFailed(ILogger logger, string functionName, string errorMessage);
 }

@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using JetBrains.Annotations;
+using SDL;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
@@ -9,42 +9,28 @@ namespace LazyFoo.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E004_KeyPresses : ExampleLazyFoo
+public sealed class E004_KeyPresses : ExampleLazyFoo
 {
-    private SDL_Surface* _screenSurface;
-    private SDL_Surface* _currentKeyPressSurface;
-    private readonly SDL_Surface*[] _keyPressSurfaces = new SDL_Surface*[Enum.GetValues<KeyPressSurfaceIndex>().Length];
+    private Surface? _currentKeyPressSurface;
+    private readonly Surface?[] _keyPressSurfaces = new Surface[Enum.GetValues<KeyPressSurfaceIndex>().Length];
 
     public E004_KeyPresses()
-        : base("4 - KeyPresses", createRenderer: false)
+        : base("4 - KeyPresses", isEnabledCreateSurface: true)
     {
     }
 
     public override bool Initialize(INativeAllocator allocator)
     {
-        if (!base.Initialize(allocator))
-        {
-            return false;
-        }
-
-        if (!LoadAssets(allocator))
-        {
-            return false;
-        }
-
-        var window = (SDL_Window*)Window.Handle;
-        _screenSurface = SDL_GetWindowSurface(window);
-        return true;
+        return TryLoadAssets();
     }
 
     public override void Quit()
     {
-        foreach (var keyPressSurface in _keyPressSurfaces)
+        for (var i = 0; i < _keyPressSurfaces.Length; i++)
         {
-            if (keyPressSurface == null)
-            {
-                SDL_DestroySurface(keyPressSurface);
-            }
+            ref var keyPressSurface = ref _keyPressSurfaces[i];
+            keyPressSurface?.Dispose();
+            keyPressSurface = null;
         }
     }
 
@@ -71,43 +57,30 @@ public sealed unsafe class E004_KeyPresses : ExampleLazyFoo
 
     public override void Draw(float deltaTime)
     {
-        var window = (SDL_Window*)Window.Handle;
-
-        _ = SDL_BlitSurface(_currentKeyPressSurface, null, _screenSurface, null);
-        _ = SDL_UpdateWindowSurface(window); // flip back and front buffer
+        _currentKeyPressSurface!.BlitTo(Window.Surface!);
+        Window.Present();
     }
 
-    private bool LoadAssets(INativeAllocator allocator)
+    private bool TryLoadAssets()
     {
-        _currentKeyPressSurface = _keyPressSurfaces[(int)KeyPressSurfaceIndex.Press] =
-            LoadSurface(allocator, "press.bmp");
-        _keyPressSurfaces[(int)KeyPressSurfaceIndex.Up] = LoadSurface(allocator, "up.bmp");
-        _keyPressSurfaces[(int)KeyPressSurfaceIndex.Down] = LoadSurface(allocator, "down.bmp");
-        _keyPressSurfaces[(int)KeyPressSurfaceIndex.Left] = LoadSurface(allocator, "left.bmp");
-        _keyPressSurfaces[(int)KeyPressSurfaceIndex.Right] = LoadSurface(allocator, "right.bmp");
+        var assetsDirectory = Path.Combine(
+            AppContext.BaseDirectory, "Examples", nameof(E004_KeyPresses));
 
-        foreach (var keyPressSurface in _keyPressSurfaces)
+        var enumValues = Enum.GetValues<KeyPressSurfaceIndex>();
+        foreach (var enumValue in enumValues)
         {
-            if (keyPressSurface == null)
+            var name = enumValue.ToString().ToLowerInvariant();
+            var filePath = Path.Combine(assetsDirectory, $"{name}.bmp");
+            if (!FileSystem.TryLoadImage(filePath, out var imageSurface))
             {
                 return false;
             }
+
+            _keyPressSurfaces[(int)enumValue] = imageSurface!;
         }
+
+        _currentKeyPressSurface = _keyPressSurfaces[0];
 
         return true;
-    }
-
-    private SDL_Surface* LoadSurface(INativeAllocator allocator, string fileName)
-    {
-        var filePath = Path.Combine(AssetsDirectory, fileName);
-        var filePathC = allocator.AllocateCString(filePath);
-        var surface = SDL_LoadBMP(filePathC);
-        if (surface == null)
-        {
-            Console.Error.WriteLine("Failed to load image '{0}': {1}", filePath, SDL_GetError());
-            return null;
-        }
-
-        return surface;
     }
 }
