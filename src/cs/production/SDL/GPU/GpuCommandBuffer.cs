@@ -59,7 +59,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     ///     The render-target <see cref="GpuTexture" /> which will be presented to the <paramref name="window" /> when
     ///     <see cref="GpuCommandBuffer.Submit" /> is called.
     /// </param>
-    /// <returns><c>true</c> if the texture was successful acquired; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> if the texture was successfully acquired; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The command buffer is submitted to the device.</exception>
     /// <remarks>
     ///     <para>

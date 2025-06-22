@@ -24,14 +24,14 @@ public sealed unsafe class FileSystem : Disposable
     }
 
     /// <summary>
-    ///     Attempts to to load a file given a specified file path.
+    ///     Attempts to load a file given a specified file path.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
     ///     <see cref="AppContext.BaseDirectory" />.
     /// </param>
     /// <param name="file">The resulting file if successfully loaded; otherwise, <c>null</c>.</param>
-    /// <returns><c>true</c> if the file was successful loaded; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> if the file was successfully loaded; otherwise, <c>false</c>.</returns>
     /// <remarks>
     ///     <para>
     ///         <see cref="TryLoadFile" /> is not thread safe.
@@ -65,7 +65,7 @@ public sealed unsafe class FileSystem : Disposable
     }
 
     /// <summary>
-    ///     Attempts to load a file given the a specified file path as an image.
+    ///     Attempts to load a file as an image given the specified file path.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
@@ -77,7 +77,7 @@ public sealed unsafe class FileSystem : Disposable
     ///     image will attempt to be converted to this pixel format. Use <c>null</c> to disable conversion and have the
     ///     image in the same pixel format as the file format.
     /// </param>
-    /// <returns><c>true</c> if the image was successful loaded; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> if the image was successfully loaded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentException">Invalid <paramref name="desiredPixelFormat" />.</exception>
     /// <remarks>
     ///     <para>
