@@ -24,14 +24,14 @@ public sealed unsafe class FileSystem : Disposable
     }
 
     /// <summary>
-    ///     Attempts to to load a file given a specified file path.
+    ///     Attempts to load a file given a specified file path.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
     ///     <see cref="AppContext.BaseDirectory" />.
     /// </param>
     /// <param name="file">The resulting file if successfully loaded; otherwise, <c>null</c>.</param>
-    /// <returns><c>true</c> if the file was successful loaded; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> if the file was successfully loaded; otherwise, <c>false</c>.</returns>
     /// <remarks>
     ///     <para>
     ///         <see cref="TryLoadFile" /> is not thread safe.
@@ -39,13 +39,17 @@ public sealed unsafe class FileSystem : Disposable
     /// </remarks>
     public bool TryLoadFile(string filePath, out File file)
     {
+        var fullFilePath = GetFullFilePath(filePath);
+
         ulong dataSize;
         _filePathAllocator.Reset();
-        var filePathC = _filePathAllocator.AllocateCString(filePath);
-        var dataPointer = SDL_LoadFile(filePathC, &dataSize);
+        var fullFilePathC = _filePathAllocator.AllocateCString(fullFilePath);
+        var filePointer = SDL_LoadFile(fullFilePathC, &dataSize);
         _filePathAllocator.Reset();
-        if (dataPointer == null)
+        if (filePointer == null)
         {
+            Console.WriteLine(filePath);
+            Console.WriteLine(fullFilePath);
             Error.NativeFunctionFailed(nameof(SDL_LoadFile));
             file = null!;
             return false;
@@ -54,18 +58,18 @@ public sealed unsafe class FileSystem : Disposable
         var file2 = _poolFile.GetOrCreate();
         if (file2 == null)
         {
-            SDL_free(dataPointer);
+            SDL_free(filePointer);
             file = null!;
             return false;
         }
 
         file = file2;
-        file.Set(filePath, (IntPtr)dataPointer, (int)dataSize);
+        file.Set(fullFilePath, (IntPtr)filePointer, (int)dataSize);
         return true;
     }
 
     /// <summary>
-    ///     Attempts to load a file given the a specified file path as an image.
+    ///     Attempts to load a file as an image given the specified file path.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
@@ -77,7 +81,7 @@ public sealed unsafe class FileSystem : Disposable
     ///     image will attempt to be converted to this pixel format. Use <c>null</c> to disable conversion and have the
     ///     image in the same pixel format as the file format.
     /// </param>
-    /// <returns><c>true</c> if the image was successful loaded; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> if the image was successfully loaded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentException">Invalid <paramref name="desiredPixelFormat" />.</exception>
     /// <remarks>
     ///     <para>
@@ -94,11 +98,13 @@ public sealed unsafe class FileSystem : Disposable
             throw new ArgumentException("Invalid desired pixel format.");
         }
 
+        var fullFilePath = GetFullFilePath(filePath);
+
         _filePathAllocator.Reset();
-        var filePathC = _filePathAllocator.AllocateCString(filePath);
-        var surfaceHandle = SDL_image.IMG_Load(filePathC);
+        var fullFilePathC = _filePathAllocator.AllocateCString(fullFilePath);
+        var surfacePointer = SDL_image.IMG_Load(fullFilePathC);
         _filePathAllocator.Reset();
-        if (surfaceHandle == null)
+        if (surfacePointer == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_image.IMG_Load));
             surface = null;
@@ -106,21 +112,21 @@ public sealed unsafe class FileSystem : Disposable
         }
 
         var desiredPixelFormat2 = (SDL_PixelFormat)(desiredPixelFormat ?? PixelFormat.Unknown);
-        if (desiredPixelFormat != null && surfaceHandle->format != desiredPixelFormat2)
+        if (desiredPixelFormat != null && surfacePointer->format != desiredPixelFormat2)
         {
-            var convertedSurfaceHandle = SDL_ConvertSurface(surfaceHandle, desiredPixelFormat2);
-            if (convertedSurfaceHandle == null)
+            var convertedSurfacePointer = SDL_ConvertSurface(surfacePointer, desiredPixelFormat2);
+            if (convertedSurfacePointer == null)
             {
                 Error.NativeFunctionFailed(nameof(SDL_ConvertSurface));
                 surface = null;
                 return false;
             }
 
-            SDL_DestroySurface(surfaceHandle);
-            surfaceHandle = convertedSurfaceHandle;
+            SDL_DestroySurface(surfacePointer);
+            surfacePointer = convertedSurfacePointer;
         }
 
-        surface = new Surface((IntPtr)surfaceHandle);
+        surface = new Surface((IntPtr)surfacePointer);
         return true;
     }
 
@@ -129,5 +135,16 @@ public sealed unsafe class FileSystem : Disposable
     {
         _poolFile.Dispose();
         _filePathAllocator.Dispose();
+    }
+
+    private static string GetFullFilePath(string filePath)
+    {
+        var fullFilePath = filePath;
+        if (!Path.IsPathRooted(filePath))
+        {
+            fullFilePath = Path.Combine(AppContext.BaseDirectory, filePath);
+        }
+
+        return fullFilePath;
     }
 }
