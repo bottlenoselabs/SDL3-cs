@@ -33,11 +33,14 @@ These goals might not align to your goals or your organization's goals to which 
 ### From source
 
 1. Download and install [.NET 9](https://dotnet.microsoft.com/download).
-2. Fork the repository using GitHub or clone the repository manually with submodules: `git clone --recurse-submodules https://github.com/bottlenoselabs/SDL3-cs`.
-3. Build the native shared libraries (SDL and SDL extensions) by running [`./ext/build-native-libraries.sh`](./ext/build-native-libraries.sh). To execute `.sh` (Bash) scripts on Windows, use Git Bash which can be installed with Git itself: https://git-scm.com/download/win. The `build-native-libraries.sh` script requires that CMake and SDL build dependencies ([see Linux docs for required packages](https://wiki.libsdl.org/SDL3/README/linux)) are installed and in your environment variable `PATH`.
+2. Clone the repository manually with submodules: `git clone --recurse-submodules https://github.com/bottlenoselabs/SDL3-cs`.
+3. Build the native shared libraries (SDL and SDL extensions) by running [`./ext/build-native-libraries.sh`](./ext/build-native-libraries.sh).
+    - Windows. To execute `.sh` (Bash) scripts on Windows, use Git Bash which can be [installed with Git](https://git-scm.com/download/win). For CMake on Windows, it's recommended to install through [Visual Studio Installer](https://visualstudio.microsoft.com/downloads/) for the workloads "Desktop development with C++" and "Game development with C++". Additionally on Windows, the [NASM assembler](https://www.nasm.us/) is required and to be in your `PATH` environment variable.
+    - macOS. Install XCode through the App Store.
+    - Linux. See [required packages](https://wiki.libsdl.org/SDL3/README/linux).
 4. Run an example suite suite to test things are working. Use '1' and '2' on your keyboard to move between examples in the suite once run.
-   - `SDL_GPU`: `dotnet run --project ./src/cs/examples/SDL_GPU/SDL_GPU.csproj`
-   - `LazyFoo`: `dotnet run --project ./src/cs/examples/LazyFoo/LazyFoo.csproj`
+   - `SDL_GPU`: `dotnet run --project ./src/cs/examples/Examples.Gpu/Examples.Gpu.csproj`
+   - `LazyFoo`: `dotnet run --project ./src/cs/examples/Examples.LazyFoo/Examples.LazyFoo.csproj`
 5. Add the following C# project to your solution and reference it in one of your C# project:
     - `./src/cs/production/SDL/SDL.csproj`
 
