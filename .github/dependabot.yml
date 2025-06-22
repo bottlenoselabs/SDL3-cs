@@ -5,6 +5,4 @@ updates:
     open-pull-requests-limit: 10000 # HACK: Set this to a stupid high number so we continue getting PRs as there appears to be a bug with Dependabot 🤷‍♂️ https://github.com/dependabot/dependabot-core/issues/12224
     schedule:
       interval: "daily"
-    reviewers:
-      - lithiumtoast
     target-branch: main
