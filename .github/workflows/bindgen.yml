@@ -174,7 +174,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "generated-cs-${{ matrix.project.name }}"
-          path: "./src/cs/production/Interop.${{ matrix.project.name }}/Generated"
+          path: "./src/cs/production/${{ matrix.project.name }}.Interop/Generated"
           if-no-files-found: error
 
   bindgen-build-dotnet-job:
