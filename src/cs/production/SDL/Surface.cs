@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace SDL;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     Represents a two-dimensional array of pixels.
@@ -95,7 +95,7 @@ public sealed unsafe class Surface : NativeHandle
             var isSuccess = SDL_BlitSurface(src, srcRect, dst, dstRect);
             if (!isSuccess)
             {
-                Error.NativeFunctionFailed(nameof(SDL_BlitSurface));
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_BlitSurface));
             }
         }
         else
@@ -104,7 +104,7 @@ public sealed unsafe class Surface : NativeHandle
                 src, srcRect, dst, dstRect, (SDL_ScaleMode)scaleMode.Value);
             if (!isSuccess)
             {
-                Error.NativeFunctionFailed(nameof(SDL_BlitSurfaceScaled));
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_BlitSurfaceScaled));
             }
         }
     }
@@ -144,7 +144,7 @@ public sealed unsafe class Surface : NativeHandle
             isSuccess = SDL_BlitSurface(src, srcRect, dst, dstRect);
             if (isSuccess)
             {
-                Error.NativeFunctionFailed(nameof(SDL_BlitSurface));
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_BlitSurface));
             }
         }
         else
@@ -153,7 +153,7 @@ public sealed unsafe class Surface : NativeHandle
                 src, srcRect, dst, dstRect, (SDL_ScaleMode)scaleMode.Value);
             if (isSuccess)
             {
-                Error.NativeFunctionFailed(nameof(SDL_BlitSurfaceScaled));
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_BlitSurfaceScaled));
             }
         }
 
@@ -181,7 +181,7 @@ public sealed unsafe class Surface : NativeHandle
         var isSuccess = SDL_FillSurfaceRect(_handle, null, pixelColor);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_FillSurfaceRect), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_FillSurfaceRect), isExceptionThrown: true);
         }
     }
 
@@ -205,7 +205,7 @@ public sealed unsafe class Surface : NativeHandle
             var isSuccess = SDL_FillSurfaceRect(_handle, rectanglePointer2, pixelColor);
             if (!isSuccess)
             {
-                Error.NativeFunctionFailed(nameof(SDL_FillSurfaceRect), isExceptionThrown: true);
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_FillSurfaceRect), isExceptionThrown: true);
             }
         }
     }
@@ -226,7 +226,7 @@ public sealed unsafe class Surface : NativeHandle
             var isSuccess = SDL_GetSurfaceClipRect(_handle, rectanglePointer2);
             if (!isSuccess)
             {
-                Error.NativeFunctionFailed(nameof(SDL_SetSurfaceClipRect), isExceptionThrown: true);
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetSurfaceClipRect), isExceptionThrown: true);
             }
         }
     }
@@ -239,7 +239,7 @@ public sealed unsafe class Surface : NativeHandle
             var isSuccess = SDL_SetSurfaceClipRect(_handle, rectanglePointer2);
             if (!isSuccess)
             {
-                Error.NativeFunctionFailed(nameof(SDL_SetSurfaceClipRect), isExceptionThrown: true);
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetSurfaceClipRect), isExceptionThrown: true);
             }
         }
     }
@@ -256,14 +256,14 @@ public sealed unsafe class Surface : NativeHandle
         var isSuccess = SDL_GetSurfaceColorKey(_handle, &colorKeyMapped);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_GetSurfaceColorKey), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetSurfaceColorKey), isExceptionThrown: true);
         }
 
         var pixelFormat = (SDL_PixelFormat)PixelFormat;
         var pixelFormatDetails = SDL_GetPixelFormatDetails(pixelFormat);
         if (pixelFormatDetails == null)
         {
-            Error.NativeFunctionFailed(nameof(SDL_GetPixelFormatDetails), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetPixelFormatDetails), isExceptionThrown: true);
         }
 
         byte r;
@@ -281,7 +281,7 @@ public sealed unsafe class Surface : NativeHandle
         var isSuccess = SDL_SetSurfaceColorKey(_handle, true, colorKeyMapped);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_SetSurfaceColorKey), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetSurfaceColorKey), isExceptionThrown: true);
         }
     }
 }

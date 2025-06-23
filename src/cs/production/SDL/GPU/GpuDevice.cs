@@ -1,7 +1,9 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace SDL.GPU;
+using bottlenoselabs.SDL.IO;
+
+namespace bottlenoselabs.SDL.GPU;
 
 /// <summary>
 ///     Represents a context for rendering 3D graphics and running computations.
@@ -280,7 +282,7 @@ public sealed unsafe class GpuDevice : NativeHandle
     ///     Attempts to create a new <see cref="GpuGraphicsShader" /> instance using the specified file path to the
     ///     shader file.
     /// </summary>
-    /// <param name="fileSystem">The <see cref="IO.FileSystem" /> instance.</param>
+    /// <param name="fileSystem">The <see cref="FileSystem" /> instance.</param>
     /// <param name="filePath">
     ///     The file path to the shader file. If the path is relative, it is assumed to be relative to
     ///     <see cref="AppContext.BaseDirectory" />.
@@ -290,7 +292,7 @@ public sealed unsafe class GpuDevice : NativeHandle
     /// <param name="uniformBufferCount">The number of uniform buffers used in the shader.</param>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
     public bool TryCreateShaderFromFile(
-        IO.FileSystem fileSystem,
+        FileSystem fileSystem,
         string filePath,
         out GpuGraphicsShader? shader,
         int samplerCount = 0,

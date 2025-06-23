@@ -1,9 +1,9 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using SDL.GPU;
+using bottlenoselabs.SDL.GPU;
 
-namespace SDL;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     Represents a desktop operating system window using SDL.
@@ -77,7 +77,7 @@ public sealed unsafe class Window : NativeHandle
 
         if (Handle == IntPtr.Zero)
         {
-            Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
         }
 
         if (options is { IsEnabledCreateSurface: true, IsEnabledCreateRenderer: true })
@@ -91,7 +91,7 @@ public sealed unsafe class Window : NativeHandle
             var surfaceHandle = SDL_GetWindowSurface((SDL_Window*)Handle);
             if (surfaceHandle == null)
             {
-                Error.NativeFunctionFailed(nameof(SDL_GetWindowSurface), isExceptionThrown: true);
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetWindowSurface), isExceptionThrown: true);
             }
             else
             {
@@ -104,7 +104,7 @@ public sealed unsafe class Window : NativeHandle
             var rendererHandle = SDL_CreateRenderer((SDL_Window*)Handle, null);
             if (rendererHandle == null)
             {
-                Error.NativeFunctionFailed(nameof(SDL_CreateRenderer), isExceptionThrown: true);
+                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_CreateRenderer), isExceptionThrown: true);
             }
             else
             {
@@ -115,7 +115,7 @@ public sealed unsafe class Window : NativeHandle
         int widthActual, heightActual;
         if (!SDL_GetWindowSize((SDL_Window*)Handle, &widthActual, &heightActual))
         {
-            Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
         }
 
         Width = widthActual;
@@ -148,7 +148,7 @@ public sealed unsafe class Window : NativeHandle
         var isSuccess = SDL_UpdateWindowSurface((SDL_Window*)Handle);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_UpdateWindowSurface));
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_UpdateWindowSurface));
         }
     }
 
@@ -180,7 +180,7 @@ public sealed unsafe class Window : NativeHandle
         }
         else
         {
-            Error.NativeFunctionFailed(nameof(SDL_SetWindowTitle));
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetWindowTitle));
         }
     }
 }

@@ -2,10 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 using ObjectDisposedException = System.ObjectDisposedException;
 
-namespace SDL;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     Delegate that attempts to return an object instance back it's associated pool.

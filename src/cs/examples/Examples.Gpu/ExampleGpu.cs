@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
 using System.Text.RegularExpressions;
+using bottlenoselabs.SDL.GPU;
 using Common;
-using SDL.GPU;
 
 namespace Gpu;
 
