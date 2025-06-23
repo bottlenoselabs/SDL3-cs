@@ -17,12 +17,17 @@ public abstract unsafe partial class Application : Disposable
     private readonly ILoggerFactory _loggerFactory;
 
     /// <summary>
-    ///     Gets the current <see cref="Platform" />.
+    ///     Gets the logger of the application.
+    /// </summary>
+    public ILogger<Application> Logger { get; }
+
+    /// <summary>
+    ///     Gets the <see cref="bottlenoselabs.SDL.Platform" /> of the application.
     /// </summary>
     public Platform Platform { get; internal set; }
 
     /// <summary>
-    ///     Gets the <see cref="FileSystem" /> of the application.
+    ///     Gets the <see cref="bottlenoselabs.SDL.IO.FileSystem" /> of the application.
     /// </summary>
     public FileSystem FileSystem { get; }
 
@@ -42,6 +47,8 @@ public abstract unsafe partial class Application : Disposable
             builder.AddConsole();
             builder.SetMinimumLevel(LogLevel.Warning);
         });
+
+        Logger = _loggerFactory.CreateLogger<Application>();
 
         Error.LoggerNativeFunction = _loggerFactory.CreateLogger("Interop");
 
