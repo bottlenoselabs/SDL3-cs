@@ -12,9 +12,9 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
 {
     private Window _secondWindow = null!;
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
-        if (!base.Initialize(allocator))
+        if (!base.OnStart())
         {
             return false;
         }
@@ -26,24 +26,24 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         Device.ReleaseWindow(_secondWindow);
         _secondWindow.Dispose();
         _secondWindow = null!;
 
-        base.Quit();
+        base.OnExit();
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(float deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(float deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTextureMainWindow))

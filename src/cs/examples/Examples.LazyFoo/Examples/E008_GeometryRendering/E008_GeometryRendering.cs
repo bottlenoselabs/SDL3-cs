@@ -16,24 +16,24 @@ public sealed class E008_GeometryRendering : ExampleLazyFoo
     {
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(float deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(float deltaTime)
     {
         var renderer = Window.Renderer!;
 

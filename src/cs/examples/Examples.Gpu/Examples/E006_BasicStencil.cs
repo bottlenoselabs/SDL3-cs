@@ -15,9 +15,9 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
     private GpuDataBuffer? _vertexBuffer;
     private GpuTexture? _textureDepthStencilTarget;
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
-        if (!base.Initialize(allocator))
+        if (!base.OnStart())
         {
             return false;
         }
@@ -160,25 +160,25 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _textureDepthStencilTarget?.Dispose();
         _pipelineMasker?.Dispose();
         _pipelineMaskee?.Dispose();
         _vertexBuffer?.Dispose();
 
-        base.Quit();
+        base.OnExit();
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(float deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(float deltaTime)
     {
         if (!_isSupported)
         {

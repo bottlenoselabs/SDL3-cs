@@ -9,15 +9,15 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed class E001_ClearScreen : ExampleGpu
 {
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(float deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(float deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (!commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTexture))

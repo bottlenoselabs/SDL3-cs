@@ -19,26 +19,26 @@ public sealed class E011_ClipRenderingAndSpriteSheets : ExampleLazyFoo
     {
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         return TryLoadAssets();
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _texture?.Dispose();
         _texture = null;
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(float deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(float deltaTime)
     {
         var renderer = Window.Renderer!;
 

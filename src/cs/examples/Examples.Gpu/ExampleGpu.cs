@@ -24,13 +24,13 @@ public abstract partial class ExampleGpu : ExampleBase
         AssetsDirectory = Path.Combine(AppContext.BaseDirectory, "Assets");
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         var isSuccess = Device.TryClaimWindow(Window);
         return isSuccess;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         Device.Dispose();
         Device = null!;

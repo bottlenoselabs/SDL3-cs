@@ -14,7 +14,7 @@ public sealed class E001_Hello : ExampleLazyFoo
     {
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         var surface = Window.Surface!;
         var color = Rgb8U.CornflowerBlue;
@@ -25,19 +25,19 @@ public sealed class E001_Hello : ExampleLazyFoo
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(float deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(float deltaTime)
     {
     }
 }
