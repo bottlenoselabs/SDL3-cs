@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- MSBuild settings -->
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput> <!-- No C# assemblies to include -->
@@ -9,6 +10,12 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
+  <!-- NuGet -->
+  <PropertyGroup>
+    <PackageDescription>The native `SDL_image` library (SDL3_image) file (SDL3_image.dll) for the `win-arm64` target framework moniker (TFM).</PackageDescription>
+  </PropertyGroup>
+
+  <!-- Dynamic link library -->
   <PropertyGroup>
     <NativeLibraryFileName>SDL3_image.dll</NativeLibraryFileName>
     <NativeLibraryFilePath>$(LibraryDirectoryPath)/$(RuntimeIdentifier)/$(NativeLibraryFileName)</NativeLibraryFilePath>
