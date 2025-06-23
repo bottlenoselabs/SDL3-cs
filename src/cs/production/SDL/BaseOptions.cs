@@ -3,7 +3,7 @@
 
 using System.ComponentModel;
 
-namespace SDL;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     Parameters for creating some object.

@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
-using SDL;
+using bottlenoselabs.SDL;
 
 namespace Common;
 
@@ -18,7 +18,7 @@ public sealed class App : Application
     private ExampleBase? _currentExample;
     private readonly ArenaNativeAllocator _allocator = new(1024);
 
-    protected override void Initialize()
+    protected override void OnStart()
     {
         var assemblyName = Assembly.GetEntryAssembly()!.GetName().Name;
         Console.WriteLine($"Welcome to the {assemblyName} suite!");
@@ -30,11 +30,15 @@ public sealed class App : Application
                 .Where(type => typeof(ExampleBase).IsAssignableFrom(type) && !type.IsAbstract)
         ];
         _examplesCount = _exampleTypes.Length;
-
-        IsExiting += OnIsExiting;
     }
 
-    protected override void Event(in SDL_Event e)
+    protected override void OnExit()
+    {
+        _currentExample?.QuitInternal();
+        _currentExample = null;
+    }
+
+    protected override void OnEvent(in SDL_Event e)
     {
         var eventType = (SDL_EventType)e.type;
         switch (eventType)
@@ -68,7 +72,7 @@ public sealed class App : Application
         }
     }
 
-    protected override void Update(float deltaTime)
+    protected override void OnUpdate(float deltaTime)
     {
         if (_goToExampleIndex != -1)
         {
@@ -123,14 +127,8 @@ public sealed class App : Application
         _currentExample?.Update(deltaTime);
     }
 
-    protected override void Draw(float deltaTime)
+    protected override void OnDraw(float deltaTime)
     {
         _currentExample?.Draw(deltaTime);
-    }
-
-    private void OnIsExiting(object? sender, EventArgs e)
-    {
-        _currentExample?.QuitInternal();
-        _currentExample = null;
     }
 }

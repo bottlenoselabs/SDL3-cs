@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- MSBuild settings -->
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput> <!-- No C# assemblies to include -->
@@ -9,14 +10,20 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
+  <!-- NuGet -->
+  <PropertyGroup>
+    <PackageDescription>The native `SDL_image` library (SDL3_image) file (libSDL3_image.dylib) for the `osx-x64` target framework moniker (TFM).</PackageDescription>
+  </PropertyGroup>
+
+  <!-- Dynamic link library -->
   <PropertyGroup>
     <NativeLibraryFileName>libSDL3_image.dylib</NativeLibraryFileName>
     <NativeLibraryFilePath>$(LibraryDirectoryPath)/$(RuntimeIdentifier)/$(NativeLibraryFileName)</NativeLibraryFilePath>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="$(NativeLibraryFilePath)"
-             PackagePath="runtimes\$(RuntimeIdentifier)\native\"
-             Condition="Exists('$(NativeLibraryFilePath)')">
+      PackagePath="runtimes\$(RuntimeIdentifier)\native\"
+      Condition="Exists('$(NativeLibraryFilePath)')">
       <Link>%(Filename)%(Extension)</Link>
       <Pack>true</Pack>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

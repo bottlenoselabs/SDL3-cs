@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace SDL;
+namespace bottlenoselabs.SDL;
 
 public partial class Application
 {
@@ -13,7 +13,7 @@ public partial class Application
     /// </summary>
     public static Application Current => _current!;
 
-    internal static void InternalInitialize(Application application)
+    internal static void Initialize(Application application)
     {
         var app = Interlocked.CompareExchange(ref _current, application, null);
         if (app != null)

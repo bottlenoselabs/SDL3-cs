@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace SDL.GPU;
+namespace bottlenoselabs.SDL.GPU;
 
 /// <summary>
 ///     Represents an GPU resource for transferring (uploading or downloading) data between the application and GPU.
@@ -37,7 +37,7 @@ public sealed unsafe class GpuTransferBuffer : GpuResource
             (SDL_GPUDevice*)Device.Handle, (SDL_GPUTransferBuffer*)Handle, isCycled);
         if (ptr == null)
         {
-            Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
             return IntPtr.Zero;
         }
 
@@ -62,7 +62,7 @@ public sealed unsafe class GpuTransferBuffer : GpuResource
             (SDL_GPUDevice*)Device.Handle, (SDL_GPUTransferBuffer*)Handle, isCycled);
         if (ptr == null)
         {
-            Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
             return default;
         }
 

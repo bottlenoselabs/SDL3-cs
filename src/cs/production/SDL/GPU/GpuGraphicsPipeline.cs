@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace SDL.GPU;
+namespace bottlenoselabs.SDL.GPU;
 
 /// <summary>
 ///     Represents the stages (steps) that a GPU performs in-order to convert 2D or 3D geometry into either: pixels that

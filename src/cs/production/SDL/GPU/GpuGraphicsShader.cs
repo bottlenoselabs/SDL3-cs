@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace SDL.GPU;
+namespace bottlenoselabs.SDL.GPU;
 
 /// <summary>
 ///     Represents a developer programmable graphics program used in the vertex stage or fragment stage of the
@@ -35,7 +35,7 @@ public sealed unsafe class GpuGraphicsShader : GpuResource
     public GpuGraphicsShaderStage Stage { get; private set; }
 
     internal GpuGraphicsShader(
-        GPU.GpuDevice device,
+        GpuDevice device,
         IntPtr handle,
         GpuShaderFormats format,
         GpuGraphicsShaderStage stage)

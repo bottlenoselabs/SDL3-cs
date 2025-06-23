@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace SDL;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     TODO.
@@ -60,7 +60,7 @@ public sealed unsafe class Texture : NativeHandle
         var isSuccess = SDL_GetTextureSize(_handle, &width, &height);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_GetTextureSize));
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureSize));
         }
 
         Width = width;
@@ -83,7 +83,7 @@ public sealed unsafe class Texture : NativeHandle
         var isSuccess = SDL_GetTextureColorMod(_handle, &r, &g, &b);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_GetTextureColorMod), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureColorMod), isExceptionThrown: true);
         }
 
         var color = new Rgb8U(r, g, b);
@@ -95,7 +95,7 @@ public sealed unsafe class Texture : NativeHandle
         var isSuccess = SDL_SetTextureColorMod(_handle, color.R, color.G, color.B);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_SetTextureColorMod), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetTextureColorMod), isExceptionThrown: true);
         }
     }
 
@@ -106,7 +106,7 @@ public sealed unsafe class Texture : NativeHandle
         var isSuccess = SDL_GetTextureAlphaMod(_handle, &a);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_GetTextureAlphaMod), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureAlphaMod), isExceptionThrown: true);
         }
 
         return a;
@@ -117,7 +117,7 @@ public sealed unsafe class Texture : NativeHandle
         var isSuccess = SDL_SetTextureAlphaMod(_handle, value);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_SetTextureAlphaMod), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetTextureAlphaMod), isExceptionThrown: true);
         }
     }
 
@@ -129,7 +129,7 @@ public sealed unsafe class Texture : NativeHandle
         var isSuccess = SDL_GetTextureBlendMode(_handle, pointer);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_GetTextureBlendMode), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureBlendMode), isExceptionThrown: true);
         }
 
         return blendMode;
@@ -141,7 +141,7 @@ public sealed unsafe class Texture : NativeHandle
         var isSuccess = SDL_SetTextureBlendMode(_handle, *pointer);
         if (!isSuccess)
         {
-            Error.NativeFunctionFailed(nameof(SDL_SetTextureBlendMode), isExceptionThrown: true);
+            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetTextureBlendMode), isExceptionThrown: true);
         }
     }
 }

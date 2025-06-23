@@ -7,7 +7,6 @@ global using System.Runtime.InteropServices;
 global using bottlenoselabs.Interop;
 global using Interop.Runtime;
 global using JetBrains.Annotations;
-global using SDL;
 global using static bottlenoselabs.Interop.SDL;
 global using static bottlenoselabs.Interop.SDL_image;
 global using static Gpu.Assets.Utility;
