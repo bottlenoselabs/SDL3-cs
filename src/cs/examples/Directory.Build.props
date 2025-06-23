@@ -1,5 +1,10 @@
 <Project>
 
-    <Import Project="../Directory.Build.props" />
+  <Import Project="../Directory.Build.props" />
+
+  <!-- NuGet -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
 </Project>
