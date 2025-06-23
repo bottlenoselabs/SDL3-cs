@@ -24,13 +24,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: "generated-cs-SDL-with-source-generators"
-          path: "./src/cs/production/Interop.SDL/Generated"
+          path: "./src/cs/production/SDL.Interop/Generated"
 
       - name: "Download changes to commit: SDL_image"
         uses: actions/download-artifact@v4
         with:
           name: "generated-cs-SDL_image-with-source-generators"
-          path: "./src/cs/production/Interop.SDL_image/Generated"
+          path: "./src/cs/production/SDL_image.Interop/Generated"
 
       - name: "Add + commit + push (if necessary)"
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9.1.4

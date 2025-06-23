@@ -120,14 +120,14 @@ jobs:
         continue-on-error: true
         with:
           name: "generated-cs-SDL"
-          path: "./src/cs/production/Interop.SDL/Generated"
+          path: "./src/cs/production/SDL.Interop/Generated"
 
       - name: "Download generated C# code: SDL_image"
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: "generated-cs-SDL_image"
-          path: "./src/cs/production/Interop.SDL_image/Generated"
+          path: "./src/cs/production/SDL_image.Interop/Generated"
 
       - name: "Setup .NET"
         uses: actions/setup-dotnet@v3
@@ -141,12 +141,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "generated-cs-SDL-with-source-generators"
-          path: "./src/cs/production/Interop.SDL/Generated"
+          path: "./src/cs/production/SDL.Interop/Generated"
           if-no-files-found: error
 
       - name: "Upload generated C# code with source generators: SDL_image"
         uses: actions/upload-artifact@v4
         with:
           name: "generated-cs-SDL_image-with-source-generators"
-          path: "./src/cs/production/Interop.SDL_image/Generated"
+          path: "./src/cs/production/SDL_image.Interop/Generated"
           if-no-files-found: error

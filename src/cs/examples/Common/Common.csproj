@@ -7,9 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\production\Interop.SDL\Interop.SDL.csproj" />
-    <ProjectReference Include="..\..\production\Interop.SDL_image\Interop.SDL_image.csproj" />
-    <ProjectReference Include="..\..\production\SDL\SDL.csproj" />
+    <ProjectReference Include="../../production/SDL/SDL.csproj" />
+    <ProjectReference Include="../../production/SDL.Runtime.win-x64/SDL.Runtime.win-x64.csproj" />
+    <ProjectReference Include="../../production/SDL.Runtime.win-arm64/SDL.Runtime.win-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL.Runtime.osx-x64/SDL.Runtime.osx-x64.csproj" />
+    <ProjectReference Include="../../production/SDL.Runtime.osx-arm64/SDL.Runtime.osx-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL.Runtime.linux-x64/SDL.Runtime.linux-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Runtime.win-x64/SDL_image.Runtime.win-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Runtime.win-arm64/SDL_image.Runtime.win-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Runtime.osx-x64/SDL_image.Runtime.osx-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Runtime.osx-arm64/SDL_image.Runtime.osx-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Runtime.linux-x64/SDL_image.Runtime.linux-x64.csproj" />
   </ItemGroup>
 
 </Project>

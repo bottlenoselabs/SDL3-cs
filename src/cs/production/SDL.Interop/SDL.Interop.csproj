@@ -9,9 +9,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <!-- NuGet -->
+  <PropertyGroup>
+    <PackageDescription>C# bindings ("unsafe" API) for interoperability with the native `SDL` library (SDL3).</PackageDescription>
+  </PropertyGroup>
+
   <!-- Project references -->
   <ItemGroup>
-    <InternalsVisibleTo Include="Interop.SDL_image" />
+    <InternalsVisibleTo Include="SDL_image.Interop" />
   </ItemGroup>
 
   <!-- NuGet package references -->
@@ -42,31 +47,6 @@
   <ItemGroup>
     <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
     <None Include="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
-  </ItemGroup>
-
-  <!-- Dynamic link libraries -->
-  <PropertyGroup>
-    <LibraryDirectoryPath>$([System.IO.Path]::Combine($(GitRepositoryPath),lib))</LibraryDirectoryPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="$(LibraryDirectoryPath)/win*/SDL3.dll"
-             Condition="$([System.OperatingSystem]::IsWindows())">
-      <Link>%(Filename)%(Extension)</Link>
-      <Pack>false</Pack>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(LibraryDirectoryPath)/osx*/libSDL3.dylib"
-             Condition="$([System.OperatingSystem]::IsMacOs())">
-      <Link>%(Filename)%(Extension)</Link>
-      <Pack>false</Pack>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(LibraryDirectoryPath)/linux*/libSDL3.so"
-             Condition="$([System.OperatingSystem]::IsLinux())">
-      <Link>%(Filename)%(Extension)</Link>
-      <Pack>false</Pack>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

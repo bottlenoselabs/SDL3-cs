@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput> <!-- No C# assemblies to include -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems> <!-- Don't include .cs files -->
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NativeLibraryFileName>libSDL3_image.so</NativeLibraryFileName>
+    <NativeLibraryFilePath>$(LibraryDirectoryPath)/$(RuntimeIdentifier)/$(NativeLibraryFileName)</NativeLibraryFilePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="$(NativeLibraryFilePath)"
+             PackagePath="runtimes\$(RuntimeIdentifier)\native\"
+             Condition="Exists('$(NativeLibraryFilePath)')">
+      <Link>%(Filename)%(Extension)</Link>
+      <Pack>true</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
