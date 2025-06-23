@@ -53,6 +53,36 @@ jobs:
         with:
           dotnet-version: '9.x'
 
+      - name: "Download native libraries: win-x64"
+        uses: actions/download-artifact@v4
+        with:
+          name: "native-libraries-win-x64"
+          path: "./lib/win-x64"
+
+      - name: "Download native libraries: win-arm64"
+        uses: actions/download-artifact@v4
+        with:
+          name: "native-libraries-win-arm64"
+          path: "./lib/win-arm64"
+
+      - name: "Download native libraries: osx-x64"
+        uses: actions/download-artifact@v4
+        with:
+          name: "native-libraries-osx-x64"
+          path: "./lib/osx-x64"
+
+      - name: "Download native libraries: osx-arm64"
+        uses: actions/download-artifact@v4
+        with:
+          name: "native-libraries-osx-arm64"
+          path: "./lib/osx-arm64"
+
+      - name: "Download native libraries: linux-x64"
+        uses: actions/download-artifact@v4
+        with:
+          name: "native-libraries-linux-x64"
+          path: "./lib/linux-x64"
+
       - name: ".NET pack"
         run: dotnet pack "./src/cs" --nologo --verbosity minimal --configuration Release /property:Version="${{ steps.set-version.outputs.VERSION }}" -p:PackageVersion="${{ steps.set-version.outputs.VERSION }}" -p:RepositoryBranch="${{ github.head_ref || github.ref_name }}" -p:RepositoryCommit="${{ github.sha }}"
 
