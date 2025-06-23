@@ -13,7 +13,7 @@ public partial class Application
     /// </summary>
     public static Application Current => _current!;
 
-    internal static void InternalInitialize(Application application)
+    internal static void Initialize(Application application)
     {
         var app = Interlocked.CompareExchange(ref _current, application, null);
         if (app != null)

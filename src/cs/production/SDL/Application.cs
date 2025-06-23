@@ -40,7 +40,7 @@ public abstract unsafe partial class Application : Disposable
     /// </param>
     protected Application(ILoggerFactory? loggerFactory = null)
     {
-        InternalInitialize(this);
+        Initialize(this);
 
         _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder =>
         {
