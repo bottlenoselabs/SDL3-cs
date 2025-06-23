@@ -16,10 +16,11 @@ Development is driven primarily for internal use at `bottlenoselabs` with the fo
     - Android not yet supported. See https://github.com/bottlenoselabs/SDL3-cs/issues/548.
     - Browser (WebAssembly) not yet supported. Dependant upon `SDL_GPU` being available. See https://github.com/libsdl-org/SDL/pull/12046.
     - Consoles not yet supported. For primary support on getting `SDL` in C# running on consoles please refer to [`FNA-XNA`](`https://fna-xna.github.io`) and specifically the documentation of [`FNA on consoles`](https://fna-xna.github.io/docs/appendix/Appendix-B%3A-FNA-on-Consoles/#general-advice). If the `FNA-XNA` team helped you in anyway please consider [donating to their cause](https://github.com/sponsors/flibitijibibo).
-4. Semi-automatic continuous delivery. All C functions and types intended for export found in SDL3 are automatically generated using [`c2cs`](https://github.com/bottlenoselabs/c2cs). This happens via GitHub Action workflows in this repository starting from [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates#) to create the pull request daily. Minimal to zero human interaction is the goal for *writing* (generating) the native interopability C# code while human interaction is required for *reviewing* (reading) the code.
+5. NuGet packages updated monthly. See https://www.nuget.org/packages?q=bottlenoselabs.SDL for list of packages on NuGet.
+6. Semi-automatic continuous delivery. All C functions and types intended for export found in SDL3 are automatically generated using [`c2cs`](https://github.com/bottlenoselabs/c2cs). This happens via GitHub Action workflows in this repository starting from [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates#) to create the pull request daily. Minimal to zero human interaction is the goal for *writing* (generating) the native interopability C# code while human interaction is required for *reviewing* (reading) the code.
   - If you need a specific released version of SDL3, please see https://github.com/bottlenoselabs/SDL3-cs/issues/549.
-5. For the C# native bindings, follow P/Invoke [best practices](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/best-practices) including using only blittable types and C# function pointers for callbacks. C# types are 1-1 to C types. This includes naming conventions. This includes enabling and using `unsafe` code in C#. However, in some cases, C# types (e.g. `CBool`, `CString`, `Span<T>`) may be perferred over raw C type equivalents in C# for performance or idiomatic reasons.
-6. Runtime marshalling is [disabled](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/disabled-marshalling). C# functions are 1-1 to C functions using [P/Invoke source generation](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke-source-generation). There are no overloads.
+7. For the C# native bindings, follow P/Invoke [best practices](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/best-practices) including using only blittable types and C# function pointers for callbacks. C# types are 1-1 to C types. This includes naming conventions. This includes enabling and using `unsafe` code in C#. However, in some cases, C# types (e.g. `CBool`, `CString`, `Span<T>`) may be perferred over raw C type equivalents in C# for performance or idiomatic reasons.
+8. Runtime marshalling is [disabled](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/disabled-marshalling). C# functions are 1-1 to C functions using [P/Invoke source generation](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke-source-generation). There are no overloads.
 
 These goals might not align to your goals or your organization's goals to which I recommend looking at other similiar bindings for `SDL3` in C#:
 
@@ -29,6 +30,10 @@ These goals might not align to your goals or your organization's goals to which 
 - https://github.com/edwardgushchin/SDL3-CS
 
 ## How to use
+
+### From NuGet
+
+See https://github.com/bottlenoselabs/template-SDL3-cs for a minimum template repository of how to use `SDL3-cs` with NuGet packages. NuGet packages are published monthly or as needed.
 
 ### From source
 
@@ -43,6 +48,8 @@ These goals might not align to your goals or your organization's goals to which 
    - `LazyFoo`: `dotnet run --project ./src/cs/examples/Examples.LazyFoo/Examples.LazyFoo.csproj`
 5. Add the following C# project to your solution and reference it in one of your C# project:
     - `./src/cs/production/SDL/SDL.csproj`
+    - `./src/cs/production/SDL.Runtime.*.csproj` (Choose the runtime identifiers that make sense for you.)
+    - `./src/cs/production/SDL_image.Runtime.*.csproj` (Choose the runtime identifiers that make sense for you.)
 
 ## Developers: Documentation
 
