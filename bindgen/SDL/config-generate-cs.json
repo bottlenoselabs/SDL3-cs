@@ -1,7 +1,7 @@
 {
   "targetFrameworkMoniker": "net9.0",
   "inputFilePath": "./ffi-x/cross-platform.json",
-  "outputFileDirectory": "./../../src/cs/production/Interop.SDL/Generated",
+  "outputFileDirectory": "./../../src/cs/production/SDL.Interop/Generated",
   "namespaceName": "bottlenoselabs.Interop",
   "className": "SDL",
   "libraryName": "SDL3",
