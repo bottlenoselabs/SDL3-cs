@@ -32,6 +32,11 @@ public sealed unsafe class Renderer2D : NativeHandle
         set => SetViewport(value);
     }
 
+    /// <summary>
+    ///     Gets the current <see cref="bottlenoselabs.SDL.VSyncMode" />.
+    /// </summary>
+    public VSyncMode VSyncMode => GetVSyncMode();
+
     internal Renderer2D(IntPtr handle)
         : base(handle)
     {
@@ -90,7 +95,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     ///     <para>
     ///         When rendering to a <see cref="Texture" />, there is no need to call <see cref="Present" /> and it
     ///         should not be called because textures don't have a back buffer. Calling <see cref="Present" /> is for
-    ///         the only updating the screen.
+    ///         only updating the screen.
     ///     </para>
     /// </remarks>
     public void Present()
@@ -233,6 +238,22 @@ public sealed unsafe class Renderer2D : NativeHandle
         }
     }
 
+    /// <summary>
+    ///     Attempts to set the current <see cref="bottlenoselabs.SDL.VSyncMode" />.
+    /// </summary>
+    /// <param name="value">The vertical sync mode.</param>
+    /// <returns>
+    ///     <c>true</c> if the vertical sync mode was successfully set; otherwise, <c>false</c> indicating
+    ///     <paramref name="value" /> is not supported for the current driver.
+    /// </returns>
+    /// <remarks>
+    ///     <para>Can return <c>false</c> if the <paramref name="value" /> is not supported by the current driver.</para>
+    /// </remarks>
+    public bool TrySetVSyncMode(VSyncMode value)
+    {
+        return SetVSyncMode(value);
+    }
+
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
@@ -291,5 +312,50 @@ public sealed unsafe class Renderer2D : NativeHandle
                 Error.NativeFunctionFailed(nameof(SDL_SetRenderViewport), isExceptionThrown: true);
             }
         }
+    }
+
+    private VSyncMode GetVSyncMode()
+    {
+        int vsync;
+        var isSuccess = SDL_GetRenderVSync(_handle, &vsync);
+        if (!isSuccess)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetRenderVSync));
+            return VSyncMode.Unknown;
+        }
+
+        return vsync switch
+        {
+            0 => VSyncMode.Disabled,
+            1 => VSyncMode.EnabledEveryRefresh,
+            2 => VSyncMode.EnabledEverySecondRefresh,
+            -1 => VSyncMode.Adaptive,
+            _ => VSyncMode.Unknown
+        };
+    }
+
+    private bool SetVSyncMode(VSyncMode value)
+    {
+        if (value == VSyncMode.Unknown)
+        {
+            return false;
+        }
+
+        var vsync = value switch
+        {
+            VSyncMode.Disabled => 0,
+            VSyncMode.EnabledEveryRefresh => 1,
+            VSyncMode.EnabledEverySecondRefresh => 2,
+            VSyncMode.Adaptive => -1,
+            _ => 0
+        };
+
+        var isSuccess = SDL_SetRenderVSync(_handle, vsync);
+        if (!isSuccess)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_SetRenderVSync));
+        }
+
+        return isSuccess;
     }
 }
