@@ -24,9 +24,9 @@ public sealed unsafe class E005_CullMode : ExampleGpu
     private GpuDataBuffer? _vertexBufferCw;
     private GpuDataBuffer? _vertexBufferCcw;
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
-        if (!base.Initialize(allocator))
+        if (!base.OnStart())
         {
             return false;
         }
@@ -145,7 +145,7 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         foreach (var pipeline in _pipelines)
         {
@@ -155,10 +155,10 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         _vertexBufferCw?.Dispose();
         _vertexBufferCcw?.Dispose();
 
-        base.Quit();
+        base.OnExit();
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
         if (e.scancode == SDL_Scancode.SDL_SCANCODE_LEFT)
         {
@@ -177,11 +177,11 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         }
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (!commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTexture))

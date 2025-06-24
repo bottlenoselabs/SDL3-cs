@@ -18,26 +18,26 @@ public sealed class E005_OptimizedSurfaceLoadingAndSoftStretching : ExampleLazyF
     {
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         return TryLoadAssets();
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _imageSurface?.Dispose();
         _imageSurface = null;
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         _imageSurface!.BlitTo(Window.Surface!, ScaleMode.Nearest);
         Window.Present();

@@ -8,17 +8,17 @@ namespace Common;
 
 public abstract class ExampleBase
 {
-    public Application Application { get; private set; }
+    private bool _hasExited;
 
-    public FileSystem FileSystem { get; private set; }
+    public Application Application { get; }
 
-    public Window Window { get; private set; }
+    public FileSystem FileSystem => Application.FileSystem;
 
-    public string AssetsDirectory { get; set; }
+    public Window Window { get; private set;  }
 
-    private bool _hasQuit;
+    public string Name { get; protected init; } = string.Empty;
 
-    public string Name { get; set; } = string.Empty;
+    public string AssetsDirectory { get; protected init; }
 
     public int ScreenWidth => Window.Width;
 
@@ -29,7 +29,6 @@ public abstract class ExampleBase
         bool isEnabledCreateRenderer2D = false)
     {
         Application = Application.Current;
-        FileSystem = Application.FileSystem;
         AssetsDirectory = AppContext.BaseDirectory;
 
         using var windowOptions = new WindowOptions();
@@ -42,36 +41,34 @@ public abstract class ExampleBase
         Window = Application.CreateWindow(windowOptions);
     }
 
-    public abstract bool Initialize(INativeAllocator allocator);
+    public abstract bool OnStart();
 
-    public abstract void Quit();
+    public abstract void OnExit();
 
-    public abstract void KeyboardEvent(in SDL_KeyboardEvent e);
+    public abstract void OnKeyboardEvent(in SDL_KeyboardEvent e);
 
-    public abstract void Update(float deltaTime);
+    public abstract void OnUpdate(TimeSpan deltaTime);
 
-    public abstract void Draw(float deltaTime);
+    public abstract void OnDraw(TimeSpan deltaTime);
 
-    internal void QuitInternal()
+    internal void Exit()
     {
-        var hasAlreadyQuit = Interlocked.CompareExchange(ref _hasQuit, true, false);
-        if (hasAlreadyQuit)
+        var hasExited = Interlocked.CompareExchange(ref _hasExited, true, false);
+        if (hasExited)
         {
             return;
         }
 
-        Quit();
+        OnExit();
         Window.Dispose();
         Window = null!;
-
-        FileSystem = null!;
     }
 
-    internal bool InitializeInternal(ArenaNativeAllocator allocator)
+    internal bool Start(ArenaNativeAllocator allocator)
     {
         Window.Title = Name;
         allocator.Reset();
-        var isInitialized = Initialize(allocator);
+        var isInitialized = OnStart();
         allocator.Reset();
         return isInitialized;
     }

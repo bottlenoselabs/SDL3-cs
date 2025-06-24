@@ -34,7 +34,7 @@ public sealed class App : Application
 
     protected override void OnExit()
     {
-        _currentExample?.QuitInternal();
+        _currentExample?.Exit();
         _currentExample = null;
     }
 
@@ -64,7 +64,7 @@ public sealed class App : Application
                 }
                 else
                 {
-                    _currentExample?.KeyboardEvent(e.key);
+                    _currentExample?.OnKeyboardEvent(e.key);
                 }
 
                 break;
@@ -72,7 +72,7 @@ public sealed class App : Application
         }
     }
 
-    protected override void OnUpdate(float deltaTime)
+    protected override void OnUpdate(TimeSpan deltaTime)
     {
         if (_goToExampleIndex != -1)
         {
@@ -80,7 +80,7 @@ public sealed class App : Application
             if (previousExample != null)
             {
                 _currentExample = null;
-                previousExample.QuitInternal();
+                previousExample.Exit();
                 // ReSharper disable once RedundantAssignment
 #pragma warning disable IDE0059
                 previousExample = null;
@@ -105,10 +105,10 @@ public sealed class App : Application
                 (bytesStartingBeforeInit / Math.Pow(1024, 2)).ToString("0.00 MB", CultureInfo.InvariantCulture);
             Console.WriteLine("STARTING EXAMPLE: '{0}', TOTAL MEMORY SIZE BEFORE INIT: {1}", _currentExample.Name, bytesStartingStringBeforeInit);
 
-            var isExampleInitialized = _currentExample.InitializeInternal(_allocator);
-            if (!isExampleInitialized)
+            var isSuccessfullyStarted = _currentExample.Start(_allocator);
+            if (!isSuccessfullyStarted)
             {
-                Console.Error.WriteLine("\nInit failed!");
+                Console.Error.WriteLine("\nStarting example failed!");
                 Exit();
                 return;
             }
@@ -124,11 +124,15 @@ public sealed class App : Application
             _goToExampleIndex = -1;
         }
 
-        _currentExample?.Update(deltaTime);
+        if (_currentExample != null)
+        {
+            _currentExample.Window.Title = _currentExample.Name + ", FPS: " + FramesPerSecond;
+            _currentExample.OnUpdate(deltaTime);
+        }
     }
 
-    protected override void OnDraw(float deltaTime)
+    protected override void OnDraw(TimeSpan deltaTime)
     {
-        _currentExample?.Draw(deltaTime);
+        _currentExample?.OnDraw(deltaTime);
     }
 }

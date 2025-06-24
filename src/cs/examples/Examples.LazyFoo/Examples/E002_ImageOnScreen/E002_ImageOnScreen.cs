@@ -18,7 +18,7 @@ public sealed class E002_ImageOnScreen : ExampleLazyFoo
     {
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         if (!TryLoadAssets())
         {
@@ -31,21 +31,21 @@ public sealed class E002_ImageOnScreen : ExampleLazyFoo
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _imageSurface?.Dispose();
         _imageSurface = null;
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
     }
 

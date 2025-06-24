@@ -19,18 +19,18 @@ public sealed class E012_ColorModulation : ExampleLazyFoo
     {
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         return LoadAssets();
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _texture?.Dispose();
         _texture = null;
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
         var key = e.scancode;
         switch (key)
@@ -56,11 +56,11 @@ public sealed class E012_ColorModulation : ExampleLazyFoo
         }
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var renderer = Window.Renderer!;
 

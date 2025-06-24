@@ -12,9 +12,9 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
     private GpuGraphicsPipeline? _pipeline;
     private GpuDataBuffer? _vertexBuffer;
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
-        if (!base.Initialize(allocator))
+        if (!base.OnStart())
         {
             return false;
         }
@@ -91,22 +91,22 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _pipeline?.Dispose();
         _vertexBuffer?.Dispose();
-        base.Quit();
+        base.OnExit();
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (!commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTexture))

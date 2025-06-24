@@ -17,9 +17,9 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
     private bool _isEnabledIndexOffset;
     private bool _isEnabledIndexBuffer = true;
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
-        if (!base.Initialize(allocator))
+        if (!base.OnStart())
         {
             return false;
         }
@@ -138,15 +138,15 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _pipeline?.Dispose();
         _vertexBuffer?.Dispose();
         _indexBuffer?.Dispose();
-        base.Quit();
+        base.OnExit();
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
         switch (e.scancode)
         {
@@ -165,11 +165,11 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
         }
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (!commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTexture))

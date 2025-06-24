@@ -9,7 +9,7 @@ namespace bottlenoselabs.SDL;
 ///     Defines a rectangle with 32-bit float components.
 /// </summary>
 [PublicAPI]
-public struct RectangleF
+public record struct RectangleF
 {
     /// <summary>
     ///     The X coordinate of the rectangle.

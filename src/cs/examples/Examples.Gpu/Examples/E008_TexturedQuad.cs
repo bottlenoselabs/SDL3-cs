@@ -28,9 +28,9 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
     private int _currentSamplerIndex;
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
-        if (!base.Initialize(allocator))
+        if (!base.OnStart())
         {
             return false;
         }
@@ -267,7 +267,7 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         return true;
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         _pipeline?.Dispose();
         _vertexBuffer?.Dispose();
@@ -281,10 +281,10 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         _currentSamplerIndex = 0;
 
-        base.Quit();
+        base.OnExit();
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
         switch (e.scancode)
         {
@@ -304,11 +304,11 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         }
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (!commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTexture))

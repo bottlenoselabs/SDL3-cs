@@ -77,7 +77,7 @@ public sealed unsafe class Window : NativeHandle
 
         if (Handle == IntPtr.Zero)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
         }
 
         if (options is { IsEnabledCreateSurface: true, IsEnabledCreateRenderer: true })
@@ -91,7 +91,7 @@ public sealed unsafe class Window : NativeHandle
             var surfaceHandle = SDL_GetWindowSurface((SDL_Window*)Handle);
             if (surfaceHandle == null)
             {
-                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetWindowSurface), isExceptionThrown: true);
+                Error.NativeFunctionFailed(nameof(SDL_GetWindowSurface), isExceptionThrown: true);
             }
             else
             {
@@ -104,7 +104,7 @@ public sealed unsafe class Window : NativeHandle
             var rendererHandle = SDL_CreateRenderer((SDL_Window*)Handle, null);
             if (rendererHandle == null)
             {
-                bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_CreateRenderer), isExceptionThrown: true);
+                Error.NativeFunctionFailed(nameof(SDL_CreateRenderer), isExceptionThrown: true);
             }
             else
             {
@@ -115,7 +115,7 @@ public sealed unsafe class Window : NativeHandle
         int widthActual, heightActual;
         if (!SDL_GetWindowSize((SDL_Window*)Handle, &widthActual, &heightActual))
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
         }
 
         Width = widthActual;
@@ -148,7 +148,7 @@ public sealed unsafe class Window : NativeHandle
         var isSuccess = SDL_UpdateWindowSurface((SDL_Window*)Handle);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_UpdateWindowSurface));
+            Error.NativeFunctionFailed(nameof(SDL_UpdateWindowSurface));
         }
     }
 
@@ -180,7 +180,7 @@ public sealed unsafe class Window : NativeHandle
         }
         else
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetWindowTitle));
+            Error.NativeFunctionFailed(nameof(SDL_SetWindowTitle));
         }
     }
 }

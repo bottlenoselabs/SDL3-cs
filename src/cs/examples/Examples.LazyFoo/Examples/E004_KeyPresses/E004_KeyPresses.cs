@@ -19,12 +19,12 @@ public sealed class E004_KeyPresses : ExampleLazyFoo
     {
     }
 
-    public override bool Initialize(INativeAllocator allocator)
+    public override bool OnStart()
     {
         return TryLoadAssets();
     }
 
-    public override void Quit()
+    public override void OnExit()
     {
         for (var i = 0; i < _keyPressSurfaces.Length; i++)
         {
@@ -34,7 +34,7 @@ public sealed class E004_KeyPresses : ExampleLazyFoo
         }
     }
 
-    public override void KeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
     {
         if (e.down)
         {
@@ -51,11 +51,11 @@ public sealed class E004_KeyPresses : ExampleLazyFoo
         }
     }
 
-    public override void Update(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void Draw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         _currentKeyPressSurface!.BlitTo(Window.Surface!);
         Window.Present();
