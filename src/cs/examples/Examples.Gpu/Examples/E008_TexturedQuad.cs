@@ -304,11 +304,11 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         }
     }
 
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void OnDraw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (!commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTexture))

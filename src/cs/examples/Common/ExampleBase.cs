@@ -47,9 +47,9 @@ public abstract class ExampleBase
 
     public abstract void OnKeyboardEvent(in SDL_KeyboardEvent e);
 
-    public abstract void OnUpdate(float deltaTime);
+    public abstract void OnUpdate(TimeSpan deltaTime);
 
-    public abstract void OnDraw(float deltaTime);
+    public abstract void OnDraw(TimeSpan deltaTime);
 
     internal void Exit()
     {

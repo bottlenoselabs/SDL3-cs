@@ -72,7 +72,7 @@ public sealed class App : Application
         }
     }
 
-    protected override void OnUpdate(float deltaTime)
+    protected override void OnUpdate(TimeSpan deltaTime)
     {
         if (_goToExampleIndex != -1)
         {
@@ -124,10 +124,14 @@ public sealed class App : Application
             _goToExampleIndex = -1;
         }
 
-        _currentExample?.OnUpdate(deltaTime);
+        if (_currentExample != null)
+        {
+            _currentExample.Window.Title = _currentExample.Name + ", FPS: " + FramesPerSecond;
+            _currentExample.OnUpdate(deltaTime);
+        }
     }
 
-    protected override void OnDraw(float deltaTime)
+    protected override void OnDraw(TimeSpan deltaTime)
     {
         _currentExample?.OnDraw(deltaTime);
     }

@@ -174,11 +174,11 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
     {
     }
 
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void OnDraw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         if (!_isSupported)
         {

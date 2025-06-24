@@ -64,11 +64,11 @@ public sealed class E013_AlphaBlending : ExampleLazyFoo
         }
     }
 
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void OnDraw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var renderer = Window.Renderer!;
 

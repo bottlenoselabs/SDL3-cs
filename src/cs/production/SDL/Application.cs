@@ -32,6 +32,11 @@ public abstract unsafe partial class Application : Disposable
     public FileSystem FileSystem { get; }
 
     /// <summary>
+    ///     Gets the current rendered frames per second (FPS).
+    /// </summary>
+    public int FramesPerSecond { get; private set; }
+
+    /// <summary>
     ///     Initializes a new instance of the <see cref="Application" /> class.
     /// </summary>
     /// <param name="loggerFactory">
@@ -67,7 +72,11 @@ public abstract unsafe partial class Application : Disposable
             return;
         }
 
-        SDL_AddEventWatch(new SDL_EventFilter(&OnEventWatch), null);
+        if (!SDL_AddEventWatch(new SDL_EventFilter(&OnEventWatch), null))
+        {
+            Error.NativeFunctionFailed(nameof(SDL_AddEventWatch));
+            return;
+        }
 
         OnStart();
         Loop();
@@ -139,46 +148,78 @@ public abstract unsafe partial class Application : Disposable
     ///     Called when the application determines it is time to update a frame. This is where your application would
     ///     update its state.
     /// </summary>
-    /// <param name="deltaTime">The time in milliseconds passed since the last call to <see cref="OnUpdate" />.</param>
-    protected abstract void OnUpdate(float deltaTime);
+    /// <param name="deltaTime">The time passed since the last call to <see cref="OnUpdate" />.</param>
+    protected abstract void OnUpdate(TimeSpan deltaTime);
 
     /// <summary>
     ///     Called when the application determines it is time to draw a frame. This is where your application would
     ///     perform rendering.
     /// </summary>
-    /// <param name="deltaTime">The time in milliseconds passed since the last call to <see cref="OnDraw" />.</param>
-    protected abstract void OnDraw(float deltaTime);
+    /// <param name="deltaTime">The time passed since the last call to <see cref="OnDraw" />.</param>
+    protected abstract void OnDraw(TimeSpan deltaTime);
 
     private void Loop()
     {
-        var lastTime = 0.0f;
+        var previousTime = SDL_GetPerformanceCounter();
+        var renderedFramesCount = 0;
+        var framesCountAccumulatedTime = TimeSpan.Zero;
 
         while (!_isExiting)
         {
-            SDL_Event e;
-            if (SDL_PollEvent(&e))
-            {
-                HandleEvent(e);
-                OnEvent(e);
-            }
-
-            var newTime = SDL_GetTicks() / 1000.0f;
-            var deltaTime = newTime - lastTime;
-            lastTime = newTime;
-
-            // TODO: Add mechanism to separate rendering timing from updates.
-            OnUpdate(deltaTime);
+            PollEvents();
+            var timeAdvanced = AdvanceTime(ref previousTime);
+            OnUpdate(timeAdvanced);
 
             if (!_isInBackground)
             {
-                OnDraw(deltaTime);
+                OnDraw(timeAdvanced);
+                renderedFramesCount++;
             }
+
+            CalculateFramesPerSecond(timeAdvanced, ref framesCountAccumulatedTime, ref renderedFramesCount);
         }
 
         OnExit();
     }
 
-    private void HandleEvent(in SDL_Event e)
+    private void PollEvents()
+    {
+        SDL_Event e;
+        while (SDL_PollEvent(&e))
+        {
+            ProcessEvent(e);
+            OnEvent(e);
+        }
+    }
+
+    private static TimeSpan AdvanceTime(ref ulong previousTime)
+    {
+        var currentTime = SDL_GetPerformanceCounter();
+        var deltaTime = currentTime - previousTime;
+        previousTime = currentTime;
+        var deltaSeconds = (double)deltaTime / SDL_GetPerformanceFrequency();
+        var deltaTicks = (long)(deltaSeconds * TimeSpan.TicksPerSecond);
+        var timeAdvanced = new TimeSpan(deltaTicks);
+        return timeAdvanced;
+    }
+
+    private void CalculateFramesPerSecond(
+        TimeSpan timeAdvanced,
+        ref TimeSpan framesCounterAccumulatedTime,
+        ref int renderedFramesCount)
+    {
+        var framesCounterElapsedTime = TimeSpan.FromSeconds(1);
+
+        framesCounterAccumulatedTime += timeAdvanced;
+        if (framesCounterAccumulatedTime >= framesCounterElapsedTime)
+        {
+            framesCounterAccumulatedTime -= framesCounterElapsedTime;
+            FramesPerSecond = renderedFramesCount;
+            renderedFramesCount = 0;
+        }
+    }
+
+    private void ProcessEvent(in SDL_Event e)
     {
         var eventType = (SDL_EventType)e.type;
         switch (eventType)
@@ -186,6 +227,18 @@ public abstract unsafe partial class Application : Disposable
             case SDL_EventType.SDL_EVENT_QUIT:
             {
                 _isExiting = true;
+                break;
+            }
+
+            case SDL_EventType.SDL_EVENT_WINDOW_OCCLUDED:
+            {
+                Interlocked.Exchange(ref _isInBackground, true);
+                break;
+            }
+
+            case SDL_EventType.SDL_EVENT_WINDOW_EXPOSED:
+            {
+                Interlocked.Exchange(ref _isInBackground, false);
                 break;
             }
         }

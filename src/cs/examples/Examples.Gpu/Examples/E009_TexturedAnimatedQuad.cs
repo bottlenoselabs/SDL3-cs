@@ -200,12 +200,12 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
     {
     }
 
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
-        _t += deltaTime;
+        _t += (float)deltaTime.TotalMilliseconds;
     }
 
-    public override void OnDraw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         var commandBuffer = Device.GetCommandBuffer();
         if (!commandBuffer.TryGetSwapchainTexture(Window, out var swapchainTexture))

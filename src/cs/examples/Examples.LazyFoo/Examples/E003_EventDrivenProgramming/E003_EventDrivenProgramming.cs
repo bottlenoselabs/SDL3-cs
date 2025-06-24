@@ -33,11 +33,11 @@ public sealed class E003_EventDrivenProgramming : ExampleLazyFoo
     {
     }
 
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void OnDraw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
         _imageSurface!.BlitTo(Window.Surface!);
         Window.Present();

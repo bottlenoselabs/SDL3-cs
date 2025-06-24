@@ -33,11 +33,11 @@ public sealed class E001_Hello : ExampleLazyFoo
     {
     }
 
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(TimeSpan deltaTime)
     {
     }
 
-    public override void OnDraw(float deltaTime)
+    public override void OnDraw(TimeSpan deltaTime)
     {
     }
 }
