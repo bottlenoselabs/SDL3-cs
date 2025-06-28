@@ -91,7 +91,8 @@ public sealed unsafe class FileSystem : Disposable
         out Surface? surface,
         PixelFormat? desiredPixelFormat = null)
     {
-        if (desiredPixelFormat == PixelFormat.Unknown)
+        if (desiredPixelFormat != null &&
+            (desiredPixelFormat.Value == PixelFormat.Unknown || !Enum.IsDefined(desiredPixelFormat.Value)))
         {
             throw new ArgumentException("Invalid desired pixel format.");
         }
@@ -100,11 +101,11 @@ public sealed unsafe class FileSystem : Disposable
 
         _filePathAllocator.Reset();
         var fullFilePathC = _filePathAllocator.AllocateCString(fullFilePath);
-        var surfacePointer = SDL_image.IMG_Load(fullFilePathC);
+        var surfacePointer = IMG_Load(fullFilePathC);
         _filePathAllocator.Reset();
         if (surfacePointer == null)
         {
-            Error.NativeFunctionFailed(nameof(SDL_image.IMG_Load));
+            Error.NativeFunctionFailed(nameof(IMG_Load));
             surface = null;
             return false;
         }
@@ -125,6 +126,47 @@ public sealed unsafe class FileSystem : Disposable
         }
 
         surface = new Surface((IntPtr)surfacePointer);
+        return true;
+    }
+
+    /// <summary>
+    ///     Attempts to load a file as a font given the specified file path and point size.
+    /// </summary>
+    /// <param name="filePath">
+    ///     The path to the file. If the path is relative, it is assumed to be relative to
+    ///     <see cref="AppContext.BaseDirectory" />.
+    /// </param>
+    /// <param name="font">The resulting font if successfully loaded; otherwise, <c>null</c>.</param>
+    /// <param name="pointSize">
+    ///     The point size of the font. Some fonts will have several sizes embedded in the file so the
+    ///     point size becomes the index of choosing the closest size. If the value is too high, the last indexed size
+    ///     will be used.
+    /// </param>
+    /// <returns><c>true</c> if the font was successfully loaded; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="TryLoadFont" /> is not thread safe.
+    ///     </para>
+    /// </remarks>
+    public bool TryLoadFont(
+        string filePath,
+        out Font? font,
+        float pointSize)
+    {
+        var fullFilePath = GetFullFilePath(filePath);
+
+        _filePathAllocator.Reset();
+        var fullFilePathC = _filePathAllocator.AllocateCString(fullFilePath);
+        var fontPointer = TTF_OpenFont(fullFilePathC, pointSize);
+        _filePathAllocator.Reset();
+        if (fontPointer == null)
+        {
+            Error.NativeFunctionFailed(nameof(TTF_OpenFont));
+            font = null;
+            return false;
+        }
+
+        font = new Font((IntPtr)fontPointer);
         return true;
     }
 
