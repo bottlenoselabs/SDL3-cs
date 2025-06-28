@@ -23,6 +23,10 @@
 ## Adaptive Scalable Texture Compression Image
 *.astc  binary
 
+# Font files
+## True Type Font
+*.ttf   binary
+
 # Source shader files
 ## High-level shader language (DirectX)
 *.hlsl  text
