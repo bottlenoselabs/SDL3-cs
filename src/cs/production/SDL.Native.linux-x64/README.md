@@ -1,4 +1,4 @@
-# SDL.Runtime.linux-x64
+# SDL.Native.linux-x64
 
 The native `SDL` library (SDL3) file (libSDL3.so) for the `linux-x64` target framework moniker (TFM).
 

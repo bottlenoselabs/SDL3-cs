@@ -1,4 +1,4 @@
-# SDL.Runtime.osx-x64
+# SDL_image.Runtime.osx-x64
 
 The native `SDL_image` library (SDL3_image) file (libSDL3_image.dylib) for the `osx-x64` target framework moniker (TFM).
 

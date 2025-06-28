@@ -1,4 +1,4 @@
-# SDL.Runtime.win-x64
+# SDL.Native.win-x64
 
 The native `SDL` library (SDL3) file (SDL3.dll) for the `win-x64` target framework moniker (TFM).
 
