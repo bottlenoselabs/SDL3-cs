@@ -129,6 +129,13 @@ jobs:
           name: "generated-cs-SDL_image"
           path: "./src/cs/production/SDL_image.Interop/Generated"
 
+      - name: "Download generated C# code: SDL_ttf"
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: "generated-cs-SDL_ttf"
+          path: "./src/cs/production/SDL_ttf.Interop/Generated"
+
       - name: "Setup .NET"
         uses: actions/setup-dotnet@v3
         with:
@@ -149,4 +156,11 @@ jobs:
         with:
           name: "generated-cs-SDL_image-with-source-generators"
           path: "./src/cs/production/SDL_image.Interop/Generated"
+          if-no-files-found: error
+
+      - name: "Upload generated C# code with source generators: SDL_ttf"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "generated-cs-SDL_ttf-with-source-generators"
+          path: "./src/cs/production/SDL_ttf.Interop/Generated"
           if-no-files-found: error
