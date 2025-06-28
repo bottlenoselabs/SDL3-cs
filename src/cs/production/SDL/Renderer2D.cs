@@ -157,6 +157,81 @@ public sealed unsafe class Renderer2D : NativeHandle
     }
 
     /// <summary>
+    ///     Renders a <see cref="Texture" /> to the current rendering target.
+    /// </summary>
+    /// <param name="texture">The texture to render.</param>
+    /// <param name="sourceRectangle">
+    ///     The rectangle area of the texture to render. Use <c>null</c> for the entire
+    ///     texture.
+    /// </param>
+    /// <param name="destinationRectangle">
+    ///     The rectangle area of the render target to render the texture to. Use <c>null</c>
+    ///     for the entire render target.
+    /// </param>
+    /// <param name="angle">
+    ///     The rotation angle in degrees. Rotation is applied clockwise to <paramref name="destinationRectangle" />
+    ///     around the point <paramref name="center" />.
+    /// </param>
+    /// <param name="center">
+    ///     The point that rotation is applied to. Use <c>null</c> to rotate around the center point of
+    ///     <paramref name="destinationRectangle" />.
+    /// </param>
+    /// <param name="flipMode">
+    ///     The flip mode applied to the texture.
+    /// </param>
+    public void RenderTextureRotated(
+        Texture texture,
+        RectangleF? sourceRectangle = null,
+        RectangleF? destinationRectangle = null,
+        float angle = 0,
+        PointF? center = null,
+        FlipMode flipMode = FlipMode.None)
+    {
+        SDL_FRect* src = null;
+        SDL_FRect* dest = null;
+
+        if (sourceRectangle != null)
+        {
+            var rect = sourceRectangle.Value;
+            var srcRect = default(SDL_FRect);
+            srcRect.x = rect.X;
+            srcRect.y = rect.Y;
+            srcRect.w = rect.Width;
+            srcRect.h = rect.Height;
+            src = &srcRect;
+        }
+
+        if (destinationRectangle != null)
+        {
+            var rect = destinationRectangle.Value;
+            var destRect = default(SDL_FRect);
+            destRect.x = rect.X;
+            destRect.y = rect.Y;
+            destRect.w = rect.Width;
+            destRect.h = rect.Height;
+            dest = &destRect;
+        }
+
+        SDL_FPoint* centerPointer = null;
+        if (center != null)
+        {
+            var centerValue = center.Value;
+            var center1 = default(SDL_FPoint);
+            center1.x = centerValue.X;
+            center1.y = centerValue.Y;
+            centerPointer = &center1;
+        }
+
+        var flip = (SDL_FlipMode)flipMode;
+        var isSuccess = SDL_RenderTextureRotated(
+            _handle, texture._handle, src, dest, angle, centerPointer, flip);
+        if (!isSuccess)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_RenderTextureRotated), isExceptionThrown: true);
+        }
+    }
+
+    /// <summary>
     ///     Renders a filled rectangle to the current render target using the <see cref="DrawColor" />.
     /// </summary>
     /// <param name="rectangle">The rectangle area. Use <c>null</c> for the entire render target.</param>

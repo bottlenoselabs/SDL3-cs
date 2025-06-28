@@ -48,8 +48,6 @@ public sealed unsafe class FileSystem : Disposable
         _filePathAllocator.Reset();
         if (filePointer == null)
         {
-            Console.WriteLine(filePath);
-            Console.WriteLine(fullFilePath);
             Error.NativeFunctionFailed(nameof(SDL_LoadFile));
             file = null!;
             return false;
