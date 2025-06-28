@@ -8,7 +8,7 @@ namespace bottlenoselabs.SDL;
 /// </summary>
 public sealed unsafe class Font : NativeHandle
 {
-    private readonly TTF_Font* _handle;
+    private TTF_Font* _handle;
 
     internal Font(IntPtr handle)
         : base(handle)
@@ -41,5 +41,13 @@ public sealed unsafe class Font : NativeHandle
 
         surface = new Surface((IntPtr)surfacePointer);
         return true;
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool isDisposing)
+    {
+        TTF_CloseFont(_handle);
+        _handle = null;
+        base.Dispose(isDisposing);
     }
 }
