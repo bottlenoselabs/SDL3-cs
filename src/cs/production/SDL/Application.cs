@@ -45,8 +45,6 @@ public abstract unsafe partial class Application : Disposable
     /// </param>
     protected Application(ILoggerFactory? loggerFactory = null)
     {
-        Initialize(this);
-
         _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder =>
         {
             builder.AddConsole();
@@ -66,20 +64,29 @@ public abstract unsafe partial class Application : Disposable
     /// <exception cref="InvalidOperationException">Failed to initialize SDL.</exception>
     public void Run()
     {
+        Initialize(this);
+
         if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
         {
-            Error.NativeFunctionFailed(nameof(SDL_Init));
+            Error.NativeFunctionFailed(nameof(SDL_Init), isExceptionThrown: true);
             return;
         }
 
         if (!SDL_AddEventWatch(new SDL_EventFilter(&OnEventWatch), null))
         {
-            Error.NativeFunctionFailed(nameof(SDL_AddEventWatch));
+            Error.NativeFunctionFailed(nameof(SDL_AddEventWatch), isExceptionThrown: true);
             return;
+        }
+
+        if (!TTF_Init())
+        {
+            Error.NativeFunctionFailed(nameof(TTF_Init), isExceptionThrown: true);
         }
 
         OnStart();
         Loop();
+
+        TTF_Quit();
     }
 
     /// <summary>

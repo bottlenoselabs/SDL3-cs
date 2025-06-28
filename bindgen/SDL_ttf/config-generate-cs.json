@@ -1,0 +1,24 @@
+{
+  "targetFrameworkMoniker": "net9.0",
+  "inputFilePath": "./ffi-x/cross-platform.json",
+  "outputFileDirectory": "./../../src/cs/production/SDL_ttf.Interop/Generated",
+  "namespaceName": "bottlenoselabs.Interop",
+  "className": "SDL_ttf",
+  "libraryName": "SDL3_ttf",
+  "mappedNames": [
+    { "source": "SDL_bool", "target": "CBool" },
+    { "source": "Uint8", "target": "byte" },
+    { "source": "Uint16", "target": "ushort" },
+    { "source": "Uint32", "target": "uint" },
+    { "source": "Uint64", "target": "ulong" },
+    { "source": "Sint8", "target": "sbyte" },
+    { "source": "Sint16", "target": "short" },
+    { "source": "Sint32", "target": "int" },
+    { "source": "Sint64", "target": "long" },
+    { "source": "SDL_Color", "target": "Rgba8U" },
+    { "source": "SDL_FColor", "target": "Rgba32F" }
+  ],
+  "isEnabledGeneratingRuntimeCode": false,
+  "isEnabledVerifyCSharpCodeCompiles": false,
+  "headerCodeRegionFilePath": "./header.cs"
+}

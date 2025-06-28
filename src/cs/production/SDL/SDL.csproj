@@ -15,8 +15,9 @@
 
   <!-- Project references -->
   <ItemGroup>
-    <ProjectReference Include="..\SDL.Interop\SDL.Interop.csproj" />
-    <ProjectReference Include="..\SDL_image.Interop\SDL_image.Interop.csproj" />
+    <ProjectReference Include="../SDL.Interop/SDL.Interop.csproj" />
+    <ProjectReference Include="../SDL_image.Interop/SDL_image.Interop.csproj" />
+    <ProjectReference Include="../SDL_ttf.Interop/SDL_ttf.Interop.csproj" />
   </ItemGroup>
 
   <!-- NuGet package references -->

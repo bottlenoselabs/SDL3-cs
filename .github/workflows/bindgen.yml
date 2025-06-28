@@ -38,7 +38,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "./bindgen/ffi"
-          key: "ffi-${{ matrix.platform.rid }}_${{ hashFiles('bindgen/**/*') }}_${{ hashFiles('ext/SDL/**/*') }}__${{ hashFiles('ext/SDL_image/**/*') }}_${{ steps.get-version-c2ffi.outputs.VERSION }}"
+          key: "ffi-${{ matrix.platform.rid }}_${{ hashFiles('bindgen/**/*') }}_${{ hashFiles('ext/SDL/**/*') }}_${{ hashFiles('ext/SDL_image/**/*') }}_${{ hashFiles('ext/SDL_ttf/**/*') }}_${{ steps.get-version-c2ffi.outputs.VERSION }}"
 
       - name: "Install Linux dependencies"
         if: matrix.platform.rid == 'linux' # && steps.cache-ffi.outputs.cache-hit != 'true'
@@ -79,6 +79,18 @@ jobs:
           path: "./bindgen/SDL_image/ffi"
           if-no-files-found: error
 
+      - name: "Extract FFI ${{ matrix.platform.name }}: SDL_ttf"
+        shell: bash
+        # if: steps.cache-ffi.outputs.cache-hit != 'true'
+        run: cd ./bindgen/SDL_ttf && ./bindgen-01-extract.sh
+
+      - name: "Upload FFIs: SDL_ttf"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "ffi-${{ matrix.platform.rid }}-SDL_ttf"
+          path: "./bindgen/SDL_ttf/ffi"
+          if-no-files-found: error
+
   bindgen-cross-platform-ffi-job:
     name: "Bindgen FFI cross-platform"
     needs: [bindgen-ffi-job]
@@ -89,6 +101,7 @@ jobs:
         project:
           - { name: SDL }
           - { name: SDL_image }
+          - { name: SDL_ttf }
 
     steps:
       - name: "Clone Git repository"
@@ -144,6 +157,7 @@ jobs:
         project:
           - { name: SDL }
           - { name: SDL_image }
+          - { name: SDL_ttf }
 
     steps:
       - name: "Clone Git repository"

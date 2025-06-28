@@ -10,3 +10,5 @@ global using Interop.Runtime;
 global using JetBrains.Annotations;
 global using Microsoft.Extensions.Logging;
 global using static bottlenoselabs.Interop.SDL;
+global using static bottlenoselabs.Interop.SDL_image;
+global using static bottlenoselabs.Interop.SDL_ttf;

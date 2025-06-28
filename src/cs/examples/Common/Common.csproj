@@ -8,16 +8,21 @@
 
   <ItemGroup>
     <ProjectReference Include="../../production/SDL/SDL.csproj" />
-    <ProjectReference Include="../../production/SDL.Runtime.win-x64/SDL.Runtime.win-x64.csproj" />
-    <ProjectReference Include="../../production/SDL.Runtime.win-arm64/SDL.Runtime.win-arm64.csproj" />
-    <ProjectReference Include="../../production/SDL.Runtime.osx-x64/SDL.Runtime.osx-x64.csproj" />
-    <ProjectReference Include="../../production/SDL.Runtime.osx-arm64/SDL.Runtime.osx-arm64.csproj" />
-    <ProjectReference Include="../../production/SDL.Runtime.linux-x64/SDL.Runtime.linux-x64.csproj" />
-    <ProjectReference Include="../../production/SDL_image.Runtime.win-x64/SDL_image.Runtime.win-x64.csproj" />
-    <ProjectReference Include="../../production/SDL_image.Runtime.win-arm64/SDL_image.Runtime.win-arm64.csproj" />
-    <ProjectReference Include="../../production/SDL_image.Runtime.osx-x64/SDL_image.Runtime.osx-x64.csproj" />
-    <ProjectReference Include="../../production/SDL_image.Runtime.osx-arm64/SDL_image.Runtime.osx-arm64.csproj" />
-    <ProjectReference Include="../../production/SDL_image.Runtime.linux-x64/SDL_image.Runtime.linux-x64.csproj" />
+    <ProjectReference Include="../../production/SDL.Native.win-x64/SDL.Native.win-x64.csproj" />
+    <ProjectReference Include="../../production/SDL.Native.win-arm64/SDL.Native.win-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL.Native.osx-x64/SDL.Native.osx-x64.csproj" />
+    <ProjectReference Include="../../production/SDL.Native.osx-arm64/SDL.Native.osx-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL.Native.linux-x64/SDL.Native.linux-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Native.win-x64/SDL_image.Native.win-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Native.win-arm64/SDL_image.Native.win-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Native.osx-x64/SDL_image.Native.osx-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Native.osx-arm64/SDL_image.Native.osx-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL_image.Native.linux-x64/SDL_image.Native.linux-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_ttf.Native.win-x64/SDL_ttf.Native.win-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_ttf.Native.win-arm64/SDL_ttf.Native.win-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL_ttf.Native.osx-x64/SDL_ttf.Native.osx-x64.csproj" />
+    <ProjectReference Include="../../production/SDL_ttf.Native.osx-arm64/SDL_ttf.Native.osx-arm64.csproj" />
+    <ProjectReference Include="../../production/SDL_ttf.Native.linux-x64/SDL_ttf.Native.linux-x64.csproj" />
   </ItemGroup>
 
 </Project>

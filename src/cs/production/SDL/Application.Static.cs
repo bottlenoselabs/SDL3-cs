@@ -27,6 +27,7 @@ public partial class Application
         application.Platform = GetNativePlatform();
 
         SDL_image.Initialize();
+        SDL_ttf.Initialize();
     }
 
     private static Platform GetNativePlatform()

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- MSBuild settings -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput> <!-- No C# assemblies to include -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems> <!-- Don't include .cs files -->
+    <RuntimeIdentifier>win-arm64</RuntimeIdentifier>
+    <PlatformTarget>arm64</PlatformTarget>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <RootNamespace>SDL_tff.Native.win-arm64</RootNamespace>
+  </PropertyGroup>
+
+  <!-- NuGet -->
+  <PropertyGroup>
+    <PackageDescription>The native `SDL_ttf` library (SDL3_ttf) file (SDL3_ttf.dll) for the `win-arm64` target framework moniker (TFM).</PackageDescription>
+  </PropertyGroup>
+
+  <!-- Dynamic link library -->
+  <PropertyGroup>
+    <NativeLibraryFileName>SDL3_tff.dll</NativeLibraryFileName>
+    <NativeLibraryFilePath>$(LibraryDirectoryPath)/$(RuntimeIdentifier)/$(NativeLibraryFileName)</NativeLibraryFilePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="$(NativeLibraryFilePath)"
+             PackagePath="runtimes\$(RuntimeIdentifier)\native\"
+             Condition="Exists('$(NativeLibraryFilePath)')">
+      <Link>%(Filename)%(Extension)</Link>
+      <Pack>true</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
