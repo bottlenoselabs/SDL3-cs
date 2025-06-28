@@ -78,27 +78,30 @@ To learn how to use `SDL` in C, check out the [official documentation](https://w
 
 ## License
 
+> [!WARNING]
+> The information here is NOT legal advice. You may wish to browser the licenses listed here at https://www.tldrlegal.com to get an idea of what you *can do*, *can not do*, and *must do*. For actual legal advice such as what to do when releasing or distributing your project, please consult a lawyer specializng in open source software licenses.
+
 `SDL-cs` is licensed under the MIT License (`MIT`) - see the [LICENSE file](LICENSE) for details.
 
 ### Dependencies
 
-All dependencies are compatible with the MIT License (`MIT`). However, some libraries have licenses that add additional things you must do with your project beyond the normal. These are listed under "Actions" table section.
+Dependencies can be found under the `./ext/` folder and recursive folders. All dependencies are compatible with the MIT License (`MIT`).
 
-|Name|License|Link|Actions
-|-|-|-|-|
-|`SDL`|zlib License|https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt|~|
-|`SDL_image`|zlib License|https://github.com/libsdl-org/SDL_image/blob/main/LICENSE.txt|~|
-|`aom`|BSD 2-Clause License|https://github.com/libsdl-org/aom/blob/main/LICENSE|~|
-|`dav1d`|BSD 2-Clause License|https://github.com/libsdl-org/dav1d/blob/master/COPYING|~|
-|`jpeg`|Libjpeg License (Custom BSD-like License)|https://github.com/libsdl-org/jpeg/blob/main/README|~|
-|`libavif`|BSD-2-Clause License|https://github.com/libsdl-org/libavif/blob/main/LICENSE|~|
-|`libjxl`|BSD 3-Clause License|https://github.com/libsdl-org/libjxl/blob/main/LICENSE|~|
-|`libpng`|PNG Reference Library V2 License|https://github.com/libsdl-org/libpng/blob/master/LICENSE|~|
-|`libtiff`|LibTIFF License|https://github.com/libsdl-org/libtiff/blob/master/LICENSE.md|~|
-|`libwebp`|BSD 3-Clause License|https://github.com/libsdl-org/libwebp/blob/main/COPYING|~|
-|`zlib`|zlib License|https://github.com/libsdl-org/zlib/blob/master/LICENSE|~|
-|`SDL_ttf`|zlib License|https://github.com/libsdl-org/SDL_ttf/blob/main/LICENSE.txt|~|
-|`freetype`|FreeType License|https://github.com/libsdl-org/freetype/blob/master/LICENSE.TXT & https://github.com/libsdl-org/freetype/blob/master/docs/FTL.TXT|Must mention/acknowledge FreeType project in your product's documentation.|
-|`hardbuzz`|MIT License (Expat)|https://github.com/libsdl-org/harfbuzz/blob/main/COPYING|~|
-|`plutosvg`|MIT License|https://github.com/libsdl-org/plutosvg/blob/master/LICENSE|~|
-|`plutosvg`|MIT License|https://github.com/libsdl-org/plutovg/blob/main/LICENSE|~|
+|Name|License|Link|
+|-|-|-|
+|`SDL`|zlib License|https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt|
+|`SDL_image`|zlib License|https://github.com/libsdl-org/SDL_image/blob/main/LICENSE.txt|
+|`aom`|BSD 2-Clause License|https://github.com/libsdl-org/aom/blob/main/LICENSE|
+|`dav1d`|BSD 2-Clause License|https://github.com/libsdl-org/dav1d/blob/master/COPYING|
+|`jpeg`|Libjpeg License (Custom BSD-like License)|https://github.com/libsdl-org/jpeg/blob/main/README|
+|`libavif`|BSD-2-Clause License|https://github.com/libsdl-org/libavif/blob/main/LICENSE|
+|`libjxl`|BSD 3-Clause License|https://github.com/libsdl-org/libjxl/blob/main/LICENSE|
+|`libpng`|PNG Reference Library V2 License|https://github.com/libsdl-org/libpng/blob/master/LICENSE|
+|`libtiff`|LibTIFF License|https://github.com/libsdl-org/libtiff/blob/master/LICENSE.md|
+|`libwebp`|BSD 3-Clause License|https://github.com/libsdl-org/libwebp/blob/main/COPYING|
+|`zlib`|zlib License|https://github.com/libsdl-org/zlib/blob/master/LICENSE|
+|`SDL_ttf`|zlib License|https://github.com/libsdl-org/SDL_ttf/blob/main/LICENSE.txt|
+|`freetype`|FreeType License|https://github.com/libsdl-org/freetype/blob/master/LICENSE.TXT & https://github.com/libsdl-org/freetype/blob/master/docs/FTL.TXT|
+|`hardbuzz`|MIT License (Expat)|https://github.com/libsdl-org/harfbuzz/blob/main/COPYING|
+|`plutosvg`|MIT License|https://github.com/libsdl-org/plutosvg/blob/master/LICENSE|
+|`plutosvg`|MIT License|https://github.com/libsdl-org/plutovg/blob/main/LICENSE|
