@@ -11,33 +11,12 @@
 
   <!-- NuGet -->
   <PropertyGroup>
-    <PackageDescription>C# bindings ("unsafe" API) for interoperability with the native `SDL` library (SDL3).</PackageDescription>
+    <PackageDescription>C# bindings ("unsafe" API) for interoperability with the native `SDL_ttf` library (SDL3_ttf).</PackageDescription>
   </PropertyGroup>
 
   <!-- Project references -->
   <ItemGroup>
-    <InternalsVisibleTo Include="SDL_image.Interop" />
-    <InternalsVisibleTo Include="SDL_ttf.Interop" />
-  </ItemGroup>
-
-  <!-- NuGet package references -->
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2024.3.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <!-- C# code file dependencies -->
-  <ItemGroup>
-    <Compile Update="Rgba8U.Colors.cs">
-      <DependentUpon>Rgba8U.cs</DependentUpon>
-    </Compile>
-    <Compile Update="Rgba32F.Colors.cs">
-      <DependentUpon>Rgba32F.cs</DependentUpon>
-    </Compile>
-    <Compile Update="Rgb8U.Colors.cs">
-      <DependentUpon>Rgb8U.cs</DependentUpon>
-    </Compile>
+    <ProjectReference Include="..\SDL.Interop\SDL.Interop.csproj" />
   </ItemGroup>
 
   <!-- C# Source Generators -->
