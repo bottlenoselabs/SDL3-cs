@@ -80,6 +80,14 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
             Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
         }
 
+        var windowId = SDL_GetWindowID(HandleTyped);
+        if (windowId == 0)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowID), isExceptionThrown: true);
+        }
+
+        Application.WindowsById[windowId] = this;
+
         if (options is { IsEnabledCreateSurface: true, IsEnabledCreateRenderer: true })
         {
             throw new InvalidOperationException(
@@ -155,6 +163,14 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
+        var windowId = SDL_GetWindowID(HandleTyped);
+        if (windowId == 0)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowID), isExceptionThrown: true);
+        }
+
+        Application.WindowsById.Remove(windowId);
+
         _allocator.Dispose();
 
         if (IsClaimed)

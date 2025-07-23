@@ -6,10 +6,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using bottlenoselabs.SDL;
+using bottlenoselabs.SDL.Input;
 
 namespace Common;
 
-public sealed class App : Application
+public sealed unsafe class App : Application
 {
     private int _exampleIndex = -1;
     private int _goToExampleIndex;
@@ -70,6 +71,21 @@ public sealed class App : Application
                 break;
             }
         }
+    }
+
+    protected override void OnMouseMove(in MouseMoveEvent e)
+    {
+        _currentExample?.OnMouseMove(e);
+    }
+
+    protected override void OnMouseDown(in MouseButtonEvent e)
+    {
+        _currentExample?.OnMouseDown(e);
+    }
+
+    protected override void OnMouseUp(in MouseButtonEvent e)
+    {
+        _currentExample?.OnMouseUp(e);
     }
 
     protected override void OnUpdate(TimeSpan deltaTime)
