@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using bottlenoselabs.SDL.GPU;
+using bottlenoselabs.SDL;
 
 namespace Gpu.Examples;
 
@@ -146,22 +146,30 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
         base.OnExit();
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.scancode)
+        switch (e.Key)
         {
-            case SDL_Scancode.SDL_SCANCODE_LEFT:
+            case KeyboardButton.Left:
+            {
                 _isEnabledVertexOffset = !_isEnabledVertexOffset;
                 Console.WriteLine("Using vertex offset: {0}", _isEnabledVertexOffset ? "true" : "false");
                 break;
-            case SDL_Scancode.SDL_SCANCODE_RIGHT:
+            }
+
+            case KeyboardButton.Right:
+            {
                 _isEnabledIndexOffset = !_isEnabledIndexOffset;
                 Console.WriteLine("Using index offset: {0}", _isEnabledIndexOffset ? "true" : "false");
                 break;
-            case SDL_Scancode.SDL_SCANCODE_UP:
+            }
+
+            case KeyboardButton.Up:
+            {
                 _isEnabledIndexBuffer = !_isEnabledIndexBuffer;
                 Console.WriteLine("Using index buffer: {0}", _isEnabledIndexBuffer ? "true" : "false");
                 break;
+            }
         }
     }
 

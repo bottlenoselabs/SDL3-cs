@@ -3,7 +3,7 @@
 
 // ReSharper disable InconsistentNaming
 
-namespace bottlenoselabs.SDL.GPU;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     Defines the data formats (byte code or source code) available for graphics or compute shaders.

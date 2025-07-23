@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using bottlenoselabs.SDL.GPU;
+using bottlenoselabs.SDL;
 
 namespace Gpu.Examples;
 
@@ -9,10 +9,6 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed class E001_ClearScreen : ExampleGpu
 {
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

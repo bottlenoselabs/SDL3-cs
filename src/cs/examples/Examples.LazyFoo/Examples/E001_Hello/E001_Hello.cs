@@ -29,10 +29,6 @@ public sealed class E001_Hello : ExampleLazyFoo
     {
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
 using bottlenoselabs.SDL;
-using bottlenoselabs.SDL.GPU;
 
 namespace Gpu.Examples;
 
@@ -194,10 +193,6 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         _t = 0;
 
         base.OnExit();
-    }
-
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
     }
 
     public override void OnUpdate(TimeSpan deltaTime)

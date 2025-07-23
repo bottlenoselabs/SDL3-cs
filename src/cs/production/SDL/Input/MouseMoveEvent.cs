@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace bottlenoselabs.SDL.Input;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     Defines a mouse move event.
@@ -14,7 +14,7 @@ public readonly record struct MouseMoveEvent
     public readonly Window Window;
 
     /// <summary>
-    ///     The position of the mouse relative to the <see cref="Window" /> at the time of the associated event.
+    ///     The position of the mouse relative to the <see cref="Window" /> at the time of the event.
     /// </summary>
     public readonly Vector2 Position;
 

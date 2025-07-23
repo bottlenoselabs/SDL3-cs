@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
 using bottlenoselabs.SDL;
-using bottlenoselabs.SDL.GPU;
 
 namespace Gpu.Examples;
 
@@ -284,11 +283,12 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         base.OnExit();
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.scancode)
+        switch (e.Key)
         {
-            case SDL_Scancode.SDL_SCANCODE_LEFT:
+            case KeyboardButton.Left:
+            {
                 _currentSamplerIndex -= 1;
                 if (_currentSamplerIndex < 0)
                 {
@@ -297,10 +297,14 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
                 Console.WriteLine("Setting sampler state to: {0}", SamplerNames[_currentSamplerIndex]);
                 break;
-            case SDL_Scancode.SDL_SCANCODE_RIGHT:
+            }
+
+            case KeyboardButton.Right:
+            {
                 _currentSamplerIndex = (_currentSamplerIndex + 1) % SamplerNames.Length;
                 Console.WriteLine("Setting sampler state to: {0}", SamplerNames[_currentSamplerIndex]);
                 break;
+            }
         }
     }
 

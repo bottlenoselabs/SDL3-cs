@@ -39,10 +39,6 @@ public sealed class E014_AnimatedSpritesAndVSync : ExampleLazyFoo
     {
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
         _animationTimer += deltaTime;
