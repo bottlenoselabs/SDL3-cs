@@ -30,29 +30,45 @@ public sealed class E012_ColorModulation : ExampleLazyFoo
         _texture = null;
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        var key = e.scancode;
-        switch (key)
+        switch (e.Key)
         {
-            case SDL_Scancode.SDL_SCANCODE_Q:
+            case KeyboardButton.Q:
+            {
                 _color.R += 32;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_W:
+            }
+
+            case KeyboardButton.W:
+            {
                 _color.G += 32;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_E:
+            }
+
+            case KeyboardButton.E:
+            {
                 _color.B += 32;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_A:
+            }
+
+            case KeyboardButton.A:
+            {
                 _color.B -= 32;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_S:
+            }
+
+            case KeyboardButton.S:
+            {
                 _color.G -= 32;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_D:
+            }
+
+            case KeyboardButton.D:
+            {
                 _color.G -= 32;
                 break;
+            }
         }
     }
 

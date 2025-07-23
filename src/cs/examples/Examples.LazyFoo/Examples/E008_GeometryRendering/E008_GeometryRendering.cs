@@ -25,10 +25,6 @@ public sealed class E008_GeometryRendering : ExampleLazyFoo
     {
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

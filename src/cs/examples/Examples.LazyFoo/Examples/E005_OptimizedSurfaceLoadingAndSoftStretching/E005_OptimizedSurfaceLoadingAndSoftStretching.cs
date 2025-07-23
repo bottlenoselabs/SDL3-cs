@@ -29,10 +29,6 @@ public sealed class E005_OptimizedSurfaceLoadingAndSoftStretching : ExampleLazyF
         _imageSurface = null;
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

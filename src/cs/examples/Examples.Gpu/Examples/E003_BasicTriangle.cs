@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
 using bottlenoselabs.SDL;
-using bottlenoselabs.SDL.GPU;
 
 namespace Gpu.Examples;
 
@@ -98,21 +97,27 @@ public sealed class E003_BasicTriangle : ExampleGpu
         base.OnExit();
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        if (e.scancode == SDL_Scancode.SDL_SCANCODE_LEFT)
+        switch (e.Key)
         {
-            _isEnabledWireframeMode = !_isEnabledWireframeMode;
-        }
+            case KeyboardButton.Left:
+            {
+                _isEnabledWireframeMode = !_isEnabledWireframeMode;
+                break;
+            }
 
-        if (e.scancode == SDL_Scancode.SDL_SCANCODE_DOWN)
-        {
-            _isEnabledSmallViewport = !_isEnabledSmallViewport;
-        }
+            case KeyboardButton.Down:
+            {
+                _isEnabledSmallViewport = !_isEnabledSmallViewport;
+                break;
+            }
 
-        if (e.scancode == SDL_Scancode.SDL_SCANCODE_RIGHT)
-        {
-            _isEnabledScissorRectangle = !_isEnabledScissorRectangle;
+            case KeyboardButton.Right:
+            {
+                _isEnabledScissorRectangle = !_isEnabledScissorRectangle;
+                break;
+            }
         }
     }
 

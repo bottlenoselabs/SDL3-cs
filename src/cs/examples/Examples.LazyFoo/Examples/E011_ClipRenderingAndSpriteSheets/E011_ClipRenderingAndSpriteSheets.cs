@@ -30,10 +30,6 @@ public sealed class E011_ClipRenderingAndSpriteSheets : ExampleLazyFoo
         _texture = null;
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

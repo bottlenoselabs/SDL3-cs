@@ -3,7 +3,7 @@
 
 using System.Diagnostics;
 
-namespace bottlenoselabs.SDL.GPU;
+namespace bottlenoselabs.SDL;
 
 /// <summary>
 ///     Represents a context for the CPU to queue up commands that are later all submitted at once to a

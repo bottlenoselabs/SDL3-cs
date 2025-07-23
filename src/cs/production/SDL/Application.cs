@@ -1,10 +1,6 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using bottlenoselabs.SDL.Disk;
-using bottlenoselabs.SDL.GPU;
-using bottlenoselabs.SDL.Input;
-
 namespace bottlenoselabs.SDL;
 
 /// <summary>
@@ -28,7 +24,7 @@ public abstract unsafe partial class Application : Disposable
     public Platform Platform { get; internal set; }
 
     /// <summary>
-    ///     Gets the <see cref="Disk.FileSystem" /> of the application.
+    ///     Gets the <see cref="bottlenoselabs.SDL.FileSystem" /> of the application.
     /// </summary>
     public FileSystem FileSystem { get; }
 
@@ -146,13 +142,6 @@ public abstract unsafe partial class Application : Disposable
     protected abstract void OnExit();
 
     /// <summary>
-    ///     Called when the application determines it is time to handle an event. This is where your application would
-    ///     handle input and other application events.
-    /// </summary>
-    /// <param name="e">The event.</param>
-    protected abstract void OnEvent(in SDL_Event e);
-
-    /// <summary>
     ///     Called when the mouse moves.
     /// </summary>
     /// <param name="e">The event.</param>
@@ -169,6 +158,18 @@ public abstract unsafe partial class Application : Disposable
     /// </summary>
     /// <param name="e">The event.</param>
     protected abstract void OnMouseUp(in MouseButtonEvent e);
+
+    /// <summary>
+    ///     Called when a keyboard key is pressed down.
+    /// </summary>
+    /// <param name="e">The event.</param>
+    protected abstract void OnKeyDown(in KeyboardEvent e);
+
+    /// <summary>
+    ///     Called when a keyboard key is released.
+    /// </summary>
+    /// <param name="e">The event.</param>
+    protected abstract void OnKeyUp(in KeyboardEvent e);
 
     /// <summary>
     ///     Called when the application determines it is time to update a frame. This is where your application would
@@ -214,7 +215,6 @@ public abstract unsafe partial class Application : Disposable
         while (SDL_PollEvent(&e))
         {
             HandleEvent(e);
-            OnEvent(e);
         }
     }
 
@@ -280,6 +280,13 @@ public abstract unsafe partial class Application : Disposable
                 HandleMouseButtonEvent(e.button);
                 break;
             }
+
+            case SDL_EventType.SDL_EVENT_KEY_DOWN:
+            case SDL_EventType.SDL_EVENT_KEY_UP:
+            {
+                HandleKeyboardEvent(e.key);
+                break;
+            }
         }
     }
 
@@ -299,7 +306,15 @@ public abstract unsafe partial class Application : Disposable
 
     private void HandleMouseButtonEvent(in SDL_MouseButtonEvent mouseButtonEvent)
     {
-        var mouseButton = MouseButton.None;
+        var isDown = (bool)mouseButtonEvent.down;
+
+        if (!WindowsById.TryGetValue(mouseButtonEvent.windowID, out var window))
+        {
+            // NOTE: Window must be created outside of managed C# code.
+            window = null!;
+        }
+
+        var mouseButton = MouseButton.Unknown;
         if (mouseButtonEvent.button == SDL_BUTTON_LEFT)
         {
             mouseButton = MouseButton.Left;
@@ -321,13 +336,6 @@ public abstract unsafe partial class Application : Disposable
             mouseButton = MouseButton.X2;
         }
 
-        var isDown = mouseButtonEvent.down;
-        if (!WindowsById.TryGetValue(mouseButtonEvent.windowID, out var window))
-        {
-            // NOTE: Window must be created outside of managed C# code.
-            window = null!;
-        }
-
         var e = new MouseButtonEvent(
             window,
             mouseButton,
@@ -342,6 +350,75 @@ public abstract unsafe partial class Application : Disposable
         else
         {
             OnMouseUp(e);
+        }
+    }
+
+    private void HandleKeyboardEvent(SDL_KeyboardEvent keyboardEvent)
+    {
+        var isDown = (bool)keyboardEvent.down;
+        var isRepeat = (bool)keyboardEvent.repeat;
+
+        if (!WindowsById.TryGetValue(keyboardEvent.windowID, out var window))
+        {
+            // NOTE: Window must be created outside of managed C# code.
+            window = null!;
+        }
+
+        // NOTE: Scancode Key is for keyboard layout independent buttons. Virtual keys are for layout dependent buttons.
+        var key = keyboardEvent.scancode switch
+        {
+            SDL_Scancode.SDL_SCANCODE_LEFT => KeyboardButton.Left,
+            SDL_Scancode.SDL_SCANCODE_RIGHT => KeyboardButton.Right,
+            SDL_Scancode.SDL_SCANCODE_UP => KeyboardButton.Up,
+            SDL_Scancode.SDL_SCANCODE_DOWN => KeyboardButton.Down,
+            SDL_Scancode.SDL_SCANCODE_A => KeyboardButton.A,
+            SDL_Scancode.SDL_SCANCODE_B => KeyboardButton.B,
+            SDL_Scancode.SDL_SCANCODE_C => KeyboardButton.C,
+            SDL_Scancode.SDL_SCANCODE_D => KeyboardButton.D,
+            SDL_Scancode.SDL_SCANCODE_E => KeyboardButton.E,
+            SDL_Scancode.SDL_SCANCODE_F => KeyboardButton.F,
+            SDL_Scancode.SDL_SCANCODE_G => KeyboardButton.G,
+            SDL_Scancode.SDL_SCANCODE_H => KeyboardButton.H,
+            SDL_Scancode.SDL_SCANCODE_I => KeyboardButton.I,
+            SDL_Scancode.SDL_SCANCODE_J => KeyboardButton.J,
+            SDL_Scancode.SDL_SCANCODE_K => KeyboardButton.K,
+            SDL_Scancode.SDL_SCANCODE_L => KeyboardButton.L,
+            SDL_Scancode.SDL_SCANCODE_M => KeyboardButton.M,
+            SDL_Scancode.SDL_SCANCODE_N => KeyboardButton.N,
+            SDL_Scancode.SDL_SCANCODE_O => KeyboardButton.O,
+            SDL_Scancode.SDL_SCANCODE_P => KeyboardButton.P,
+            SDL_Scancode.SDL_SCANCODE_Q => KeyboardButton.Q,
+            SDL_Scancode.SDL_SCANCODE_R => KeyboardButton.R,
+            SDL_Scancode.SDL_SCANCODE_S => KeyboardButton.S,
+            SDL_Scancode.SDL_SCANCODE_T => KeyboardButton.T,
+            SDL_Scancode.SDL_SCANCODE_U => KeyboardButton.U,
+            SDL_Scancode.SDL_SCANCODE_V => KeyboardButton.V,
+            SDL_Scancode.SDL_SCANCODE_W => KeyboardButton.W,
+            SDL_Scancode.SDL_SCANCODE_X => KeyboardButton.X,
+            SDL_Scancode.SDL_SCANCODE_Y => KeyboardButton.Y,
+            SDL_Scancode.SDL_SCANCODE_Z => KeyboardButton.Z,
+            SDL_Scancode.SDL_SCANCODE_1 => KeyboardButton.Number1,
+            SDL_Scancode.SDL_SCANCODE_2 => KeyboardButton.Number2,
+            SDL_Scancode.SDL_SCANCODE_3 => KeyboardButton.Number3,
+            SDL_Scancode.SDL_SCANCODE_4 => KeyboardButton.Number4,
+            SDL_Scancode.SDL_SCANCODE_5 => KeyboardButton.Number5,
+            SDL_Scancode.SDL_SCANCODE_6 => KeyboardButton.Number6,
+            SDL_Scancode.SDL_SCANCODE_7 => KeyboardButton.Number7,
+            SDL_Scancode.SDL_SCANCODE_8 => KeyboardButton.Number8,
+            SDL_Scancode.SDL_SCANCODE_9 => KeyboardButton.Number9,
+            SDL_Scancode.SDL_SCANCODE_0 => KeyboardButton.Number0,
+            _ => KeyboardButton.Unknown
+        };
+
+        var e = new KeyboardEvent(window, key, isDown, isRepeat);
+
+        if (isDown)
+        {
+            OnKeyDown(e);
+        }
+        else
+        {
+            OnKeyUp(e);
         }
     }
 

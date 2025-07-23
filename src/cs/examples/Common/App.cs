@@ -6,11 +6,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using bottlenoselabs.SDL;
-using bottlenoselabs.SDL.Input;
 
 namespace Common;
 
-public sealed unsafe class App : Application
+public sealed class App : Application
 {
     private int _exampleIndex = -1;
     private int _goToExampleIndex;
@@ -39,40 +38,6 @@ public sealed unsafe class App : Application
         _currentExample = null;
     }
 
-    protected override void OnEvent(in SDL_Event e)
-    {
-        var eventType = (SDL_EventType)e.type;
-        switch (eventType)
-        {
-            case SDL_EventType.SDL_EVENT_KEY_DOWN:
-            {
-                var key = e.key.scancode;
-                if (key == SDL_Scancode.SDL_SCANCODE_2)
-                {
-                    _goToExampleIndex = _exampleIndex + 1;
-                    if (_goToExampleIndex >= _examplesCount)
-                    {
-                        _goToExampleIndex = 0;
-                    }
-                }
-                else if (key == SDL_Scancode.SDL_SCANCODE_1)
-                {
-                    _goToExampleIndex = _exampleIndex - 1;
-                    if (_goToExampleIndex < 0)
-                    {
-                        _goToExampleIndex = _examplesCount - 1;
-                    }
-                }
-                else
-                {
-                    _currentExample?.OnKeyboardEvent(e.key);
-                }
-
-                break;
-            }
-        }
-    }
-
     protected override void OnMouseMove(in MouseMoveEvent e)
     {
         _currentExample?.OnMouseMove(e);
@@ -86,6 +51,33 @@ public sealed unsafe class App : Application
     protected override void OnMouseUp(in MouseButtonEvent e)
     {
         _currentExample?.OnMouseUp(e);
+    }
+
+    protected override void OnKeyDown(in KeyboardEvent e)
+    {
+        if (e.Key == KeyboardButton.Number2)
+        {
+            _goToExampleIndex = _exampleIndex + 1;
+            if (_goToExampleIndex >= _examplesCount)
+            {
+                _goToExampleIndex = 0;
+            }
+        }
+        else if (e.Key == KeyboardButton.Number1)
+        {
+            _goToExampleIndex = _exampleIndex - 1;
+            if (_goToExampleIndex < 0)
+            {
+                _goToExampleIndex = _examplesCount - 1;
+            }
+        }
+
+        _currentExample?.OnKeyDown(e);
+    }
+
+    protected override void OnKeyUp(in KeyboardEvent e)
+    {
+        _currentExample?.OnKeyUp(e);
     }
 
     protected override void OnUpdate(TimeSpan deltaTime)

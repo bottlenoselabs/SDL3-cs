@@ -30,10 +30,6 @@ public sealed class E016_TrueTypeFonts : ExampleLazyFoo
     {
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

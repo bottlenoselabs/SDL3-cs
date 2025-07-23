@@ -34,12 +34,12 @@ public sealed class E013_AlphaBlending : ExampleLazyFoo
         _textureFadeIn = null;
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        var key = e.scancode;
-        switch (key)
+        switch (e.Key)
         {
-            case SDL_Scancode.SDL_SCANCODE_W:
+            case KeyboardButton.W:
+            {
                 if (_a + 32 > 255)
                 {
                     _a = 255;
@@ -50,7 +50,10 @@ public sealed class E013_AlphaBlending : ExampleLazyFoo
                 }
 
                 break;
-            case SDL_Scancode.SDL_SCANCODE_S:
+            }
+
+            case KeyboardButton.S:
+            {
                 if (_a - 32 < 0)
                 {
                     _a = 0;
@@ -61,6 +64,7 @@ public sealed class E013_AlphaBlending : ExampleLazyFoo
                 }
 
                 break;
+            }
         }
     }
 

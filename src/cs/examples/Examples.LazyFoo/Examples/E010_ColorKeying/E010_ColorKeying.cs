@@ -33,10 +33,6 @@ public sealed class E010_ColorKeying : ExampleLazyFoo
         _textureBackground = null;
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

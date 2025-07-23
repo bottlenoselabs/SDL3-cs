@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using bottlenoselabs.SDL.GPU;
+using bottlenoselabs.SDL;
 
 namespace Gpu.Examples;
 
@@ -158,22 +158,28 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         base.OnExit();
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        if (e.scancode == SDL_Scancode.SDL_SCANCODE_LEFT)
+        switch (e.Key)
         {
-            _currentModeIndex -= 1;
-            if (_currentModeIndex < 0)
+            case KeyboardButton.Left:
             {
-                _currentModeIndex = ModeNames.Length - 1;
+                _currentModeIndex -= 1;
+                if (_currentModeIndex < 0)
+                {
+                    _currentModeIndex = ModeNames.Length - 1;
+                }
+
+                Console.WriteLine("Current Mode: " + ModeNames[_currentModeIndex]);
+                break;
             }
 
-            Console.WriteLine("Current Mode: " + ModeNames[_currentModeIndex]);
-        }
-        else if (e.scancode == SDL_Scancode.SDL_SCANCODE_RIGHT)
-        {
-            _currentModeIndex = (_currentModeIndex + 1) % ModeNames.Length;
-            Console.WriteLine("Current Mode: " + ModeNames[_currentModeIndex]);
+            case KeyboardButton.Right:
+            {
+                _currentModeIndex = (_currentModeIndex + 1) % ModeNames.Length;
+                Console.WriteLine("Current Mode: " + ModeNames[_currentModeIndex]);
+                break;
+            }
         }
     }
 
