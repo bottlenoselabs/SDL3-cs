@@ -202,7 +202,7 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
 
     public override void OnUpdate(TimeSpan deltaTime)
     {
-        _t += (float)deltaTime.TotalMilliseconds;
+        _t += (float)deltaTime.TotalSeconds;
     }
 
     public override void OnDraw(TimeSpan deltaTime)

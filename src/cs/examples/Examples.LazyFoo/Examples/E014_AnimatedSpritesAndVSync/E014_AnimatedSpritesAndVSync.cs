@@ -20,6 +20,7 @@ public sealed class E014_AnimatedSpritesAndVSync : ExampleLazyFoo
 
     private Texture _texture = null!;
     private int _currentSpriteSourceRectangleIndex;
+    private TimeSpan _animationTimer;
 
     public E014_AnimatedSpritesAndVSync()
         : base("14 - Animated Sprites and VSync", isEnabledCreateRenderer2D: true)
@@ -44,7 +45,12 @@ public sealed class E014_AnimatedSpritesAndVSync : ExampleLazyFoo
 
     public override void OnUpdate(TimeSpan deltaTime)
     {
-        _currentSpriteSourceRectangleIndex = (_currentSpriteSourceRectangleIndex + 1) % 4;
+        _animationTimer += deltaTime;
+        if (_animationTimer > TimeSpan.FromMilliseconds(100))
+        {
+            _animationTimer = TimeSpan.Zero;
+            _currentSpriteSourceRectangleIndex = (_currentSpriteSourceRectangleIndex + 1) % 4;
+        }
     }
 
     public override void OnDraw(TimeSpan deltaTime)
