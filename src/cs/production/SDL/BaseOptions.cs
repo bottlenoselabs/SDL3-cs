@@ -60,7 +60,7 @@ public abstract class BaseOptions : Disposable
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        Reset();
+        Allocator.Reset();
         var allocatorDisposable = _ownedAllocator as IDisposable;
         allocatorDisposable?.Dispose();
         _ownedAllocator = null;
