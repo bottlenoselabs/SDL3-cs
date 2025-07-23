@@ -6,14 +6,11 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Represents a font.
 /// </summary>
-public sealed unsafe class Font : NativeHandle
+public sealed unsafe class Font : NativeHandleTyped<TTF_Font>
 {
-    private TTF_Font* _handle;
-
     internal Font(IntPtr handle)
-        : base(handle)
+        : base((TTF_Font*)handle)
     {
-        _handle = (TTF_Font*)handle;
     }
 
     /// <summary>
@@ -31,7 +28,7 @@ public sealed unsafe class Font : NativeHandle
         out Surface? surface)
     {
         var textCString = allocator.AllocateCString(text);
-        var surfacePointer = TTF_RenderText_Blended(_handle, textCString, 0, color);
+        var surfacePointer = TTF_RenderText_Blended(HandleTyped, textCString, 0, color);
         if (surfacePointer == null)
         {
             Error.NativeFunctionFailed(nameof(TTF_RenderText_Blended));
@@ -39,15 +36,14 @@ public sealed unsafe class Font : NativeHandle
             return false;
         }
 
-        surface = new Surface((IntPtr)surfacePointer);
+        surface = new Surface(surfacePointer);
         return true;
     }
 
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        TTF_CloseFont(_handle);
-        _handle = null;
+        TTF_CloseFont(HandleTyped);
         base.Dispose(isDisposing);
     }
 }

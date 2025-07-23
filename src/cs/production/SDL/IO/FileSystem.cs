@@ -125,7 +125,7 @@ public sealed unsafe class FileSystem : Disposable
             surfacePointer = convertedSurfacePointer;
         }
 
-        surface = new Surface((IntPtr)surfacePointer);
+        surface = new Surface(surfacePointer);
         return true;
     }
 

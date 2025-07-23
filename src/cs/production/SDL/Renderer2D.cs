@@ -7,12 +7,8 @@ namespace bottlenoselabs.SDL;
 ///     Represents a context for rendering 2D graphics.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class Renderer2D : NativeHandle
+public sealed unsafe class Renderer2D : NativeHandleTyped<SDL_Renderer>
 {
-    // ReSharper disable once InconsistentNaming
-    // ReSharper disable once MemberCanBePrivate.Global
-    internal SDL_Renderer* _handle;
-
     /// <summary>
     ///     Gets or sets the color used for rendering operations such as <see cref="RenderRectangle" />,
     ///     <see cref="RenderLine" />, and <see cref="Clear" />.
@@ -37,10 +33,9 @@ public sealed unsafe class Renderer2D : NativeHandle
     /// </summary>
     public VSyncMode VSyncMode => GetVSyncMode();
 
-    internal Renderer2D(IntPtr handle)
+    internal Renderer2D(SDL_Renderer* handle)
         : base(handle)
     {
-        _handle = (SDL_Renderer*)Handle;
     }
 
     /// <summary>
@@ -66,7 +61,7 @@ public sealed unsafe class Renderer2D : NativeHandle
             Error.NativeFunctionFailed(nameof(SDL_CreateTextureFromSurface), true);
         }
 
-        var texture = new Texture((IntPtr)textureHandle);
+        var texture = new Texture(textureHandle);
         return texture;
     }
 
@@ -76,7 +71,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     /// </summary>
     public void Clear()
     {
-        SDL_RenderClear(_handle);
+        SDL_RenderClear(HandleTyped);
     }
 
     /// <summary>
@@ -100,7 +95,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     /// </remarks>
     public void Present()
     {
-        var isSuccess = SDL_RenderPresent(_handle);
+        var isSuccess = SDL_RenderPresent(HandleTyped);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_RenderPresent), isExceptionThrown: true);
@@ -149,7 +144,7 @@ public sealed unsafe class Renderer2D : NativeHandle
             dest = &destRect;
         }
 
-        var isSuccess = SDL_RenderTexture(_handle, texture._handle, src, dest);
+        var isSuccess = SDL_RenderTexture(HandleTyped, texture.HandleTyped, src, dest);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_RenderTexture), isExceptionThrown: true);
@@ -224,7 +219,7 @@ public sealed unsafe class Renderer2D : NativeHandle
 
         var flip = (SDL_FlipMode)flipMode;
         var isSuccess = SDL_RenderTextureRotated(
-            _handle, texture._handle, src, dest, angle, centerPointer, flip);
+            HandleTyped, texture.HandleTyped, src, dest, angle, centerPointer, flip);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_RenderTextureRotated), isExceptionThrown: true);
@@ -250,7 +245,7 @@ public sealed unsafe class Renderer2D : NativeHandle
             rect = &rect1;
         }
 
-        var isSuccess = SDL_RenderFillRect(_handle, rect);
+        var isSuccess = SDL_RenderFillRect(HandleTyped, rect);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_RenderFillRect), isExceptionThrown: true);
@@ -276,7 +271,7 @@ public sealed unsafe class Renderer2D : NativeHandle
             rect = &rect1;
         }
 
-        var isSuccess = SDL_RenderRect(_handle, rect);
+        var isSuccess = SDL_RenderRect(HandleTyped, rect);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_RenderRect), isExceptionThrown: true);
@@ -292,7 +287,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     /// <param name="y2">The y coordinate of the end point.</param>
     public void RenderLine(float x1, float y1, float x2, float y2)
     {
-        var isSuccess = SDL_RenderLine(_handle, x1, y1, x2, y2);
+        var isSuccess = SDL_RenderLine(HandleTyped, x1, y1, x2, y2);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_RenderLine), isExceptionThrown: true);
@@ -306,7 +301,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     /// <param name="y">The y coordinate of the point.</param>
     public void RenderPoint(float x, float y)
     {
-        var isSuccess = SDL_RenderPoint(_handle, x, y);
+        var isSuccess = SDL_RenderPoint(HandleTyped, x, y);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_RenderPoint), isExceptionThrown: true);
@@ -332,8 +327,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_DestroyRenderer(_handle);
-        _handle = null;
+        SDL_DestroyRenderer(HandleTyped);
         base.Dispose(isDisposing);
     }
 
@@ -344,7 +338,7 @@ public sealed unsafe class Renderer2D : NativeHandle
         byte b;
         byte a;
 
-        var isSuccess = SDL_GetRenderDrawColor(_handle, &r, &g, &b, &a);
+        var isSuccess = SDL_GetRenderDrawColor(HandleTyped, &r, &g, &b, &a);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_GetRenderDrawColor), isExceptionThrown: true);
@@ -356,7 +350,7 @@ public sealed unsafe class Renderer2D : NativeHandle
 
     private void SetDrawColor(in Rgba8U color)
     {
-        var isSuccess = SDL_SetRenderDrawColor(_handle, color.R, color.G, color.B, color.A);
+        var isSuccess = SDL_SetRenderDrawColor(HandleTyped, color.R, color.G, color.B, color.A);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_SetRenderDrawColor), isExceptionThrown: true);
@@ -366,7 +360,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     private Rectangle GetViewport()
     {
         SDL_Rect rect;
-        var isSuccess = SDL_GetRenderViewport(_handle, &rect);
+        var isSuccess = SDL_GetRenderViewport(HandleTyped, &rect);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_GetRenderViewport), isExceptionThrown: true);
@@ -381,7 +375,7 @@ public sealed unsafe class Renderer2D : NativeHandle
         fixed (Rectangle* rectanglePointer = &rectangle)
         {
             var pointer = (SDL_Rect*)rectanglePointer;
-            var isSuccess = SDL_SetRenderViewport(_handle, pointer);
+            var isSuccess = SDL_SetRenderViewport(HandleTyped, pointer);
             if (!isSuccess)
             {
                 Error.NativeFunctionFailed(nameof(SDL_SetRenderViewport), isExceptionThrown: true);
@@ -392,7 +386,7 @@ public sealed unsafe class Renderer2D : NativeHandle
     private VSyncMode GetVSyncMode()
     {
         int vsync;
-        var isSuccess = SDL_GetRenderVSync(_handle, &vsync);
+        var isSuccess = SDL_GetRenderVSync(HandleTyped, &vsync);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_GetRenderVSync));
@@ -425,7 +419,7 @@ public sealed unsafe class Renderer2D : NativeHandle
             _ => 0
         };
 
-        var isSuccess = SDL_SetRenderVSync(_handle, vsync);
+        var isSuccess = SDL_SetRenderVSync(HandleTyped, vsync);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_SetRenderVSync));

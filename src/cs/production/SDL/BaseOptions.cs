@@ -6,13 +6,13 @@ using System.ComponentModel;
 namespace bottlenoselabs.SDL;
 
 /// <summary>
-///     Parameters for creating some object.
+///     Parameters for creating an object.
 /// </summary>
 [PublicAPI]
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract class BaseOptions : Disposable
 {
-    private readonly INativeAllocator? _ownedAllocator;
+    private INativeAllocator? _ownedAllocator;
 
     /// <summary>
     ///     Gets the allocator used for temporary interoperability allocations.
@@ -47,9 +47,9 @@ public abstract class BaseOptions : Disposable
     /// </summary>
     public void Reset()
     {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         OnReset();
-        var allocator = Allocator as ArenaNativeAllocator; // FIXME: Expand `INativeAllocator` to have `Reset` method.
-        allocator?.Reset();
+        Allocator.Reset();
     }
 
     /// <summary>
@@ -63,5 +63,6 @@ public abstract class BaseOptions : Disposable
         Reset();
         var allocatorDisposable = _ownedAllocator as IDisposable;
         allocatorDisposable?.Dispose();
+        _ownedAllocator = null;
     }
 }

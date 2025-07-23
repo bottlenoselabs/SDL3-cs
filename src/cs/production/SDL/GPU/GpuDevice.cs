@@ -9,7 +9,7 @@ namespace bottlenoselabs.SDL.GPU;
 ///     Represents a context for rendering 3D graphics and running computations.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class GpuDevice : NativeHandle
+public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
 {
     internal readonly Pool<GpuRenderPass> PoolRenderPass;
     internal readonly ArenaNativeAllocator Allocator;
@@ -35,7 +35,6 @@ public sealed unsafe class GpuDevice : NativeHandle
     public GpuTextureFormat SupportedDepthStencilTargetFormat { get; }
 
     internal GpuDevice(ILogger<GpuDevice> logger, GpuDeviceOptions? options)
-        : base(IntPtr.Zero)
     {
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
@@ -122,7 +121,8 @@ public sealed unsafe class GpuDevice : NativeHandle
             SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_METALLIB_BOOLEAN, true);
         }
 
-        Handle = (IntPtr)SDL_CreateGPUDeviceWithProperties(properties);
+        HandleTyped = SDL_CreateGPUDeviceWithProperties(properties);
+        Handle = (IntPtr)HandleTyped;
         SDL_DestroyProperties(properties);
         Allocator.Reset();
 
@@ -131,7 +131,7 @@ public sealed unsafe class GpuDevice : NativeHandle
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUDeviceWithProperties), isExceptionThrown: true);
         }
 
-        var driverNameCActual = SDL_GetGPUDeviceDriver((SDL_GPUDevice*)Handle);
+        var driverNameCActual = SDL_GetGPUDeviceDriver(HandleTyped);
         if (driverNameCActual.IsNull)
         {
             Error.NativeFunctionFailed(nameof(SDL_GetGPUDeviceDriver), true);
@@ -149,10 +149,10 @@ public sealed unsafe class GpuDevice : NativeHandle
         _poolCommandBuffer = new Pool<GpuCommandBuffer>(_logger, () => new GpuCommandBuffer(this), "GpuCommandBuffers");
         PoolRenderPass = new Pool<GpuRenderPass>(_logger, () => new GpuRenderPass(this), "GpuRenderPasses");
 
-        SupportedShaderFormats = (GpuShaderFormats)(uint)SDL_GetGPUShaderFormats((SDL_GPUDevice*)Handle);
+        SupportedShaderFormats = (GpuShaderFormats)(uint)SDL_GetGPUShaderFormats(HandleTyped);
 
         if (SDL_GPUTextureSupportsFormat(
-                (SDL_GPUDevice*)Handle,
+                HandleTyped,
                 SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
                 SDL_GPUTextureType.SDL_GPU_TEXTURETYPE_2D,
                 SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET))
@@ -160,7 +160,7 @@ public sealed unsafe class GpuDevice : NativeHandle
             SupportedDepthStencilTargetFormat = (GpuTextureFormat)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT;
         }
         else if (SDL_GPUTextureSupportsFormat(
-                     (SDL_GPUDevice*)Handle,
+                     HandleTyped,
                      SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
                      SDL_GPUTextureType.SDL_GPU_TEXTURETYPE_2D,
                      SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET))
@@ -186,7 +186,7 @@ public sealed unsafe class GpuDevice : NativeHandle
             return false;
         }
 
-        var isSuccess = SDL_ClaimWindowForGPUDevice((SDL_GPUDevice*)Handle, (SDL_Window*)window.Handle);
+        var isSuccess = SDL_ClaimWindowForGPUDevice(HandleTyped, (SDL_Window*)window.Handle);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_ClaimWindowForGPUDevice));
@@ -234,7 +234,7 @@ public sealed unsafe class GpuDevice : NativeHandle
     /// <returns>A pooled <see cref="GpuCommandBuffer" /> instance.</returns>
     public GpuCommandBuffer GetCommandBuffer()
     {
-        var handle = SDL_AcquireGPUCommandBuffer((SDL_GPUDevice*)Handle);
+        var handle = SDL_AcquireGPUCommandBuffer(HandleTyped);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_AcquireGPUCommandBuffer), isExceptionThrown: true);
@@ -265,7 +265,7 @@ public sealed unsafe class GpuDevice : NativeHandle
         info.num_storage_buffers = (uint)Math.Max(options.StorageBufferCount, 0);
         info.num_storage_textures = (uint)Math.Max(options.StorageTextureCount, 0);
 
-        var handle = SDL_CreateGPUShader((SDL_GPUDevice*)Handle, &info);
+        var handle = SDL_CreateGPUShader(HandleTyped, &info);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUShader));
@@ -430,8 +430,7 @@ public sealed unsafe class GpuDevice : NativeHandle
             targetInfo.has_depth_stencil_target = options.IsEnabledDepthStencilRenderTarget;
         }
 
-        var handle = SDL_CreateGPUGraphicsPipeline(
-            (SDL_GPUDevice*)Handle, &info);
+        var handle = SDL_CreateGPUGraphicsPipeline(HandleTyped, &info);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUShader));
@@ -461,7 +460,7 @@ public sealed unsafe class GpuDevice : NativeHandle
         var bufferCreateInfo = default(SDL_GPUBufferCreateInfo);
         bufferCreateInfo.usage = SDL_GPU_BUFFERUSAGE_VERTEX;
         bufferCreateInfo.size = (uint)(sizeof(TElement) * elementCount);
-        var handle = SDL_CreateGPUBuffer((SDL_GPUDevice*)Handle, &bufferCreateInfo);
+        var handle = SDL_CreateGPUBuffer(HandleTyped, &bufferCreateInfo);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUBuffer));
@@ -476,7 +475,7 @@ public sealed unsafe class GpuDevice : NativeHandle
             var allocator = Allocator;
             allocator.Reset();
             var nameCString = allocator.AllocateCString(name);
-            SDL_SetGPUBufferName((SDL_GPUDevice*)Handle, handle, nameCString);
+            SDL_SetGPUBufferName(HandleTyped, handle, nameCString);
             allocator.Reset();
         }
 
@@ -499,7 +498,7 @@ public sealed unsafe class GpuDevice : NativeHandle
         transferBufferCreateInfo.usage = SDL_GPUTransferBufferUsage.SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
         transferBufferCreateInfo.size = (uint)size;
         var handle = SDL_CreateGPUTransferBuffer(
-            (SDL_GPUDevice*)Handle, &transferBufferCreateInfo);
+            HandleTyped, &transferBufferCreateInfo);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUTransferBuffer));
@@ -543,7 +542,7 @@ public sealed unsafe class GpuDevice : NativeHandle
             _ => throw new ArgumentException("Sample count must be 1, 2, 4, or 8.")
         };
 
-        var handle = SDL_CreateGPUTexture((SDL_GPUDevice*)Handle, &textureCreateInfo);
+        var handle = SDL_CreateGPUTexture(HandleTyped, &textureCreateInfo);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUTexture));
@@ -564,7 +563,7 @@ public sealed unsafe class GpuDevice : NativeHandle
             options.Usage);
 
         var nameCString = options.Allocator.AllocateCString(options.Name);
-        SDL_SetGPUTextureName((SDL_GPUDevice*)Handle, handle, nameCString);
+        SDL_SetGPUTextureName(HandleTyped, handle, nameCString);
 
         return true;
     }
@@ -594,7 +593,7 @@ public sealed unsafe class GpuDevice : NativeHandle
         samplerCreateInfo.enable_anisotropy = options.IsEnabledAnisotropy;
         samplerCreateInfo.enable_compare = options.IsEnabledDepthCompare;
 
-        var handle = SDL_CreateGPUSampler((SDL_GPUDevice*)Handle, &samplerCreateInfo);
+        var handle = SDL_CreateGPUSampler(HandleTyped, &samplerCreateInfo);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUSampler));
@@ -628,7 +627,7 @@ public sealed unsafe class GpuDevice : NativeHandle
         PoolRenderPass.Dispose();
         _poolCommandBuffer.Dispose();
 
-        SDL_DestroyGPUDevice((SDL_GPUDevice*)Handle);
+        SDL_DestroyGPUDevice(HandleTyped);
 
         base.Dispose(isDisposing);
 
