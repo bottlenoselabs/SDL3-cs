@@ -1,8 +1,9 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using bottlenoselabs.SDL.Disk;
 using bottlenoselabs.SDL.GPU;
-using bottlenoselabs.SDL.IO;
+using bottlenoselabs.SDL.Input;
 
 namespace bottlenoselabs.SDL;
 
@@ -27,7 +28,7 @@ public abstract unsafe partial class Application : Disposable
     public Platform Platform { get; internal set; }
 
     /// <summary>
-    ///     Gets the <see cref="bottlenoselabs.SDL.IO.FileSystem" /> of the application.
+    ///     Gets the <see cref="Disk.FileSystem" /> of the application.
     /// </summary>
     public FileSystem FileSystem { get; }
 
