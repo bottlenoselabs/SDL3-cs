@@ -2,7 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
 using bottlenoselabs.SDL;
-using bottlenoselabs.SDL.IO;
+using bottlenoselabs.SDL.Disk;
+using bottlenoselabs.SDL.Input;
 
 namespace Common;
 
@@ -45,7 +46,21 @@ public abstract class ExampleBase
 
     public abstract void OnExit();
 
-    public abstract void OnKeyboardEvent(in SDL_KeyboardEvent e);
+    public virtual void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    {
+    }
+
+    public virtual void OnMouseMove(in MouseMoveEvent e)
+    {
+    }
+
+    public virtual void OnMouseDown(in MouseButtonEvent e)
+    {
+    }
+
+    public virtual void OnMouseUp(in MouseButtonEvent e)
+    {
+    }
 
     public abstract void OnUpdate(TimeSpan deltaTime);
 

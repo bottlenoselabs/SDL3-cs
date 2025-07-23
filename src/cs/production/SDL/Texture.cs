@@ -7,12 +7,8 @@ namespace bottlenoselabs.SDL;
 ///     TODO.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class Texture : NativeHandle
+public sealed unsafe class Texture : NativeHandleTyped<SDL_Texture>
 {
-    // ReSharper disable once InconsistentNaming
-    // ReSharper disable once MemberCanBePrivate.Global
-    internal SDL_Texture* _handle;
-
     /// <summary>
     ///     Gets the width of the texture.
     /// </summary>
@@ -50,28 +46,19 @@ public sealed unsafe class Texture : NativeHandle
         set => SetBlendMode(value);
     }
 
-    internal Texture(IntPtr handle)
+    internal Texture(SDL_Texture* handle)
         : base(handle)
     {
-        _handle = (SDL_Texture*)Handle;
-
         float width;
         float height;
-        var isSuccess = SDL_GetTextureSize(_handle, &width, &height);
+        var isSuccess = SDL_GetTextureSize(HandleTyped, &width, &height);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureSize));
+            Error.NativeFunctionFailed(nameof(SDL_GetTextureSize));
         }
 
         Width = width;
         Height = height;
-    }
-
-    /// <inheritdoc />
-    protected override void Dispose(bool isDisposing)
-    {
-        _handle = null;
-        base.Dispose(isDisposing);
     }
 
     private Rgb8U GetColor()
@@ -80,10 +67,10 @@ public sealed unsafe class Texture : NativeHandle
         byte g;
         byte b;
 
-        var isSuccess = SDL_GetTextureColorMod(_handle, &r, &g, &b);
+        var isSuccess = SDL_GetTextureColorMod(HandleTyped, &r, &g, &b);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureColorMod), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_GetTextureColorMod), isExceptionThrown: true);
         }
 
         var color = new Rgb8U(r, g, b);
@@ -92,10 +79,10 @@ public sealed unsafe class Texture : NativeHandle
 
     private void SetColor(in Rgb8U color)
     {
-        var isSuccess = SDL_SetTextureColorMod(_handle, color.R, color.G, color.B);
+        var isSuccess = SDL_SetTextureColorMod(HandleTyped, color.R, color.G, color.B);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetTextureColorMod), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_SetTextureColorMod), isExceptionThrown: true);
         }
     }
 
@@ -103,10 +90,10 @@ public sealed unsafe class Texture : NativeHandle
     {
         byte a;
 
-        var isSuccess = SDL_GetTextureAlphaMod(_handle, &a);
+        var isSuccess = SDL_GetTextureAlphaMod(HandleTyped, &a);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureAlphaMod), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_GetTextureAlphaMod), isExceptionThrown: true);
         }
 
         return a;
@@ -114,10 +101,10 @@ public sealed unsafe class Texture : NativeHandle
 
     private void SetAlpha(in byte value)
     {
-        var isSuccess = SDL_SetTextureAlphaMod(_handle, value);
+        var isSuccess = SDL_SetTextureAlphaMod(HandleTyped, value);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetTextureAlphaMod), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_SetTextureAlphaMod), isExceptionThrown: true);
         }
     }
 
@@ -126,10 +113,10 @@ public sealed unsafe class Texture : NativeHandle
         BlendMode blendMode;
 
         var pointer = (SDL_BlendMode*)&blendMode;
-        var isSuccess = SDL_GetTextureBlendMode(_handle, pointer);
+        var isSuccess = SDL_GetTextureBlendMode(HandleTyped, pointer);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_GetTextureBlendMode), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_GetTextureBlendMode), isExceptionThrown: true);
         }
 
         return blendMode;
@@ -138,10 +125,10 @@ public sealed unsafe class Texture : NativeHandle
     private void SetBlendMode(BlendMode blendMode)
     {
         var pointer = (SDL_BlendMode*)&blendMode;
-        var isSuccess = SDL_SetTextureBlendMode(_handle, *pointer);
+        var isSuccess = SDL_SetTextureBlendMode(HandleTyped, *pointer);
         if (!isSuccess)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_SetTextureBlendMode), isExceptionThrown: true);
+            Error.NativeFunctionFailed(nameof(SDL_SetTextureBlendMode), isExceptionThrown: true);
         }
     }
 }

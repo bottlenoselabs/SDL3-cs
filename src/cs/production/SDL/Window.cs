@@ -9,7 +9,7 @@ namespace bottlenoselabs.SDL;
 ///     Represents a desktop operating system window using SDL.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class Window : NativeHandle
+public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
 {
     private string _title = string.Empty;
 
@@ -55,7 +55,6 @@ public sealed unsafe class Window : NativeHandle
     public GpuSwapchain? Swapchain { get; internal set; }
 
     internal Window(WindowOptions options)
-        : base(IntPtr.Zero)
     {
         var flags = default(SDL_WindowFlags);
 
@@ -69,16 +68,25 @@ public sealed unsafe class Window : NativeHandle
             flags |= SDL_WINDOW_MAXIMIZED;
         }
 
-        Handle = (IntPtr)SDL_CreateWindow(
+        HandleTyped = SDL_CreateWindow(
             options.TitleCString,
             options.Width,
             options.Height,
             flags);
+        Handle = (IntPtr)HandleTyped;
 
         if (Handle == IntPtr.Zero)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
         }
+
+        var windowId = SDL_GetWindowID(HandleTyped);
+        if (windowId == 0)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowID), isExceptionThrown: true);
+        }
+
+        Application.WindowsById[windowId] = this;
 
         if (options is { IsEnabledCreateSurface: true, IsEnabledCreateRenderer: true })
         {
@@ -88,32 +96,32 @@ public sealed unsafe class Window : NativeHandle
 
         if (options.IsEnabledCreateSurface)
         {
-            var surfaceHandle = SDL_GetWindowSurface((SDL_Window*)Handle);
+            var surfaceHandle = SDL_GetWindowSurface(HandleTyped);
             if (surfaceHandle == null)
             {
                 Error.NativeFunctionFailed(nameof(SDL_GetWindowSurface), isExceptionThrown: true);
             }
             else
             {
-                Surface = new Surface((IntPtr)surfaceHandle);
+                Surface = new Surface(surfaceHandle);
             }
         }
 
         if (options.IsEnabledCreateRenderer)
         {
-            var rendererHandle = SDL_CreateRenderer((SDL_Window*)Handle, null);
+            var rendererHandle = SDL_CreateRenderer(HandleTyped, null);
             if (rendererHandle == null)
             {
                 Error.NativeFunctionFailed(nameof(SDL_CreateRenderer), isExceptionThrown: true);
             }
             else
             {
-                Renderer = new Renderer2D((IntPtr)rendererHandle);
+                Renderer = new Renderer2D(rendererHandle);
             }
         }
 
         int widthActual, heightActual;
-        if (!SDL_GetWindowSize((SDL_Window*)Handle, &widthActual, &heightActual))
+        if (!SDL_GetWindowSize(HandleTyped, &widthActual, &heightActual))
         {
             Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
         }
@@ -130,7 +138,7 @@ public sealed unsafe class Window : NativeHandle
     /// <returns><c>true</c> if the window's position was successfully set; otherwise, <c>false</c>.</returns>
     public bool TrySetPosition(int x, int y)
     {
-        var isSuccess = SDL_SetWindowPosition((SDL_Window*)Handle, x, y);
+        var isSuccess = SDL_SetWindowPosition(HandleTyped, x, y);
         return isSuccess;
     }
 
@@ -145,7 +153,7 @@ public sealed unsafe class Window : NativeHandle
     /// <exception cref="NativeFunctionFailedException">Native function failed.</exception>
     public void Present()
     {
-        var isSuccess = SDL_UpdateWindowSurface((SDL_Window*)Handle);
+        var isSuccess = SDL_UpdateWindowSurface(HandleTyped);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_UpdateWindowSurface));
@@ -155,6 +163,14 @@ public sealed unsafe class Window : NativeHandle
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
+        var windowId = SDL_GetWindowID(HandleTyped);
+        if (windowId == 0)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowID), isExceptionThrown: true);
+        }
+
+        Application.WindowsById.Remove(windowId);
+
         _allocator.Dispose();
 
         if (IsClaimed)
@@ -163,7 +179,7 @@ public sealed unsafe class Window : NativeHandle
             Swapchain = null;
         }
 
-        SDL_DestroyWindow((SDL_Window*)Handle);
+        SDL_DestroyWindow(HandleTyped);
         base.Dispose(isDisposing);
     }
 
@@ -171,7 +187,7 @@ public sealed unsafe class Window : NativeHandle
     {
         _allocator.Reset();
         var cString = _allocator.AllocateCString(value);
-        var isSuccess = SDL_SetWindowTitle((SDL_Window*)Handle, cString);
+        var isSuccess = SDL_SetWindowTitle(HandleTyped, cString);
         _allocator.Reset();
 
         if (isSuccess)

@@ -30,4 +30,34 @@ public record struct RectangleF
     ///     The height of the rectangle.
     /// </summary>
     public float Height;
+
+    /// <summary>
+    ///     Determines whether a specified <see cref="Vector2" /> position is inside the rectangle.
+    /// </summary>
+    /// <param name="position">The position.</param>
+    /// <returns><c>true</c> if <paramref name="position" /> is inside the rectangle; otherwise, <c>false</c>.</returns>
+    public readonly bool Contains(Vector2 position)
+    {
+        if (position.X < X)
+        {
+            return false;
+        }
+
+        if (position.X > X + Width)
+        {
+            return false;
+        }
+
+        if (position.Y < Y)
+        {
+            return false;
+        }
+
+        if (position.Y > Y + Height)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

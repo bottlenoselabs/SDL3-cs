@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace bottlenoselabs.SDL.IO;
+namespace bottlenoselabs.SDL.Disk;
 
 /// <summary>
 ///     Represents a file system using SDL.
@@ -125,7 +125,7 @@ public sealed unsafe class FileSystem : Disposable
             surfacePointer = convertedSurfacePointer;
         }
 
-        surface = new Surface((IntPtr)surfacePointer);
+        surface = new Surface(surfacePointer);
         return true;
     }
 

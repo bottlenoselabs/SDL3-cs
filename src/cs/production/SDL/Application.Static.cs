@@ -13,6 +13,8 @@ public partial class Application
     /// </summary>
     public static Application Current => _current!;
 
+    internal static Dictionary<uint, Window> WindowsById = new();
+
     internal static void Initialize(Application application)
     {
         var app = Interlocked.CompareExchange(ref _current, application, null);

@@ -1,8 +1,9 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using bottlenoselabs.SDL.Disk;
 using bottlenoselabs.SDL.GPU;
-using bottlenoselabs.SDL.IO;
+using bottlenoselabs.SDL.Input;
 
 namespace bottlenoselabs.SDL;
 
@@ -27,7 +28,7 @@ public abstract unsafe partial class Application : Disposable
     public Platform Platform { get; internal set; }
 
     /// <summary>
-    ///     Gets the <see cref="bottlenoselabs.SDL.IO.FileSystem" /> of the application.
+    ///     Gets the <see cref="Disk.FileSystem" /> of the application.
     /// </summary>
     public FileSystem FileSystem { get; }
 
@@ -152,6 +153,24 @@ public abstract unsafe partial class Application : Disposable
     protected abstract void OnEvent(in SDL_Event e);
 
     /// <summary>
+    ///     Called when the mouse moves.
+    /// </summary>
+    /// <param name="e">The event.</param>
+    protected abstract void OnMouseMove(in MouseMoveEvent e);
+
+    /// <summary>
+    ///     Called when a mouse button is pressed down.
+    /// </summary>
+    /// <param name="e">The event.</param>
+    protected abstract void OnMouseDown(in MouseButtonEvent e);
+
+    /// <summary>
+    ///     Called when a mouse button is released.
+    /// </summary>
+    /// <param name="e">The event.</param>
+    protected abstract void OnMouseUp(in MouseButtonEvent e);
+
+    /// <summary>
     ///     Called when the application determines it is time to update a frame. This is where your application would
     ///     update its state.
     /// </summary>
@@ -194,7 +213,7 @@ public abstract unsafe partial class Application : Disposable
         SDL_Event e;
         while (SDL_PollEvent(&e))
         {
-            ProcessEvent(e);
+            HandleEvent(e);
             OnEvent(e);
         }
     }
@@ -226,7 +245,7 @@ public abstract unsafe partial class Application : Disposable
         }
     }
 
-    private void ProcessEvent(in SDL_Event e)
+    private void HandleEvent(in SDL_Event e)
     {
         var eventType = (SDL_EventType)e.type;
         switch (eventType)
@@ -248,6 +267,81 @@ public abstract unsafe partial class Application : Disposable
                 Interlocked.Exchange(ref _isInBackground, false);
                 break;
             }
+
+            case SDL_EventType.SDL_EVENT_MOUSE_MOTION:
+            {
+                HandleMouseMotionEvent(e.motion);
+                break;
+            }
+
+            case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
+            case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
+            {
+                HandleMouseButtonEvent(e.button);
+                break;
+            }
+        }
+    }
+
+    private void HandleMouseMotionEvent(in SDL_MouseMotionEvent mouseMotionEvent)
+    {
+        if (!WindowsById.TryGetValue(mouseMotionEvent.windowID, out var window))
+        {
+            // NOTE: Window must be created outside of managed C# code.
+            window = null!;
+        }
+
+        var position = new Vector2(mouseMotionEvent.x, mouseMotionEvent.y);
+        var e = new MouseMoveEvent(window, position);
+
+        OnMouseMove(e);
+    }
+
+    private void HandleMouseButtonEvent(in SDL_MouseButtonEvent mouseButtonEvent)
+    {
+        var mouseButton = MouseButton.None;
+        if (mouseButtonEvent.button == SDL_BUTTON_LEFT)
+        {
+            mouseButton = MouseButton.Left;
+        }
+        else if (mouseButtonEvent.button == SDL_BUTTON_MIDDLE)
+        {
+            mouseButton = MouseButton.Middle;
+        }
+        else if (mouseButtonEvent.button == SDL_BUTTON_RIGHT)
+        {
+            mouseButton = MouseButton.Right;
+        }
+        else if (mouseButtonEvent.button == SDL_BUTTON_X1)
+        {
+            mouseButton = MouseButton.X1;
+        }
+        else if (mouseButtonEvent.button == SDL_BUTTON_X2)
+        {
+            mouseButton = MouseButton.X2;
+        }
+
+        var isDown = mouseButtonEvent.down;
+        if (!WindowsById.TryGetValue(mouseButtonEvent.windowID, out var window))
+        {
+            // NOTE: Window must be created outside of managed C# code.
+            window = null!;
+        }
+
+        var e = new MouseButtonEvent(
+            window,
+            mouseButton,
+            isDown,
+            mouseButtonEvent.clicks,
+            new Vector2(mouseButtonEvent.x, mouseButtonEvent.y));
+
+        if (isDown)
+        {
+            OnMouseDown(e);
+        }
+        else
+        {
+            OnMouseUp(e);
         }
     }
 
