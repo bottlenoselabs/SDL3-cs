@@ -2,7 +2,8 @@
 # https://google.github.io/styleguide/shellguide.html
 # https://github.com/koalaman/shellcheck
 
-source ./build-native-library-SDL.sh $1 $2
+DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+source $DIRECTORY/build-native-library-SDL.sh $1 $2
 
 function build_library_SDL_ttf() {
     local DIRECTORY_SOURCE="$DIRECTORY/SDL_ttf"
