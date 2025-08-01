@@ -211,8 +211,6 @@ function build_library_cmake() {
 function move_library_files() {
     echo "Moving library files..."
 
-    ls "$DIRECTORY_OUTPUT/**/*"
-
     case $RID in
         win*)
             local DIRECTORY_COPY_SOURCE="$DIRECTORY_OUTPUT/bin"
@@ -222,7 +220,7 @@ function move_library_files() {
             ;;
     esac
 
-    find "$DIRECTORY_COPY_SOURCE" -type f \( -name "*.dll" -o -name "*.dylib" -o -name "*.so" \) | while read -r FILE_PATH; do
+    find "$DIRECTORY_COPY_SOURCE" -type f \( -name "*.dll" -o -name "*.dylib" -o -name "*.so*" \) | while read -r FILE_PATH; do
         local RELATIVE_PATH="${FILE_PATH#"$DIRECTORY_COPY_SOURCE"/}"
         local TARGET_FILE_PATH="$DIRECTORY_COPY_DESTINATION/$RELATIVE_PATH"
         mkdir -p "$(dirname "$TARGET_FILE_PATH")"
@@ -230,7 +228,7 @@ function move_library_files() {
         mv -f -v "$FILE_PATH" "$TARGET_FILE_PATH"
     done
 
-    find "$DIRECTORY_COPY_SOURCE" -type l \( -name "*.dll" -o -name "*.dylib" -o -name "*.so" \) | while read -r FILE_PATH; do
+    find "$DIRECTORY_COPY_SOURCE" -type l \( -name "*.dll" -o -name "*.dylib" -o -name "*.so*" \) | while read -r FILE_PATH; do
         local RELATIVE_PATH="${FILE_PATH#"$DIRECTORY_COPY_SOURCE"/}"
         local TARGET_FILE_PATH="$DIRECTORY_COPY_DESTINATION/$RELATIVE_PATH"
         mkdir -p "$(dirname "$TARGET_FILE_PATH")"
