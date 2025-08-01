@@ -52,7 +52,7 @@ function get_dotnet_rid() {
     if [[ -n $1 ]]; then
         if [[ $1 == 'win-x64' || $1 == 'win-arm64' ]]; then
             if [[ $RID == 'win-x64' || $RID == 'win-arm64' ]]; then
-                RID="$DESIRED_RID"
+                RID="$1"
             else
                 echo "RID '$1' is not known or can not be be used when building native libraries for Windows. Please use one of the following for Windows: 'win-x64', 'win-arm64'" >&2
                 exit 1
