@@ -92,13 +92,6 @@ function initialize() {
     DIRECTORY_CONTAINER_BUILDS="$DIRECTORY_CONTAINER/builds"
     mkdir -p "$DIRECTORY_CONTAINER_BUILDS"
 
-    # Directories to place built artifacts
-    DIRECTORY_OUTPUT="$DIRECTORY_CONTAINER/out/$RID-$BUILD_TYPE"
-    if [[ -d "$DIRECTORY_OUTPUT" ]]; then
-        rm -r "$DIRECTORY_OUTPUT"
-        mkdir "$DIRECTORY_OUTPUT"
-    fi
-
     if [[ -z $BUILD_TYPE ]]; then
         BUILD_TYPE=$(get_build_type "$1")
         echo "BUILD_TYPE=$BUILD_TYPE"
@@ -112,6 +105,13 @@ function initialize() {
     # Directory to place copied artifacts
     DIRECTORY_COPY_DESTINATION="$DIRECTORY/../lib/$RID"
     mkdir -p "$DIRECTORY_COPY_DESTINATION"
+
+    # Directories to place built artifacts
+    DIRECTORY_OUTPUT="$DIRECTORY_CONTAINER/out/$RID-$BUILD_TYPE"
+    if [[ -d "$DIRECTORY_OUTPUT" ]]; then
+        rm -r "$DIRECTORY_OUTPUT"
+        mkdir "$DIRECTORY_OUTPUT"
+    fi
 }
 
 function build_library_cmake() {
