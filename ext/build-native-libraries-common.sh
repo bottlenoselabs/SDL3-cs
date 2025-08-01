@@ -211,6 +211,8 @@ function build_library_cmake() {
 function move_library_files() {
     echo "Moving library files..."
 
+    ls "$DIRECTORY_OUTPUT/**/*"
+
     case $RID in
         win*)
             local DIRECTORY_COPY_SOURCE="$DIRECTORY_OUTPUT/bin"
