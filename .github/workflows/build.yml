@@ -41,21 +41,21 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "./lib/${{ matrix.platform.rid }}/*SDL3.*"
-          key: "native-libraries_${{ matrix.platform.rid }}_${{ hashFiles('ext/SDL/**/*') }}"
+          key: "native-libraries_${{ matrix.platform.rid }}_SDL3_${{ hashFiles('ext/SDL/**/*') }}"
 
       - name: "Cache: SDL_image"
         id: cache-libs-SDL_image
         uses: actions/cache@v4
         with:
           path: "./lib/${{ matrix.platform.rid }}/*SDL3_image.*"
-          key: "native-libraries_${{ matrix.platform.rid }}_${{ hashFiles('ext/SDL_image/**/*') }}"
+          key: "native-libraries_${{ matrix.platform.rid }}_SDL3_image_${{ hashFiles('ext/SDL_image/**/*') }}"
 
       - name: "Cache: SDL_ttf"
         id: cache-libs-SDL_ttf
         uses: actions/cache@v4
         with:
           path: "./lib/${{ matrix.platform.rid }}/*SDL3_ttf.*"
-          key: "native-libraries_${{ matrix.platform.rid }}_${{ hashFiles('ext/SDL_ttf/**/*') }}"
+          key: "native-libraries_${{ matrix.platform.rid }}_SDL3_ttf_${{ hashFiles('ext/SDL_ttf/**/*') }}"
 
       # https://wiki.libsdl.org/SDL3/README/linux#build-dependencies
       - name: "Install dependencies: linux-x64"
