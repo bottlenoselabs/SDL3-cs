@@ -66,10 +66,9 @@ jobs:
         if: matrix.platform.rid == 'osx-x64' && (steps.cache-libs-SDL.outputs.cache-hit != 'true' || steps.cache-libs-SDL_image.outputs.cache-hit != 'true' || steps.cache-libs-SDL_ttf.outputs.cache-hit != 'true')
         run: brew install nasm
 
-      # Disabled building for `linux-arm64` until GitHub Actions runner images are generally available. See: https://github.com/orgs/community/discussions/19197
-      # - name: "Build native library: linux-arm64 dependencies"
-      #   if: matrix.platform.rid == 'linux-arm64' && steps.cache-libs.outputs.cache-hit != 'true'
-      #   run: sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+      - name: "Install dependencies: linux-arm64"
+        if: matrix.platform.rid == 'linux-arm64' && (steps.cache-libs-SDL.outputs.cache-hit != 'true' || steps.cache-libs-SDL_image.outputs.cache-hit != 'true' || steps.cache-libs-SDL_ttf.outputs.cache-hit != 'true')
+        run: sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 
       - name: "Build: SDL"
         if: steps.cache-libs-SDL.outputs.cache-hit != 'true'
@@ -132,12 +131,11 @@ jobs:
           name: "native-libraries-linux-x64"
           path: "./lib/linux-x64"
 
-      # Disabled building for `linux-arm64` until GitHub Actions runner images are generally available. See: https://github.com/orgs/community/discussions/19197
-      # - name: "Download native library (linux-arm64)"
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: "native-library-SDL3-linux-arm64"
-      #     path: "./lib"
+      - name: "Download native library (linux-arm64)"
+        uses: actions/download-artifact@v4
+        with:
+          name: "native-library-SDL3-linux-arm64"
+          path: "./lib"
 
       - name: "Download generated C# code: SDL"
         uses: actions/download-artifact@v4
