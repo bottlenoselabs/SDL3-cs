@@ -29,6 +29,10 @@ function cleanup_library_files_SDL_image() {
         mv libSDL3_image.*.*.*.dylib libSDL3_image.dylib
         install_name_tool -id @rpath/libSDL3_image.dylib libSDL3_image.dylib
         install_name_tool -change @rpath/libSDL3.0.dylib @rpath/libSDL3.dylib libSDL3_image.dylib
+    elif [[ $RID == 'linux-x64' || $RID == 'linux-arm64' ]]; then
+        rm libSDL3_image.so
+        rm libSDL3_image.so.0
+        mv libSDL3_image.so.*.*.* libSDL3_image.so
     fi
     cd "$DIRECTORY" || return
 }

@@ -28,6 +28,10 @@ function cleanup_library_files_SDL_ttf() {
         mv libSDL3_ttf.*.*.*.dylib libSDL3_ttf.dylib
         install_name_tool -id @rpath/libSDL3_ttf.dylib libSDL3_ttf.dylib
         install_name_tool -change @rpath/libSDL3.0.dylib @rpath/libSDL3.dylib libSDL3_ttf.dylib
+    elif [[ $RID == 'linux-x64' || $RID == 'linux-arm64' ]]; then
+        rm libSDL3_ttf.so
+        rm libSDL3_ttf.so.0
+        mv libSDL3_ttf.so.*.*.* libSDL3_ttf.so
     fi
     cd "$DIRECTORY" || return
 }
