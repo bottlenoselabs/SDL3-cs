@@ -77,6 +77,7 @@ function get_dotnet_rid() {
         fi
     fi
     echo "$RID"
+    return 0
 }
 
 function initialize() {
@@ -238,4 +239,4 @@ function move_library_files() {
     echo "Moving library files... done"
 }
 
-initialize
+initialize $1 $2
