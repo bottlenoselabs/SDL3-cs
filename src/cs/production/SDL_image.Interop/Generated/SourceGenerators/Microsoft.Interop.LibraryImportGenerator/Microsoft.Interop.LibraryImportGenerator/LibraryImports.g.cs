@@ -467,6 +467,38 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL_image
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveTGA", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveTGA(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::Interop.Runtime.CString file);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveTGA_IO", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveTGA_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveWEBP", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveWEBP(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::Interop.Runtime.CString file, float quality);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveWEBP_IO", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveWEBP_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst, global::Interop.Runtime.CBool closeio, float quality);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_Version", ExactSpelling = true)]
         public static extern partial int IMG_Version();
     }
