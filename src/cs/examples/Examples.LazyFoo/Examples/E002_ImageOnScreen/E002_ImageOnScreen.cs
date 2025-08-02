@@ -37,10 +37,6 @@ public sealed class E002_ImageOnScreen : ExampleLazyFoo
         _imageSurface = null;
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

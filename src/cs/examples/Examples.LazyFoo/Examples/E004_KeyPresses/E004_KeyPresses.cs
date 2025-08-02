@@ -34,21 +34,18 @@ public sealed class E004_KeyPresses : ExampleLazyFoo
         }
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        if (e.down)
+        var keyPressSurface = e.Key switch
         {
-            var keyPressSurface = e.scancode switch
-            {
-                SDL_Scancode.SDL_SCANCODE_UP => KeyPressSurfaceIndex.Up,
-                SDL_Scancode.SDL_SCANCODE_DOWN => KeyPressSurfaceIndex.Down,
-                SDL_Scancode.SDL_SCANCODE_LEFT => KeyPressSurfaceIndex.Left,
-                SDL_Scancode.SDL_SCANCODE_RIGHT => KeyPressSurfaceIndex.Right,
-                _ => KeyPressSurfaceIndex.Press
-            };
+            KeyboardButton.Up => KeyPressSurfaceIndex.Up,
+            KeyboardButton.Down => KeyPressSurfaceIndex.Down,
+            KeyboardButton.Left => KeyPressSurfaceIndex.Left,
+            KeyboardButton.Right => KeyPressSurfaceIndex.Right,
+            _ => KeyPressSurfaceIndex.Press
+        };
 
-            _currentKeyPressSurface = _keyPressSurfaces[(int)keyPressSurface];
-        }
+        _currentKeyPressSurface = _keyPressSurfaces[(int)keyPressSurface];
     }
 
     public override void OnUpdate(TimeSpan deltaTime)

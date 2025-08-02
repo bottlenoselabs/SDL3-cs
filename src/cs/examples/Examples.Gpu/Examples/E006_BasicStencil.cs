@@ -1,7 +1,7 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-using bottlenoselabs.SDL.GPU;
+using bottlenoselabs.SDL;
 
 namespace Gpu.Examples;
 
@@ -168,10 +168,6 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         _vertexBuffer?.Dispose();
 
         base.OnExit();
-    }
-
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
     }
 
     public override void OnUpdate(TimeSpan deltaTime)

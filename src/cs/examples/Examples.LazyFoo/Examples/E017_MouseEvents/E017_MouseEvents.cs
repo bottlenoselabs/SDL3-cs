@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
 using bottlenoselabs.SDL;
-using bottlenoselabs.SDL.Input;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace

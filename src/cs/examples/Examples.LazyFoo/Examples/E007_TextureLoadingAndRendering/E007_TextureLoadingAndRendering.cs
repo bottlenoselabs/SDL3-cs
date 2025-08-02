@@ -29,10 +29,6 @@ public sealed class E007_TextureLoadingAndRendering : ExampleLazyFoo
         _texture = null;
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
-    {
-    }
-
     public override void OnUpdate(TimeSpan deltaTime)
     {
     }

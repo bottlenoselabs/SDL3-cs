@@ -34,26 +34,39 @@ public sealed class E015_RotationAndFlipping : ExampleLazyFoo
     {
     }
 
-    public override void OnKeyboardEvent(in SDL_KeyboardEvent e)
+    public override void OnKeyDown(in KeyboardEvent e)
     {
-        var key = e.scancode;
-        switch (key)
+        switch (e.Key)
         {
-            case SDL_Scancode.SDL_SCANCODE_A:
+            case KeyboardButton.A:
+            {
                 _rotationAngleDegrees -= 60;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_D:
+            }
+
+            case KeyboardButton.D:
+            {
                 _rotationAngleDegrees += 60;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_Q:
+            }
+
+            case KeyboardButton.Q:
+            {
                 _flipMode = FlipMode.Horizontal;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_W:
+            }
+
+            case KeyboardButton.W:
+            {
                 _flipMode = FlipMode.None;
                 break;
-            case SDL_Scancode.SDL_SCANCODE_E:
+            }
+
+            case KeyboardButton.E:
+            {
                 _flipMode = FlipMode.Vertical;
                 break;
+            }
         }
     }
 
