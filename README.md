@@ -85,23 +85,32 @@ To learn how to use `SDL` in C, check out the [official documentation](https://w
 
 ### Dependencies
 
-Dependencies can be found under the `./ext/` folder and recursive folders. All dependencies are compatible with the MIT License (`MIT`).
+All dependencies are compatible with the MIT License (`MIT`).
 
-|Name|License|Link|
+#### SDL libraries
+
+SDL libraries are the main dependencies which can be found under the `./ext/` folder. These main dependencies are the ones that your C# application at runtime would use and be distributed with.
+
+|SDL Library|License|Link|
 |-|-|-|
 |`SDL`|zlib License|https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt|
 |`SDL_image`|zlib License|https://github.com/libsdl-org/SDL_image/blob/main/LICENSE.txt|
-|`aom`|BSD 2-Clause License|https://github.com/libsdl-org/aom/blob/main/LICENSE|
-|`dav1d`|BSD 2-Clause License|https://github.com/libsdl-org/dav1d/blob/master/COPYING|
-|`jpeg`|Libjpeg License (Custom BSD-like License)|https://github.com/libsdl-org/jpeg/blob/main/README|
-|`libavif`|BSD-2-Clause License|https://github.com/libsdl-org/libavif/blob/main/LICENSE|
-|`libjxl`|BSD 3-Clause License|https://github.com/libsdl-org/libjxl/blob/main/LICENSE|
-|`libpng`|PNG Reference Library V2 License|https://github.com/libsdl-org/libpng/blob/master/LICENSE|
-|`libtiff`|LibTIFF License|https://github.com/libsdl-org/libtiff/blob/master/LICENSE.md|
-|`libwebp`|BSD 3-Clause License|https://github.com/libsdl-org/libwebp/blob/main/COPYING|
-|`zlib`|zlib License|https://github.com/libsdl-org/zlib/blob/master/LICENSE|
 |`SDL_ttf`|zlib License|https://github.com/libsdl-org/SDL_ttf/blob/main/LICENSE.txt|
-|`freetype`|FreeType License|https://github.com/libsdl-org/freetype/blob/master/LICENSE.TXT & https://github.com/libsdl-org/freetype/blob/master/docs/FTL.TXT|
-|`hardbuzz`|MIT License (Expat)|https://github.com/libsdl-org/harfbuzz/blob/main/COPYING|
-|`plutosvg`|MIT License|https://github.com/libsdl-org/plutosvg/blob/master/LICENSE|
-|`plutosvg`|MIT License|https://github.com/libsdl-org/plutovg/blob/main/LICENSE|
+
+#### SDL library dependencies
+
+|SDL Library|Library Name|License|Link|
+|-|-|-|-|
+|`SDL_image`|`aom`|BSD 2-Clause License|https://github.com/libsdl-org/aom/blob/main/LICENSE|
+|`SDL_image`|`dav1d`|BSD 2-Clause License|https://github.com/libsdl-org/dav1d/blob/master/COPYING|
+|`SDL_image`|`jpeg`|Libjpeg License (Custom BSD-like License)|https://github.com/libsdl-org/jpeg/blob/main/README|
+|`SDL_image`|`libavif`|BSD-2-Clause License|https://github.com/libsdl-org/libavif/blob/main/LICENSE|
+|`SDL_image`|`libjxl`|BSD 3-Clause License|https://github.com/libsdl-org/libjxl/blob/main/LICENSE|
+|`SDL_image`|`libpng`|PNG Reference Library V2 License|https://github.com/libsdl-org/libpng/blob/master/LICENSE|
+|`SDL_image`|`libtiff`|LibTIFF License|https://github.com/libsdl-org/libtiff/blob/master/LICENSE.md|
+|`SDL_image`|`libwebp`|BSD 3-Clause License|https://github.com/libsdl-org/libwebp/blob/main/COPYING|
+|`SDL_image`|`zlib`|zlib License|https://github.com/libsdl-org/zlib/blob/master/LICENSE|
+|`SDL_ttf`|`freetype`|FreeType License|https://github.com/libsdl-org/freetype/blob/master/LICENSE.TXT & https://github.com/libsdl-org/freetype/blob/master/docs/FTL.TXT|
+|`SDL_ttf`|`hardbuzz`|MIT License (Expat)|https://github.com/libsdl-org/harfbuzz/blob/main/COPYING|
+|`SDL_ttf`|`plutosvg`|MIT License|https://github.com/libsdl-org/plutosvg/blob/master/LICENSE|
+|`SDL_ttf`|`plutovg`|MIT License|https://github.com/libsdl-org/plutovg/blob/main/LICENSE|
