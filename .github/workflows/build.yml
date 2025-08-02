@@ -56,9 +56,13 @@ jobs:
           path: "./lib/${{ matrix.platform.rid }}/*SDL3_ttf.*"
           key: "native-libraries_${{ matrix.platform.rid }}_SDL3_ttf_${{ hashFiles('ext/SDL_ttf/**/*') }}"
 
-      - name: "Install dependencies: linux"
-        if: (matrix.platform.rid == 'linux-arm64' || matrix.platform.rid == 'linux-x64') && (steps.cache-libs-SDL.outputs.cache-hit != 'true' || steps.cache-libs-SDL_image.outputs.cache-hit != 'true' || steps.cache-libs-SDL_ttf.outputs.cache-hit != 'true')
+      - name: "Install dependencies: linux-x64"
+        if: matrix.platform.rid == 'linux-x64' && (steps.cache-libs-SDL.outputs.cache-hit != 'true' || steps.cache-libs-SDL_image.outputs.cache-hit != 'true' || steps.cache-libs-SDL_ttf.outputs.cache-hit != 'true')
         run: sudo apt-get update && sudo apt-get install build-essential git make pkg-config cmake ninja-build nasm gnome-desktop-testing libasound2-dev libpulse-dev libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev fcitx-libs-dev libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
+
+      - name: "Install dependencies: linux-arm64"
+        if: matrix.platform.rid == 'linux-arm64' && (steps.cache-libs-SDL.outputs.cache-hit != 'true' || steps.cache-libs-SDL_image.outputs.cache-hit != 'true' || steps.cache-libs-SDL_ttf.outputs.cache-hit != 'true')
+        run: sudo apt-get update && sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu build-essential git make pkg-config cmake ninja-build nasm gnome-desktop-testing libasound2-dev libpulse-dev libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev fcitx-libs-dev libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
 
       - name: "Install dependencies: osx-x64"
         if: matrix.platform.rid == 'osx-x64' && (steps.cache-libs-SDL.outputs.cache-hit != 'true' || steps.cache-libs-SDL_image.outputs.cache-hit != 'true' || steps.cache-libs-SDL_ttf.outputs.cache-hit != 'true')
