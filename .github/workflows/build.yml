@@ -129,11 +129,11 @@ jobs:
           name: "native-libraries-linux-x64"
           path: "./lib/linux-x64"
 
-      - name: "Download native library (linux-arm64)"
+      - name: "Download native libraries: linux-arm64"
         uses: actions/download-artifact@v4
         with:
-          name: "native-library-SDL3-linux-arm64"
-          path: "./lib"
+          name: "native-libraries-linux-arm64"
+          path: "./lib/linux-arm64"
 
       - name: "Download generated C# code: SDL"
         uses: actions/download-artifact@v4

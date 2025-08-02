@@ -2,12 +2,16 @@
 
 Run `./build-native-libraries.sh [debug|release] [RID]` Bash script to build all the native libraries for SDL and SDL extensions.
 
-e.g. `./build-native-libraries.sh debug osx-64`.
+e.g. `./build-native-libraries.sh debug osx-x64`.
 
 ## SDL
 
-SDL3 on `main` branch. Updated using Dependabot for automatic pull requests in [`.github/dependabot.yml`](../.github/dependabot.yml). Note that Dependabot respects the branch set in [`.gitmodules`](../.gitmodules).
+Run `./build-native-library-SDL.sh [debug|release] [RID]` Bash script to build only `SDL` native library.
 
 ## SDL_image
 
-SDL3_image on `main` branch. Updated using Dependabot for automatic pull requests in [`.github/dependabot.yml`](../.github/dependabot.yml). Note that Dependabot respects the branch set in [`.gitmodules`](../.gitmodules).
+Run `./build-native-library-SDL_image.sh [debug|release] [RID]` Bash script to build only `SDL` + `SDL_image` native libraries.
+
+## SDL_tff
+
+Run `./build-native-library-SDL_tff.sh [debug|release] [RID]` Bash script to build only `SDL` + `SDL_tff` native libraries.
