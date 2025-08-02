@@ -54,21 +54,21 @@ function get_dotnet_rid() {
             if [[ $RID == 'win-x64' || $RID == 'win-arm64' ]]; then
                 RID="$1"
             else
-                echo "RID '$1' is not known or can not be be used when building native libraries for Windows. Please use one of the following for Windows: 'win-x64', 'win-arm64'" >&2
+                echo "RID '$1' is not known or can not be be used when building native libraries for Windows '$RID'. Please use one of the following for Windows: 'win-x64', 'win-arm64'" >&2
                 exit 1
             fi
         elif [[ $1 == 'osx-x64' || $1 == 'osx-arm64' ]]; then
             if [[ $RID == 'osx-x64' || $RID == 'osx-arm64' ]]; then
                 RID="$1"
             else
-                echo "RID '$1' is not known or can not be be used when building native libraries for macOS. Please use one of the following for macOS: 'osx-x64', 'osx-arm64'" >&2
+                echo "RID '$1' is not known or can not be be used when building native libraries for macOS '$RID'. Please use one of the following for macOS: 'osx-x64', 'osx-arm64'" >&2
                 exit 1
             fi
         elif [[ $1 == 'linux-x64' || $1 == 'linux-arm64' ]]; then
             if [[ $RID == 'linux-x64' || $RID == 'linux-arm64' ]]; then
                 RID="$1"
             else
-                echo "RID '$1' is not known or can not be be used when building native libraries for Linux. Please use one of the following for Linux: 'linux-x64', 'linux-arm64'" >&2
+                echo "RID '$1' is not known or can not be be used when building native libraries for Linux '$RID'. Please use one of the following for Linux: 'linux-x64', 'linux-arm64'" >&2
                 exit 1
             fi
         else
