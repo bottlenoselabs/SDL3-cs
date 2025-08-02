@@ -11,7 +11,7 @@ namespace LazyFoo.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed class E016_TrueTypeFonts : ExampleLazyFoo
 {
-    private Texture _texture = null!;
+    private Texture? _texture;
 
     public E016_TrueTypeFonts()
         : base("16 - True Type Fonts", isEnabledCreateRenderer2D: true)
@@ -28,6 +28,8 @@ public sealed class E016_TrueTypeFonts : ExampleLazyFoo
 
     public override void OnExit()
     {
+        _texture?.Dispose();
+        _texture = null;
     }
 
     public override void OnUpdate(TimeSpan deltaTime)
@@ -42,13 +44,16 @@ public sealed class E016_TrueTypeFonts : ExampleLazyFoo
         renderer.DrawColor = Rgba8U.CornflowerBlue;
         renderer.Clear();
 
-        // Render text
-        RectangleF destinationRectangle;
-        destinationRectangle.X = (renderer.Viewport.Width - _texture.Width) / 2f;
-        destinationRectangle.Y = (renderer.Viewport.Height - _texture.Height) / 2f;
-        destinationRectangle.Width = _texture.Width;
-        destinationRectangle.Height = _texture.Height;
-        renderer.RenderTexture(_texture, null, destinationRectangle);
+        if (_texture != null)
+        {
+            // Render text
+            RectangleF destinationRectangle;
+            destinationRectangle.X = (renderer.Viewport.Width - _texture.Width) / 2f;
+            destinationRectangle.Y = (renderer.Viewport.Height - _texture.Height) / 2f;
+            destinationRectangle.Width = _texture.Width;
+            destinationRectangle.Height = _texture.Height;
+            renderer.RenderTexture(_texture, null, destinationRectangle);
+        }
 
         // Update screen
         renderer.Present();

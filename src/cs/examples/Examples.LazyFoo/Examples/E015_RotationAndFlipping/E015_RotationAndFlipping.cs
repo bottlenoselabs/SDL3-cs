@@ -14,7 +14,7 @@ public sealed class E015_RotationAndFlipping : ExampleLazyFoo
     private float _rotationAngleDegrees;
     private FlipMode _flipMode;
 
-    private Texture _texture = null!;
+    private Texture? _texture;
     private int _currentSpriteSourceRectangleIndex;
 
     public E015_RotationAndFlipping()
@@ -32,6 +32,8 @@ public sealed class E015_RotationAndFlipping : ExampleLazyFoo
 
     public override void OnExit()
     {
+        _texture?.Dispose();
+        _texture = null;
     }
 
     public override void OnKeyDown(in KeyboardEvent e)
@@ -83,14 +85,17 @@ public sealed class E015_RotationAndFlipping : ExampleLazyFoo
         renderer.DrawColor = Rgba8U.CornflowerBlue;
         renderer.Clear();
 
-        // Render sprite
-        RectangleF destinationRectangle;
-        destinationRectangle.X = (renderer.Viewport.Width - _texture.Width) / 2f;
-        destinationRectangle.Y = (renderer.Viewport.Height - _texture.Height) / 2f;
-        destinationRectangle.Width = _texture.Width;
-        destinationRectangle.Height = _texture.Height;
-        renderer.RenderTextureRotated(
-            _texture, null, destinationRectangle, _rotationAngleDegrees, null, _flipMode);
+        if (_texture != null)
+        {
+            // Render sprite
+            RectangleF destinationRectangle;
+            destinationRectangle.X = (renderer.Viewport.Width - _texture.Width) / 2f;
+            destinationRectangle.Y = (renderer.Viewport.Height - _texture.Height) / 2f;
+            destinationRectangle.Width = _texture.Width;
+            destinationRectangle.Height = _texture.Height;
+            renderer.RenderTextureRotated(
+                _texture, null, destinationRectangle, _rotationAngleDegrees, null, _flipMode);
+        }
 
         // Update screen
         renderer.Present();
