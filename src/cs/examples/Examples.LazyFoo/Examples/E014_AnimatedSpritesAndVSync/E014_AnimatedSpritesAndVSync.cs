@@ -18,7 +18,7 @@ public sealed class E014_AnimatedSpritesAndVSync : ExampleLazyFoo
         new() { X = 192, Y = 0, Width = 64, Height = 205}
     ];
 
-    private Texture _texture = null!;
+    private Texture? _texture;
     private int _currentSpriteSourceRectangleIndex;
     private TimeSpan _animationTimer;
 
@@ -37,6 +37,8 @@ public sealed class E014_AnimatedSpritesAndVSync : ExampleLazyFoo
 
     public override void OnExit()
     {
+        _texture?.Dispose();
+        _texture = null;
     }
 
     public override void OnUpdate(TimeSpan deltaTime)
@@ -57,14 +59,17 @@ public sealed class E014_AnimatedSpritesAndVSync : ExampleLazyFoo
         renderer.DrawColor = Rgba8U.CornflowerBlue;
         renderer.Clear();
 
-        // Render animated sprite
-        var spriteSourceRectangle = _spriteSourceRectangles[_currentSpriteSourceRectangleIndex];
-        RectangleF destinationRectangle;
-        destinationRectangle.X = (renderer.Viewport.Width - spriteSourceRectangle.Width) / 2f;
-        destinationRectangle.Y = (renderer.Viewport.Height - spriteSourceRectangle.Height) / 2f;
-        destinationRectangle.Width = spriteSourceRectangle.Width;
-        destinationRectangle.Height = spriteSourceRectangle.Height;
-        renderer.RenderTexture(_texture, spriteSourceRectangle, destinationRectangle);
+        if (_texture != null)
+        {
+            // Render animated sprite
+            var spriteSourceRectangle = _spriteSourceRectangles[_currentSpriteSourceRectangleIndex];
+            RectangleF destinationRectangle;
+            destinationRectangle.X = (renderer.Viewport.Width - spriteSourceRectangle.Width) / 2f;
+            destinationRectangle.Y = (renderer.Viewport.Height - spriteSourceRectangle.Height) / 2f;
+            destinationRectangle.Width = spriteSourceRectangle.Width;
+            destinationRectangle.Height = spriteSourceRectangle.Height;
+            renderer.RenderTexture(_texture, spriteSourceRectangle, destinationRectangle);
+        }
 
         // Update screen
         renderer.Present();
