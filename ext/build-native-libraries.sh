@@ -4,6 +4,8 @@
 
 # NOTE: It's not ideal, but the SDL base library is built several times.
 
-source ./build-native-library-SDL.sh $1 $2
-source ./build-native-library-SDL_image.sh $1 $2
-source ./build-native-library-SDL_ttf.sh $1 $2
+DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+source $DIRECTORY/build-native-library-SDL.sh $1 $2
+source $DIRECTORY/build-native-library-SDL_image.sh $1 $2
+source $DIRECTORY/build-native-library-SDL_ttf.sh $1 $2
