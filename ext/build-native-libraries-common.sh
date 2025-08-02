@@ -28,6 +28,7 @@ function get_dotnet_os_rid() {
     case "${UNAME_ARCH_STRING}" in
         x86_64)         local RID_ARCH="x64";;
         arm64)          local RID_ARCH="arm64";;
+        aarch64)        local RID_ARCH="arm64";;
         *)              local RID_ARCH="UNKNOWN:${UNAME_ARCH_STRING}"
     esac
     echo "$RID_OS-$RID_ARCH"
