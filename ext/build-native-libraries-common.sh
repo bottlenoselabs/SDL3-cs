@@ -177,8 +177,7 @@ function build_library_cmake() {
     elif [[ $RID == 'linux-x64' ]]; then
         local CMAKE_FLAGS_ARCH="-D CMAKE_SYSTEM_NAME=Linux -D CMAKE_SYSTEM_PROCESSOR=x86_64 -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -D CMAKE_C_FLAGS=-m64 -D CMAKE_CXX_FLAGS=-m64"
     elif [[ $RID == 'linux-arm64' ]]; then
-        # Requires packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-        local CMAKE_FLAGS_ARCH="$CMAKE_FLAGS -D CMAKE_SYSTEM_NAME=Linux -D CMAKE_SYSTEM_PROCESSOR=aarch64 -D CMAKE_C_COMPILER=aarch64-linux-gnu-gcc -D CMAKE_CXX_COMPILER=aarch64-linux-gnu-g++"
+        local CMAKE_FLAGS_ARCH="-D CMAKE_SYSTEM_NAME=Linux -D CMAKE_SYSTEM_PROCESSOR=aarch64 -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ CMAKE_C_FLAGS=-m64 -D CMAKE_CXX_FLAGS=-m64"
     else
         echo "Unknown RID '$RID' for CMake" >&2
         exit 1
