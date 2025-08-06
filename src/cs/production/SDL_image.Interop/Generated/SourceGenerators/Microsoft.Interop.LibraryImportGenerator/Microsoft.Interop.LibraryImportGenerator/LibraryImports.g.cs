@@ -3,6 +3,46 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL_image
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_AddAnimationFrame", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_AddAnimationFrame(global::bottlenoselabs.Interop.SDL_image.IMG_AnimationStream* stream, global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, ulong pts);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_CloseAnimationStream", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_CloseAnimationStream(global::bottlenoselabs.Interop.SDL_image.IMG_AnimationStream* stream);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_CreateAnimationStream", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL_image.IMG_AnimationStream* IMG_CreateAnimationStream(global::Interop.Runtime.CString file);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_CreateAnimationStream_IO", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL_image.IMG_AnimationStream* IMG_CreateAnimationStream_IO(global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst, global::Interop.Runtime.CBool closeio, global::Interop.Runtime.CString type);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_CreateAnimationStreamWithProperties", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL_image.IMG_AnimationStream* IMG_CreateAnimationStreamWithProperties(global::bottlenoselabs.Interop.SDL.SDL_PropertiesID props);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_FreeAnimation", ExactSpelling = true)]
         public static extern partial void IMG_FreeAnimation(global::bottlenoselabs.Interop.SDL_image.IMG_Animation* anim);
     }
@@ -195,8 +235,24 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL_image
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_LoadAPNGAnimation_IO", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL_image.IMG_Animation* IMG_LoadAPNGAnimation_IO(global::bottlenoselabs.Interop.SDL.SDL_IOStream* src);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_LoadAVIF_IO", ExactSpelling = true)]
         public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Surface* IMG_LoadAVIF_IO(global::bottlenoselabs.Interop.SDL.SDL_IOStream* src);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_LoadAVIFAnimation_IO", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL_image.IMG_Animation* IMG_LoadAVIFAnimation_IO(global::bottlenoselabs.Interop.SDL.SDL_IOStream* src);
     }
 }
 namespace bottlenoselabs.Interop
@@ -419,6 +475,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL_image
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_Save", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_Save(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::Interop.Runtime.CString file);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveAVIF", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool IMG_SaveAVIF(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::Interop.Runtime.CString file, int quality);
     }
@@ -429,6 +493,38 @@ namespace bottlenoselabs.Interop
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveAVIF_IO", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool IMG_SaveAVIF_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst, global::Interop.Runtime.CBool closeio, int quality);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveBMP", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveBMP(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::Interop.Runtime.CString file);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveBMP_IO", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveBMP_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst, global::Interop.Runtime.CBool closeio);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveGIF", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveGIF(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::Interop.Runtime.CString file);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveGIF_IO", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveGIF_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst, global::Interop.Runtime.CBool closeio);
     }
 }
 namespace bottlenoselabs.Interop
@@ -476,7 +572,15 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL_image
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveTGA_IO", ExactSpelling = true)]
-        public static extern partial global::Interop.Runtime.CBool IMG_SaveTGA_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst);
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveTGA_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst, global::Interop.Runtime.CBool closeio);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_SaveTyped_IO", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool IMG_SaveTyped_IO(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, global::bottlenoselabs.Interop.SDL.SDL_IOStream* dst, global::Interop.Runtime.CBool closeio, global::Interop.Runtime.CString type);
     }
 }
 namespace bottlenoselabs.Interop
