@@ -4723,14 +4723,6 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
-        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_IsTraySupported", ExactSpelling = true)]
-        public static extern partial global::Interop.Runtime.CBool SDL_IsTraySupported();
-    }
-}
-namespace bottlenoselabs.Interop
-{
-    public static unsafe partial class SDL
-    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_JoystickConnected", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_JoystickConnected(global::bottlenoselabs.Interop.SDL.SDL_Joystick* joystick);
     }
