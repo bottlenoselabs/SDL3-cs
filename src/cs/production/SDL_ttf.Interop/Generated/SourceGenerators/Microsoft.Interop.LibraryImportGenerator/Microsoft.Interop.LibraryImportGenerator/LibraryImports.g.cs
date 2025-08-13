@@ -179,6 +179,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL_ttf
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_ttf", EntryPoint = "TTF_GetFontCharSpacing", ExactSpelling = true)]
+        public static extern partial int TTF_GetFontCharSpacing(global::bottlenoselabs.Interop.SDL_ttf.TTF_Font* font);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_ttf
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_ttf", EntryPoint = "TTF_GetFontDescent", ExactSpelling = true)]
         public static extern partial int TTF_GetFontDescent(global::bottlenoselabs.Interop.SDL_ttf.TTF_Font* font);
     }
@@ -701,6 +709,14 @@ namespace bottlenoselabs.Interop
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_ttf", EntryPoint = "TTF_RenderText_Solid_Wrapped", ExactSpelling = true)]
         public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Surface* TTF_RenderText_Solid_Wrapped(global::bottlenoselabs.Interop.SDL_ttf.TTF_Font* font, global::Interop.Runtime.CString text, ulong length, global::bottlenoselabs.Interop.Rgba8U fg, int wrapLength);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_ttf
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_ttf", EntryPoint = "TTF_SetFontCharSpacing", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool TTF_SetFontCharSpacing(global::bottlenoselabs.Interop.SDL_ttf.TTF_Font* font, int spacing);
     }
 }
 namespace bottlenoselabs.Interop
