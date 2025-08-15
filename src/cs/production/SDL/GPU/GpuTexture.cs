@@ -8,7 +8,7 @@ namespace bottlenoselabs.SDL;
 ///     related information such as how many texels there are and how they are encoded and organized.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class GpuTexture : GpuResource
+public sealed unsafe class GpuTexture : GpuResource<SDL_GPUTexture>
 {
     private readonly bool _isSwapchain;
 
@@ -96,11 +96,12 @@ public sealed unsafe class GpuTexture : GpuResource
     }
 
     internal void UpdateTextureSwapchain(
-        IntPtr handle,
+        SDL_GPUTexture* handle,
         int width,
         int height)
     {
-        Handle = handle;
+        Handle = (IntPtr)handle;
+        HandleTyped = handle;
         Width = width;
         Height = height;
     }
@@ -108,7 +109,7 @@ public sealed unsafe class GpuTexture : GpuResource
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_ReleaseGPUTexture((SDL_GPUDevice*)Device.Handle, (SDL_GPUTexture*)Handle);
+        SDL_ReleaseGPUTexture(Device.HandleTyped, HandleTyped);
         base.Dispose(isDisposing);
     }
 }

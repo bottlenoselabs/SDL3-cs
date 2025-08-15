@@ -160,7 +160,7 @@ public sealed unsafe class E005_CullMode : ExampleGpu
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.Key)
+        switch (e.Button)
         {
             case KeyboardButton.Left:
             {
@@ -198,7 +198,7 @@ public sealed unsafe class E005_CullMode : ExampleGpu
 
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);

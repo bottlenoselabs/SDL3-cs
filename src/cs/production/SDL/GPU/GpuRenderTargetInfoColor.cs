@@ -9,7 +9,7 @@ namespace bottlenoselabs.SDL;
 ///     TODO.
 /// </summary>
 [PublicAPI]
-public struct GpuRenderTargetInfoColor
+public record struct GpuRenderTargetInfoColor
 {
     /// <summary>
     ///     TODO.
@@ -34,7 +34,7 @@ public struct GpuRenderTargetInfoColor
     /// <summary>
     ///     TODO.
     /// </summary>
-    public GpuRenderTargetLoadOp LoadOp;
+    public GpuRenderTargetLoadOperation LoadOperation;
 
     /// <summary>
     ///     TODO.

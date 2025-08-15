@@ -89,8 +89,8 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // PointClamp
         using var samplerDescriptor = new GpuSamplerOptions();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
         samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
         samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
         samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
@@ -102,8 +102,8 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // PointWrap
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
         samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
         samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
         samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
@@ -115,8 +115,8 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // LinearClamp
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
         samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
         samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
         samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
@@ -128,8 +128,8 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // LinearWrap
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
         samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
         samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
         samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
@@ -141,8 +141,8 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // AnisotropicClamp
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
         samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
         samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
         samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
@@ -156,8 +156,8 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // AnisotropicWrap
         samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
+        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
         samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
         samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
         samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
@@ -285,7 +285,7 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.Key)
+        switch (e.Button)
         {
             case KeyboardButton.Left:
             {
@@ -324,7 +324,7 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
 

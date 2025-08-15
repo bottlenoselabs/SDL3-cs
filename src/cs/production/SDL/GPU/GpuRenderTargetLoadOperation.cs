@@ -7,7 +7,7 @@ namespace bottlenoselabs.SDL;
 ///     Defines what happens with the contents of a render-target at the start of a rendering pass.
 /// </summary>
 [PublicAPI]
-public enum GpuRenderTargetLoadOp
+public enum GpuRenderTargetLoadOperation
 {
     /// <summary>
     ///     The previous contents of the render-target will be preserved.

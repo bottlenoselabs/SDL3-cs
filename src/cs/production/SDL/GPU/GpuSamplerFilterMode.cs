@@ -4,9 +4,9 @@
 namespace bottlenoselabs.SDL;
 
 /// <summary>
-///     Defines the different strategies for how texels of a <see cref="GpuTexture" /> are mapped into fragments (pixels)
-///     when rendering with a <see cref="GpuGraphicsShader" />, also known as sampling. Depending on the strategy chosen
-///     the pixels will show a varying degree of blurriness, detail, and aliasing.
+///     Defines the different strategies for how texels of a <see cref="GpuTexture" /> are mapped into fragments
+///     (pixels), also known as sampling. Depending on the strategy chosen the pixels will show a varying degree of
+///     blurriness, detail, and aliasing.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -27,7 +27,7 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public enum GpuSamplerFilter
+public enum GpuSamplerFilterMode
 {
     /// <summary>
     ///     Uses the closest texel (in Manhattan distance) to the center of fragment (pixel) being rendered.

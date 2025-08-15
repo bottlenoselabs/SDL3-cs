@@ -45,7 +45,7 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
         {
             var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
             renderTargetInfoColor.Texture = swapchainTextureMainWindow!;
-            renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+            renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
             renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
             renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
             var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
@@ -57,7 +57,7 @@ public sealed class E002_ClearScreenMultipleWindow : ExampleGpu
         {
             var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
             renderTargetInfoColor.Texture = swapchainTextureSecondWindow!;
-            renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+            renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
             renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
             renderTargetInfoColor.ClearColor = Rgba32F.Indigo;
             var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);

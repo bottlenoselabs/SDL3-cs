@@ -191,7 +191,7 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
 
         var depthStencil = default(GpuRenderTargetInfoDepthStencil);
@@ -199,9 +199,9 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         depthStencil.IsTextureCycled = true;
         depthStencil.ClearDepth = 0;
         depthStencil.ClearStencil = 0;
-        depthStencil.LoadOp = GpuRenderTargetLoadOp.Clear;
+        depthStencil.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         depthStencil.StoreOp = GpuRenderTargetStoreOp.DontCare;
-        depthStencil.StencilLoadOp = GpuRenderTargetLoadOp.Clear;
+        depthStencil.StencilLoadOperation = GpuRenderTargetLoadOperation.Clear;
         depthStencil.StencilStoreOp = GpuRenderTargetStoreOp.DontCare;
 
         var renderPass = commandBuffer.BeginRenderPass(depthStencil, renderTargetInfoColor);
