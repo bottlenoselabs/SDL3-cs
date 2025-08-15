@@ -7,7 +7,7 @@ namespace Gpu.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E006_BasicStencil : ExampleGpu
+public sealed class E006_BasicStencil : ExampleGpu
 {
     private bool _isSupported = true;
     private GpuGraphicsPipeline? _pipelineMasker;
@@ -30,13 +30,10 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
             return true;
         }
 
-        int width, height;
-        SDL_GetWindowSizeInPixels((SDL_Window*)Window.Handle, &width, &height);
-
         var textureDescriptor = new GpuTextureOptions();
         textureDescriptor.Type = GpuTextureType.TwoDimensional;
-        textureDescriptor.Width = width;
-        textureDescriptor.Height = height;
+        textureDescriptor.Width = Window.SizeInPixels.Width;
+        textureDescriptor.Height = Window.SizeInPixels.Height;
         textureDescriptor.LayerCountOrDepth = 1;
         textureDescriptor.MipmapLevelCount = 1;
         textureDescriptor.SampleCount = 1;
@@ -116,7 +113,7 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(sizeof(VertexPositionColor) * 6, out var transferBuffer))
+        if (!Device.TryCreateTransferBuffer(VertexPositionColor.SizeOf * 6, out var transferBuffer))
         {
             return false;
         }
@@ -151,7 +148,7 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
             0,
             _vertexBuffer,
             0,
-            sizeof(VertexPositionColor) * 6);
+            VertexPositionColor.SizeOf * 6);
 
         copyPass.End();
         uploadCommandBuffer.Submit();

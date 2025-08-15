@@ -65,20 +65,20 @@ public sealed class E003_BasicTriangle : ExampleGpu
 
         _viewportSmall = new()
         {
-            X = Window.Width / 4.0f,
-            Y = Window.Height / 4.0f,
-            Width = Window.Width / 2.0f,
-            Height = Window.Height / 2.0f,
+            X = Window.Size.Width / 4.0f,
+            Y = Window.Size.Height / 4.0f,
+            Width = Window.Size.Width / 2.0f,
+            Height = Window.Size.Height / 2.0f,
             MinDepth = 0.1f,
             MaxDepth = 1.0f
         };
 
         _rectangleScissor = new()
         {
-            X = Window.Width / 2,
-            Y = Window.Height / 2,
-            Width = Window.Width / 2,
-            Height = Window.Height / 2
+            X = Window.Size.Width / 2,
+            Y = Window.Size.Height / 2,
+            Width = Window.Size.Width / 2,
+            Height = Window.Size.Height / 2
         };
 
         // Finally, print instructions!
