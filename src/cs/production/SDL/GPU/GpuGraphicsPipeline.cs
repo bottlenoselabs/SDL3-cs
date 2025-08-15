@@ -26,7 +26,7 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public sealed unsafe class GpuGraphicsPipeline : GpuResource
+public sealed unsafe class GpuGraphicsPipeline : GpuResource<SDL_GPUGraphicsPipeline>
 {
     internal GpuGraphicsPipeline(
         GpuDevice device,
@@ -38,7 +38,7 @@ public sealed unsafe class GpuGraphicsPipeline : GpuResource
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_ReleaseGPUGraphicsPipeline((SDL_GPUDevice*)Device.Handle, (SDL_GPUGraphicsPipeline*)Handle);
+        SDL_ReleaseGPUGraphicsPipeline(Device.HandleTyped, HandleTyped);
         base.Dispose(isDisposing);
     }
 }

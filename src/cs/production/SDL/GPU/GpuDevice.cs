@@ -577,8 +577,8 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     public bool TryCreateSampler(GpuSamplerOptions options, out GpuSampler? sampler)
     {
         var samplerCreateInfo = default(SDL_GPUSamplerCreateInfo);
-        samplerCreateInfo.min_filter = (SDL_GPUFilter)options.MinificationFilter;
-        samplerCreateInfo.mag_filter = (SDL_GPUFilter)options.MagnificationFilter;
+        samplerCreateInfo.min_filter = (SDL_GPUFilter)options.MinificationFilterMode;
+        samplerCreateInfo.mag_filter = (SDL_GPUFilter)options.MagnificationFilterMode;
         samplerCreateInfo.mipmap_mode = (SDL_GPUSamplerMipmapMode)options.MipMapMode;
         samplerCreateInfo.address_mode_u = (SDL_GPUSamplerAddressMode)options.AddressModeU;
         samplerCreateInfo.address_mode_v = (SDL_GPUSamplerAddressMode)options.AddressModeV;

@@ -10,16 +10,16 @@ namespace bottlenoselabs.SDL;
 public class GpuSamplerOptions : BaseOptions
 {
     /// <summary>
-    ///     Gets or sets the <see cref="GpuSamplerFilter" /> used in sampling when each texel maps onto more than one
-    ///     fragment (pixel). Default is <see cref="GpuSamplerFilter.Nearest" />.
+    ///     Gets or sets the <see cref="GpuSamplerFilterMode" /> used in sampling when each texel maps onto more than one
+    ///     fragment (pixel). Default is <see cref="GpuSamplerFilterMode.Nearest" />.
     /// </summary>
-    public GpuSamplerFilter MagnificationFilter { get; set; }
+    public GpuSamplerFilterMode MagnificationFilterMode { get; set; }
 
     /// <summary>
-    ///     Gets or sets the <see cref="GpuSamplerFilter" /> used in sampling when each texel maps onto less than one
-    ///     fragment (pixel). Default is <see cref="GpuSamplerFilter.Nearest" />.
+    ///     Gets or sets the <see cref="GpuSamplerFilterMode" /> used in sampling when each texel maps onto less than one
+    ///     fragment (pixel). Default is <see cref="GpuSamplerFilterMode.Nearest" />.
     /// </summary>
-    public GpuSamplerFilter MinificationFilter { get; set; }
+    public GpuSamplerFilterMode MinificationFilterMode { get; set; }
 
     /// <summary>
     ///     Gets or sets the <see cref="GpuSamplerMipmapMode" /> used in sampling. Default is
@@ -100,8 +100,8 @@ public class GpuSamplerOptions : BaseOptions
     /// <inheritdoc />
     protected override void OnReset()
     {
-        MagnificationFilter = GpuSamplerFilter.Nearest;
-        MinificationFilter = GpuSamplerFilter.Nearest;
+        MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
+        MinificationFilterMode = GpuSamplerFilterMode.Nearest;
         MipMapMode = GpuSamplerMipmapMode.Nearest;
         AddressModeU = GpuSamplerAddressMode.Repeat;
         AddressModeV = GpuSamplerAddressMode.Repeat;
