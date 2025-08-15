@@ -23,14 +23,18 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
     }
 
     /// <summary>
-    ///     Gets the width of the window.
+    ///     Gets the size of the window using the window's coordinate system.
     /// </summary>
-    public int Width { get; private set; }
+    public Size Size { get; private set; }
 
     /// <summary>
-    ///     Gets the height of the window.
+    ///     Gets the size of the window in pixels for rendering.
     /// </summary>
-    public int Height { get; private set; }
+    /// <remarks>
+    ///     <see cref="SizeInPixels" /> may differ from <see cref="Size" /> if the window is on a high pixel density
+    ///     display.
+    /// </remarks>
+    public Size SizeInPixels { get; private set; }
 
     /// <summary>
     ///     Gets a value indicating whether the window is claimed by a <see cref="GpuDevice" />.
@@ -78,7 +82,7 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
             Error.NativeFunctionFailed(nameof(SDL_CreateWindow), isExceptionThrown: true);
         }
 
-        var windowId = SDL_GetWindowID(HandleTyped);
+        var windowId = (int)SDL_GetWindowID(HandleTyped).Data;
         if (windowId == 0)
         {
             Error.NativeFunctionFailed(nameof(SDL_GetWindowID), isExceptionThrown: true);
@@ -118,14 +122,7 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
             }
         }
 
-        int widthActual, heightActual;
-        if (!SDL_GetWindowSize(HandleTyped, &widthActual, &heightActual))
-        {
-            Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
-        }
-
-        Width = widthActual;
-        Height = heightActual;
+        OnResize();
     }
 
     /// <summary>
@@ -158,10 +155,16 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
         }
     }
 
+    internal void OnResize()
+    {
+        Size = GetSize();
+        SizeInPixels = GetSizeInPixels();
+    }
+
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        var windowId = SDL_GetWindowID(HandleTyped);
+        var windowId = (int)SDL_GetWindowID(HandleTyped).Data;
         if (windowId == 0)
         {
             Error.NativeFunctionFailed(nameof(SDL_GetWindowID), isExceptionThrown: true);
@@ -196,5 +199,31 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
         {
             Error.NativeFunctionFailed(nameof(SDL_SetWindowTitle));
         }
+    }
+
+    private Size GetSize()
+    {
+        int w;
+        int h;
+        var isSuccess = SDL_GetWindowSize(HandleTyped, &w, &h);
+        if (!isSuccess)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowSize), isExceptionThrown: true);
+        }
+
+        return new Size { Width = w, Height = h };
+    }
+
+    private Size GetSizeInPixels()
+    {
+        int w;
+        int h;
+        var isSuccess = SDL_GetWindowSizeInPixels(HandleTyped, &w, &h);
+        if (!isSuccess)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_GetWindowSizeInPixels), isExceptionThrown: true);
+        }
+
+        return new Size { Width = w, Height = h };
     }
 }

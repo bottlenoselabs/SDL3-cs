@@ -1,12 +1,8 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
-namespace Gpu;
+namespace Gpu.Examples;
 
-public record struct VertexPositionColor
+public sealed class E011_BasicCompute
 {
-    public Vector3 Position;
-    public Rgba8U Color;
-
-    public static int SizeOf => Unsafe.SizeOf<VertexPositionColor>();
 }

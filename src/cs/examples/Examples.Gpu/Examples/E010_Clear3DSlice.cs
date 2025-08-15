@@ -7,7 +7,7 @@ namespace Gpu.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public class E010_Clear3DSlice : ExampleGpu
+public sealed class E010_Clear3DSlice : ExampleGpu
 {
     private GpuTexture? _texture3D;
 

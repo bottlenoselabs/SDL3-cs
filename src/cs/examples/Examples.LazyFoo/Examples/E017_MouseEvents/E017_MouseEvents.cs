@@ -34,8 +34,8 @@ public sealed class E017_MouseEvents : ExampleLazyFoo
     public E017_MouseEvents()
         : base("17 - Mouse Events", isEnabledCreateRenderer2D: true)
     {
-        var screenWidth = Window.Width;
-        var screenHeight = Window.Height;
+        var screenWidth = Window.Size.Width;
+        var screenHeight = Window.Size.Height;
         var screenHalfWidth = screenWidth * 0.5f;
         var screenHalfHeight = screenHeight * 0.5f;
 

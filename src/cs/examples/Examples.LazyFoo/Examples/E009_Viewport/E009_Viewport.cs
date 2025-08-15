@@ -45,18 +45,18 @@ public sealed class E009_Viewport : ExampleLazyFoo
         Rectangle topLeftViewport;
         topLeftViewport.X = 0;
         topLeftViewport.Y = 0;
-        topLeftViewport.Width = ScreenWidth / 2;
-        topLeftViewport.Height = ScreenHeight / 2;
+        topLeftViewport.Width = Window.Size.Width / 2;
+        topLeftViewport.Height = Window.Size.Height / 2;
         renderer.Viewport = topLeftViewport;
         // Render texture to screen
         renderer.RenderTexture(_texture!);
 
         // Top right viewport
         Rectangle topRightViewport;
-        topRightViewport.X = ScreenWidth / 2;
+        topRightViewport.X = Window.Size.Width / 2;
         topRightViewport.Y = 0;
-        topRightViewport.Width = ScreenWidth / 2;
-        topRightViewport.Height = ScreenHeight / 2;
+        topRightViewport.Width = Window.Size.Width / 2;
+        topRightViewport.Height = Window.Size.Height / 2;
         renderer.Viewport = topRightViewport;
         // Render texture to screen
         renderer.RenderTexture(_texture!);
@@ -64,9 +64,9 @@ public sealed class E009_Viewport : ExampleLazyFoo
         // Bottom viewport
         Rectangle bottomViewport;
         bottomViewport.X = 0;
-        bottomViewport.Y = ScreenHeight / 2;
-        bottomViewport.Width = ScreenWidth;
-        bottomViewport.Height = ScreenHeight / 2;
+        bottomViewport.Y = Window.Size.Height / 2;
+        bottomViewport.Width = Window.Size.Width;
+        bottomViewport.Height = Window.Size.Height / 2;
         renderer.Viewport = bottomViewport;
         // Render texture to screen
         renderer.RenderTexture(_texture!);

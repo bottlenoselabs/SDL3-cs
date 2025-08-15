@@ -278,6 +278,14 @@ public abstract unsafe partial class Application : Disposable
                 break;
             }
 
+            case SDL_EventType.SDL_EVENT_WINDOW_RESIZED:
+            {
+                var windowId = (int)e.window.windowID.Data;
+                var window = WindowsById[windowId];
+                window.OnResize();
+                break;
+            }
+
             case SDL_EventType.SDL_EVENT_WINDOW_OCCLUDED:
             {
                 Interlocked.Exchange(ref _isInBackground, true);
@@ -316,7 +324,8 @@ public abstract unsafe partial class Application : Disposable
 
     private void HandleMouseMotionEvent(in SDL_MouseMotionEvent mouseMotionEvent)
     {
-        if (!WindowsById.TryGetValue(mouseMotionEvent.windowID, out var window))
+        var windowId = (int)mouseMotionEvent.windowID.Data;
+        if (!WindowsById.TryGetValue(windowId, out var window))
         {
             // NOTE: Window must be created outside of managed C# code.
             window = null!;
@@ -332,9 +341,10 @@ public abstract unsafe partial class Application : Disposable
 
     private void HandleMouseButtonEvent(in SDL_MouseButtonEvent mouseButtonEvent)
     {
+        var windowId = (int)mouseButtonEvent.windowID.Data;
         var isDown = (bool)mouseButtonEvent.down;
 
-        if (!WindowsById.TryGetValue(mouseButtonEvent.windowID, out var window))
+        if (!WindowsById.TryGetValue(windowId, out var window))
         {
             // NOTE: Window must be created outside of managed C# code.
             window = null!;
@@ -393,7 +403,8 @@ public abstract unsafe partial class Application : Disposable
         var isDown = (bool)keyboardEvent.down;
         var isRepeat = (bool)keyboardEvent.repeat;
 
-        if (!WindowsById.TryGetValue(keyboardEvent.windowID, out var window))
+        var windowId = (int)keyboardEvent.windowID.Data;
+        if (!WindowsById.TryGetValue(windowId, out var window))
         {
             // NOTE: Window must be created outside of managed C# code.
             window = null!;

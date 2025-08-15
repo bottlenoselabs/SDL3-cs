@@ -13,7 +13,7 @@ public partial class Application
     /// </summary>
     public static Application Current => _current!;
 
-    internal static Dictionary<uint, Window> WindowsById = new();
+    internal static Dictionary<int, Window> WindowsById = new();
 
     internal static void Initialize(Application application)
     {
