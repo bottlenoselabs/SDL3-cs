@@ -64,9 +64,13 @@ public abstract class ExampleBase
     {
     }
 
-    public abstract void OnUpdate(TimeSpan deltaTime);
+    public virtual void OnUpdate(TimeSpan deltaTime)
+    {
+    }
 
-    public abstract void OnDraw(TimeSpan deltaTime);
+    public virtual void OnDraw(TimeSpan deltaTime)
+    {
+    }
 
     internal void Exit()
     {

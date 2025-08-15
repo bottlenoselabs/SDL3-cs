@@ -32,7 +32,7 @@ public sealed class E012_ColorModulation : ExampleLazyFoo
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.Key)
+        switch (e.Button)
         {
             case KeyboardButton.Q:
             {
