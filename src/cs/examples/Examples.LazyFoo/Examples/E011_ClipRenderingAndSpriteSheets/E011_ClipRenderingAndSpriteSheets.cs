@@ -51,18 +51,18 @@ public sealed class E011_ClipRenderingAndSpriteSheets : ExampleLazyFoo
         renderer.RenderTexture(_texture!, _spriteSourceRectangles[0], destinationRectangle);
 
         // Render top right sprite
-        destinationRectangle.X = ScreenWidth - _spriteSourceRectangles[1].Width;
+        destinationRectangle.X = Window.Size.Width - _spriteSourceRectangles[1].Width;
         destinationRectangle.Y = 0;
         renderer.RenderTexture(_texture!, _spriteSourceRectangles[1], destinationRectangle);
 
         // Render bottom left sprite
         destinationRectangle.X = 0;
-        destinationRectangle.Y = ScreenHeight - _spriteSourceRectangles[2].Height;
+        destinationRectangle.Y = Window.Size.Height - _spriteSourceRectangles[2].Height;
         renderer.RenderTexture(_texture!, _spriteSourceRectangles[2], destinationRectangle);
 
         // Render bottom right sprite
-        destinationRectangle.X = ScreenWidth - _spriteSourceRectangles[3].Width;
-        destinationRectangle.Y = ScreenHeight - _spriteSourceRectangles[3].Height;
+        destinationRectangle.X = Window.Size.Width - _spriteSourceRectangles[3].Width;
+        destinationRectangle.Y = Window.Size.Height - _spriteSourceRectangles[3].Height;
         renderer.RenderTexture(_texture!, _spriteSourceRectangles[3], destinationRectangle);
 
         // Update screen
