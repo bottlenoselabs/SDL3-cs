@@ -7,7 +7,7 @@ namespace bottlenoselabs.SDL;
 ///     Represents an GPU resource for transferring (uploading or downloading) data between the application and GPU.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class GpuTransferBuffer : GpuResource
+public sealed unsafe class GpuTransferBuffer : GpuResource<SDL_GPUTransferBuffer>
 {
     /// <summary>
     ///     Gets the data size of the transfer buffer.
@@ -34,10 +34,10 @@ public sealed unsafe class GpuTransferBuffer : GpuResource
     public IntPtr MapAsPointer(bool isCycled = false)
     {
         var ptr = SDL_MapGPUTransferBuffer(
-            (SDL_GPUDevice*)Device.Handle, (SDL_GPUTransferBuffer*)Handle, isCycled);
+            Device.HandleTyped, HandleTyped, isCycled);
         if (ptr == null)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
+            Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
             return IntPtr.Zero;
         }
 
@@ -59,10 +59,10 @@ public sealed unsafe class GpuTransferBuffer : GpuResource
     public Span<byte> MapAsSpan(bool isCycled = false)
     {
         var ptr = SDL_MapGPUTransferBuffer(
-            (SDL_GPUDevice*)Device.Handle, (SDL_GPUTransferBuffer*)Handle, isCycled);
+            Device.HandleTyped, HandleTyped, isCycled);
         if (ptr == null)
         {
-            bottlenoselabs.SDL.Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
+            Error.NativeFunctionFailed(nameof(SDL_MapGPUTransferBuffer));
             return default;
         }
 
@@ -75,13 +75,13 @@ public sealed unsafe class GpuTransferBuffer : GpuResource
     /// </summary>
     public void Unmap()
     {
-        SDL_UnmapGPUTransferBuffer((SDL_GPUDevice*)Device.Handle, (SDL_GPUTransferBuffer*)Handle);
+        SDL_UnmapGPUTransferBuffer(Device.HandleTyped, HandleTyped);
     }
 
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_ReleaseGPUTransferBuffer((SDL_GPUDevice*)Device.Handle, (SDL_GPUTransferBuffer*)Handle);
+        SDL_ReleaseGPUTransferBuffer(Device.HandleTyped, HandleTyped);
         base.Dispose(isDisposing);
     }
 }

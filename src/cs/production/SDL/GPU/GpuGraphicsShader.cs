@@ -22,7 +22,7 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public sealed unsafe class GpuGraphicsShader : GpuResource
+public sealed unsafe class GpuGraphicsShader : GpuResource<SDL_GPUShader>
 {
     /// <summary>
     ///     Gets the <see cref="GpuShaderFormats " /> of the graphics shader.
@@ -48,7 +48,7 @@ public sealed unsafe class GpuGraphicsShader : GpuResource
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_ReleaseGPUShader((SDL_GPUDevice*)Device.Handle, (SDL_GPUShader*)Handle);
+        SDL_ReleaseGPUShader(Device.HandleTyped, HandleTyped);
         base.Dispose(isDisposing);
     }
 }

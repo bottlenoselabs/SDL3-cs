@@ -9,7 +9,7 @@ namespace bottlenoselabs.SDL;
 ///     TODO.
 /// </summary>
 [PublicAPI]
-public struct GpuRenderTargetInfoDepthStencil
+public record struct GpuRenderTargetInfoDepthStencil
 {
     /// <summary>
     ///     TODO.
@@ -24,7 +24,7 @@ public struct GpuRenderTargetInfoDepthStencil
     /// <summary>
     ///    TODO.
     /// </summary>
-    public GpuRenderTargetLoadOp LoadOp;
+    public GpuRenderTargetLoadOperation LoadOperation;
 
     /// <summary>
     ///     TODO.
@@ -34,7 +34,7 @@ public struct GpuRenderTargetInfoDepthStencil
     /// <summary>
     ///     TODO.
     /// </summary>
-    public GpuRenderTargetLoadOp StencilLoadOp;
+    public GpuRenderTargetLoadOperation StencilLoadOperation;
 
     /// <summary>
     ///     TODO.

@@ -113,7 +113,7 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
 
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);

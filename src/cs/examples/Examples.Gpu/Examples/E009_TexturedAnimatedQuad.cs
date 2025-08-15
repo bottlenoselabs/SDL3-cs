@@ -89,8 +89,8 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
 
         // PointClamp
         var samplerDescriptor = new GpuSamplerOptions();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
+        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
         samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
         samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
         samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
@@ -212,7 +212,7 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
 
