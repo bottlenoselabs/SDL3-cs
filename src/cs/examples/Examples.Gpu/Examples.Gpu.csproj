@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Examples.Common\Examples.Common.csproj" />
   </ItemGroup>
 
   <!-- Assets: images -->
