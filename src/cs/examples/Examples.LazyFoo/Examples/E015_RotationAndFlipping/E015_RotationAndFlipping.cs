@@ -38,7 +38,7 @@ public sealed class E015_RotationAndFlipping : ExampleLazyFoo
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.Key)
+        switch (e.Button)
         {
             case KeyboardButton.A:
             {

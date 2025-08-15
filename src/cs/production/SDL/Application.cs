@@ -13,6 +13,10 @@ public abstract unsafe partial class Application : Disposable
     private volatile bool _isInBackground;
     private readonly ILoggerFactory _loggerFactory;
 
+    private readonly Dictionary<IntPtr, string> _keyNamesByPointer = new();
+
+    private static readonly TimeSpan FramesCounterElapsedTime = TimeSpan.FromSeconds(1);
+
     /// <summary>
     ///     Gets the logger of the application.
     /// </summary>
@@ -36,22 +40,14 @@ public abstract unsafe partial class Application : Disposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="Application" /> class.
     /// </summary>
-    /// <param name="loggerFactory">
-    ///     The optional logger factory. If <c>null</c>, a console logger factory is created with
-    ///     minimum log level of <see cref="LogLevel.Warning" />.
-    /// </param>
-    protected Application(ILoggerFactory? loggerFactory = null)
+    /// <param name="options">The application options.</param>
+    protected Application(ApplicationOptions? options = null)
     {
-        _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Warning);
-        });
+        options ??= new ApplicationOptions();
+        _loggerFactory = options.LoggerFactory!;
 
         Logger = _loggerFactory.CreateLogger<Application>();
-
         Error.LoggerNativeFunction = _loggerFactory.CreateLogger("Interop");
-
         FileSystem = new FileSystem(_loggerFactory.CreateLogger<FileSystem>());
     }
 
@@ -134,42 +130,56 @@ public abstract unsafe partial class Application : Disposable
     /// <summary>
     ///     Called when the application is starting.
     /// </summary>
-    protected abstract void OnStart();
+    protected virtual void OnStart()
+    {
+    }
 
     /// <summary>
     ///     Called when the application is exiting.
     /// </summary>
-    protected abstract void OnExit();
+    protected virtual void OnExit()
+    {
+    }
 
     /// <summary>
     ///     Called when the mouse moves.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnMouseMove(in MouseMoveEvent e);
+    protected virtual void OnMouseMove(in MouseMoveEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a mouse button is pressed down.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnMouseDown(in MouseButtonEvent e);
+    protected virtual void OnMouseDown(in MouseButtonEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a mouse button is released.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnMouseUp(in MouseButtonEvent e);
+    protected virtual void OnMouseUp(in MouseButtonEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a keyboard key is pressed down.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnKeyDown(in KeyboardEvent e);
+    protected virtual void OnKeyDown(in KeyboardEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a keyboard key is released.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnKeyUp(in KeyboardEvent e);
+    protected virtual void OnKeyUp(in KeyboardEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when an event is received from SDL.
@@ -184,14 +194,18 @@ public abstract unsafe partial class Application : Disposable
     ///     update its state.
     /// </summary>
     /// <param name="deltaTime">The time passed since the last call to <see cref="OnUpdate" />.</param>
-    protected abstract void OnUpdate(TimeSpan deltaTime);
+    protected virtual void OnUpdate(TimeSpan deltaTime)
+    {
+    }
 
     /// <summary>
     ///     Called when the application determines it is time to draw a frame. This is where your application would
     ///     perform rendering.
     /// </summary>
     /// <param name="deltaTime">The time passed since the last call to <see cref="OnDraw" />.</param>
-    protected abstract void OnDraw(TimeSpan deltaTime);
+    protected virtual void OnDraw(TimeSpan deltaTime)
+    {
+    }
 
     private void Loop()
     {
@@ -202,16 +216,16 @@ public abstract unsafe partial class Application : Disposable
         while (!_isExiting)
         {
             PollEvents();
-            var timeAdvanced = AdvanceTime(ref previousTime);
-            OnUpdate(timeAdvanced);
+            var deltaTime = AdvanceTime(ref previousTime);
+            OnUpdate(deltaTime);
 
             if (!_isInBackground)
             {
-                OnDraw(timeAdvanced);
+                OnDraw(deltaTime);
                 renderedFramesCount++;
             }
 
-            CalculateFramesPerSecond(timeAdvanced, ref framesCountAccumulatedTime, ref renderedFramesCount);
+            CalculateFramesPerSecond(deltaTime, ref framesCountAccumulatedTime, ref renderedFramesCount);
         }
 
         OnExit();
@@ -238,19 +252,19 @@ public abstract unsafe partial class Application : Disposable
     }
 
     private void CalculateFramesPerSecond(
-        TimeSpan timeAdvanced,
+        TimeSpan deltaTime,
         ref TimeSpan framesCounterAccumulatedTime,
         ref int renderedFramesCount)
     {
-        var framesCounterElapsedTime = TimeSpan.FromSeconds(1);
-
-        framesCounterAccumulatedTime += timeAdvanced;
-        if (framesCounterAccumulatedTime >= framesCounterElapsedTime)
+        framesCounterAccumulatedTime += deltaTime;
+        if (framesCounterAccumulatedTime < FramesCounterElapsedTime)
         {
-            framesCounterAccumulatedTime -= framesCounterElapsedTime;
-            FramesPerSecond = renderedFramesCount;
-            renderedFramesCount = 0;
+            return;
         }
+
+        framesCounterAccumulatedTime -= FramesCounterElapsedTime;
+        FramesPerSecond = renderedFramesCount;
+        renderedFramesCount = 0;
     }
 
     private void HandleEvent(in SDL_Event e)
@@ -309,7 +323,9 @@ public abstract unsafe partial class Application : Disposable
         }
 
         var position = new Vector2(mouseMotionEvent.x, mouseMotionEvent.y);
-        var e = new MouseMoveEvent(window, position);
+        var positionDelta = new Vector2(mouseMotionEvent.xrel, mouseMotionEvent.yrel);
+        var mouseButtonState = (MouseButtonState)mouseMotionEvent.state.Data;
+        var e = new MouseMoveEvent(window, position, positionDelta, mouseButtonState);
 
         OnMouseMove(e);
     }
@@ -365,6 +381,15 @@ public abstract unsafe partial class Application : Disposable
 
     private void HandleKeyboardEvent(SDL_KeyboardEvent keyboardEvent)
     {
+        var nameC = SDL_GetKeyName(keyboardEvent.key);
+
+        // NOTE: It's assumed that pointers for key names are constant
+        if (!_keyNamesByPointer.TryGetValue(nameC.Pointer, out var name))
+        {
+            name = CString.ToString(nameC);
+            _keyNamesByPointer.Add(nameC.Pointer, name);
+        }
+
         var isDown = (bool)keyboardEvent.down;
         var isRepeat = (bool)keyboardEvent.repeat;
 
@@ -374,8 +399,10 @@ public abstract unsafe partial class Application : Disposable
             window = null!;
         }
 
+        var key = (KeyboardKey)keyboardEvent.key.Data;
+
         // NOTE: Scancode Key is for keyboard layout independent buttons. Virtual keys are for layout dependent buttons.
-        var key = keyboardEvent.scancode switch
+        var button = keyboardEvent.scancode switch
         {
             SDL_Scancode.SDL_SCANCODE_LEFT => KeyboardButton.Left,
             SDL_Scancode.SDL_SCANCODE_RIGHT => KeyboardButton.Right,
@@ -420,7 +447,7 @@ public abstract unsafe partial class Application : Disposable
             _ => KeyboardButton.Unknown
         };
 
-        var e = new KeyboardEvent(window, key, isDown, isRepeat);
+        var e = new KeyboardEvent(window, button, key, isDown, isRepeat);
 
         if (isDown)
         {

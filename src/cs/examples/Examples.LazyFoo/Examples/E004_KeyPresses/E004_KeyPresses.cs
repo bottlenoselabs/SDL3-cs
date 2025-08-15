@@ -36,7 +36,7 @@ public sealed class E004_KeyPresses : ExampleLazyFoo
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        var keyPressSurface = e.Key switch
+        var keyPressSurface = e.Button switch
         {
             KeyboardButton.Up => KeyPressSurfaceIndex.Up,
             KeyboardButton.Down => KeyPressSurfaceIndex.Down,
