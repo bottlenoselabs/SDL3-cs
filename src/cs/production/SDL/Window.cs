@@ -66,6 +66,11 @@ public sealed unsafe class Window : NativeHandleTyped<SDL_Window>
             flags |= SDL_WINDOW_MAXIMIZED;
         }
 
+        if (options.IsEnabledHighPixelDensity)
+        {
+            flags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
+        }
+
         HandleTyped = SDL_CreateWindow(
             options.TitleCString,
             options.Width,
