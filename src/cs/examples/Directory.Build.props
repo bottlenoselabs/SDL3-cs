@@ -7,4 +7,13 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <!-- Publish -->
+  <Target Name="DeleteFilesAfterPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <FilesToDelete Include="$(PublishDir)*.xml" />
+      <FilesToDelete Include="$(PublishDir)*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" />
+  </Target>
+
 </Project>
