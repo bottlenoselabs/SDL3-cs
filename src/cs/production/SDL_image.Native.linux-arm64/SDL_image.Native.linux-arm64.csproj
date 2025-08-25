@@ -2,9 +2,9 @@
 
   <!-- Native Library -->
   <PropertyGroup>
-    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
     <PlatformTarget>arm64</PlatformTarget>
-    <NativeLibraryFileName>libSDL3.dylib</NativeLibraryFileName>
+    <NativeLibraryFileName>libSDL3_image.so</NativeLibraryFileName>
   </PropertyGroup>
   <Import Project="../NativeLibrary.props" />
 
@@ -15,7 +15,7 @@
 
   <!-- NuGet -->
   <PropertyGroup>
-    <PackageDescription>The native `SDL` library (SDL3) file (libSDL3.dylib) for the `osx-arm64` target framework moniker (TFM).</PackageDescription>
+    <PackageDescription>The native `SDL_image` library (SDL3_image) file (libSDL3_image.so) for the `linux-arm64` target framework moniker (TFM).</PackageDescription>
   </PropertyGroup>
 
 </Project>

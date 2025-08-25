@@ -2,8 +2,4 @@
 
   <Import Project="../Directory.Build.props" />
 
-  <PropertyGroup>
-    <LibraryDirectoryPath>$([System.IO.Path]::Combine($(GitRepositoryPath),lib))</LibraryDirectoryPath>
-  </PropertyGroup>
-
 </Project>

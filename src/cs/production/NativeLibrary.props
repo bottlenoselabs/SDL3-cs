@@ -1,0 +1,42 @@
+<Project>
+
+  <Target Name="ErrorIfNotDefined_RuntimeIdentifier" BeforeTargets="BeforeBuild" Condition="$(GitRepositoryPath) == ''">
+    <Error Text="The property 'GitRepositoryPath' is not defined." />
+  </Target>
+
+  <Target Name="ErrorIfNotDefined_NativeLibraryFileName" BeforeTargets="BeforeBuild" Condition="$(NativeLibraryFileName) == ''">
+    <Error Text="The property 'NativeLibraryFileName' is not defined." />
+  </Target>
+
+  <Target Name="ErrorIfNotDefined_RuntimeIdentifier" BeforeTargets="BeforeBuild" Condition="$(RuntimeIdentifier) == ''">
+    <Error Text="The property 'RuntimeIdentifier' is not defined." />
+  </Target>
+
+  <!-- File paths -->
+  <PropertyGroup>
+    <NativeLibraryFilePath>$(GitRepositoryPath)/lib/$(RuntimeIdentifier)/$(NativeLibraryFileName)</NativeLibraryFilePath>
+  </PropertyGroup>
+
+  <!-- MSBuild properties -->
+  <PropertyGroup>
+    <IncludeBuildOutput>false</IncludeBuildOutput> <!-- No C# assemblies to include -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems> <!-- Don't include .cs files -->
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <PublishDocumentationFile>false</PublishDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Dynamic link library -->
+  <ItemGroup Condition="$(NativeLibraryFilePath) != ''">
+    <Content Include="$(NativeLibraryFilePath)"
+             PackagePath="runtimes\$(RuntimeIdentifier)\native\"
+             Condition="Exists('$(NativeLibraryFilePath)')">
+      <Link>%(Filename)%(Extension)</Link>
+      <Pack>true</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
