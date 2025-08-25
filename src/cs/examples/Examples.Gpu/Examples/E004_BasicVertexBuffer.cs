@@ -19,14 +19,14 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("PositionColor.vert"), out var vertexShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("PositionColor.vert"),  Device, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, out var fragmentShader))
         {
             return false;
         }
@@ -41,7 +41,7 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
         pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
         pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipeline))
         {
             return false;
         }

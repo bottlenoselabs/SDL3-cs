@@ -31,14 +31,14 @@ public sealed unsafe class E005_CullMode : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("PositionColor.vert"), out var vertexShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("PositionColor.vert"),  Device, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, out var fragmentShader))
         {
             return false;
         }
@@ -62,7 +62,7 @@ public sealed unsafe class E005_CullMode : ExampleGpu
                 GpuGraphicsPipelineFrontFace.Clockwise :
                 GpuGraphicsPipelineFrontFace.CounterClockwise;
 
-            if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelines[i]))
+            if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelines[i]))
             {
                 return false;
             }

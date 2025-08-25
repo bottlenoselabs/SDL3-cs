@@ -36,7 +36,7 @@ public sealed unsafe class GpuGraphicsShader : GpuResource<SDL_GPUShader>
 
     internal GpuGraphicsShader(
         GpuDevice device,
-        IntPtr handle,
+        SDL_GPUShader* handle,
         GpuShaderFormats format,
         GpuGraphicsShaderStage stage)
         : base(device, handle)

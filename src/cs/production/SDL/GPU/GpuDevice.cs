@@ -247,9 +247,11 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     ///     Attempts to create a new <see cref="GpuGraphicsShader" /> instance.
     /// </summary>
     /// <param name="options">The parameters for creating the shader.</param>
-    /// <param name="shader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
+    /// <param name="graphicsShader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateShader(GpuGraphicsShaderOptions options, out GpuGraphicsShader? shader)
+    public bool TryCreateGraphicsShader(
+        GpuGraphicsShaderOptions options,
+        out GpuGraphicsShader? graphicsShader)
     {
         SDL_GPUShaderCreateInfo info = default;
         info.code = (byte*)options.DataPointer;
@@ -267,61 +269,40 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUShader));
-            shader = null;
+            graphicsShader = null;
             return false;
         }
 
-        shader = new GpuGraphicsShader(
-            this, (IntPtr)handle, options.Format, options.Stage);
+        graphicsShader = new GpuGraphicsShader(
+            this, handle, options.Format, options.Stage);
         return true;
     }
 
     /// <summary>
-    ///     Attempts to create a new <see cref="GpuGraphicsShader" /> instance using the specified file path to the
-    ///     shader file.
+    ///     Attempts to create a new <see cref="GpuComputeShader" /> instance.
     /// </summary>
-    /// <param name="fileSystem">The <see cref="FileSystem" /> instance.</param>
-    /// <param name="filePath">
-    ///     The file path to the shader file. If the path is relative, it is assumed to be relative to
-    ///     <see cref="AppContext.BaseDirectory" />.
-    /// </param>
-    /// <param name="shader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
-    /// <param name="samplerCount">The number of samplers used in the shader.</param>
-    /// <param name="uniformBufferCount">The number of uniform buffers used in the shader.</param>
+    /// <param name="options">The parameters for creating the shader.</param>
+    /// <param name="computeShader">If successful, a new <see cref="GpuComputeShader" /> instance; otherwise, <c>null</c>.</param>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateShaderFromFile(
-        FileSystem fileSystem,
-        string filePath,
-        out GpuGraphicsShader? shader,
-        int samplerCount = 0,
-        int uniformBufferCount = 0)
+    public bool TryCreateComputeShader(
+        GpuComputeShaderOptions options,
+        out GpuComputeShader? computeShader)
     {
-#pragma warning disable CA2000
-        if (!fileSystem.TryLoadFile(filePath, out var file))
-#pragma warning restore CA2000
+        var createInfo = default(SDL_GPUComputePipelineCreateInfo);
+        createInfo.code = (byte*)options.DataPointer;
+        createInfo.code_size = (ulong)options.DataSize;
+        createInfo.entrypoint = options.Allocator.AllocateCString(options.EntryPoint);
+        createInfo.format = (uint)options.Format;
+
+        var handle = SDL_CreateGPUComputePipeline(HandleTyped, &createInfo);
+        if (handle == null)
         {
-            shader = null;
+            Error.NativeFunctionFailed(nameof(SDL_CreateGPUComputePipeline));
+            computeShader = null;
             return false;
         }
 
-        using var descriptor = new GpuGraphicsShaderOptions();
-        descriptor.SamplerCount = samplerCount;
-        descriptor.UniformBufferCount = uniformBufferCount;
-        if (!descriptor.TrySetFromFile(file))
-        {
-            shader = null;
-            file.Dispose();
-            return false;
-        }
-
-        if (!TryCreateShader(descriptor, out shader))
-        {
-            shader = null;
-            file.Dispose();
-            return false;
-        }
-
-        file.Dispose();
+        computeShader = new GpuComputeShader(this, handle);
         return true;
     }
 
@@ -334,7 +315,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// </param>
     /// <returns><c>true</c> if the pipeline was successfully created; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The vertex shader or fragment shader is <c>null</c>.</exception>
-    public bool TryCreatePipeline(GpuGraphicsPipelineOptions options, out GpuGraphicsPipeline? pipeline)
+    public bool TryCreateGraphicsPipeline(GpuGraphicsPipelineOptions options, out GpuGraphicsPipeline? pipeline)
     {
         var info = default(SDL_GPUGraphicsPipelineCreateInfo);
 
@@ -436,7 +417,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             return false;
         }
 
-        pipeline = new GpuGraphicsPipeline(this, (IntPtr)handle);
+        pipeline = new GpuGraphicsPipeline(this, handle);
         return true;
     }
 
@@ -466,7 +447,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             return false;
         }
 
-        buffer = new GpuDataBuffer(this, (IntPtr)handle);
+        buffer = new GpuDataBuffer(this, handle);
 
         if (name != null)
         {
@@ -505,7 +486,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         }
 
         transferBuffer = new GpuTransferBuffer(
-            this, (IntPtr)handle, (int)transferBufferCreateInfo.size);
+            this, handle, (int)transferBufferCreateInfo.size);
 
         return true;
     }
@@ -550,7 +531,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
 
         texture = new GpuTexture(
             this,
-            (IntPtr)handle,
+            handle,
             options.Type,
             options.Format,
             options.Width,
@@ -599,7 +580,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             return false;
         }
 
-        sampler = new GpuSampler(this, (IntPtr)handle);
+        sampler = new GpuSampler(this, handle);
 
         return true;
     }

@@ -45,14 +45,14 @@ public sealed class E006_BasicStencil : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("PositionColor.vert"), out var vertexShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("PositionColor.vert"),  Device, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, out var fragmentShader))
         {
             return false;
         }
@@ -82,7 +82,7 @@ public sealed class E006_BasicStencil : ExampleGpu
         backStencilState.PassOp = GpuStencilOp.Keep;
         backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineMasker))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelineMasker))
         {
             return false;
         }
@@ -100,7 +100,7 @@ public sealed class E006_BasicStencil : ExampleGpu
         backStencilState.PassOp = GpuStencilOp.Keep;
         backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineMaskee))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelineMaskee))
         {
             return false;
         }

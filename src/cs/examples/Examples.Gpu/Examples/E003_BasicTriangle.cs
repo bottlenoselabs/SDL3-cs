@@ -26,14 +26,14 @@ public sealed class E003_BasicTriangle : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("RawTriangle.vert"), out var vertexShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("RawTriangle.vert"),  Device, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, out var fragmentShader))
         {
             return false;
         }
@@ -46,14 +46,14 @@ public sealed class E003_BasicTriangle : ExampleGpu
         pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
         pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineFill))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelineFill))
         {
             Console.Error.WriteLine("Failed to create fill pipeline!");
             return false;
         }
 
         pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Line;
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineLine))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelineLine))
         {
             Console.Error.WriteLine("Failed to create line pipeline!");
             return false;

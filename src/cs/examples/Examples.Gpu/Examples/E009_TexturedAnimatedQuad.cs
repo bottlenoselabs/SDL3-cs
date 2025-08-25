@@ -24,21 +24,14 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem,
-                GetShaderFilePath("TexturedQuadWithMatrix.vert"),
-                out var vertexShader,
-                uniformBufferCount: 1))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("TexturedQuadWithMatrix.vert"),  Device, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem,
-                GetShaderFilePath("TexturedQuadWithMultiplyColor.frag"),
-                out var fragmentShader,
-                samplerCount: 1,
-                uniformBufferCount: 1))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("TexturedQuadWithMultiplyColor.frag"), Device, out var fragmentShader))
         {
             return false;
         }
@@ -66,7 +59,7 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         blendState.SourceAlphaBlendFactor = GpuBlendFactor.SourceAlpha;
         blendState.DestinationColorBlendFactor = GpuBlendFactor.OneMinusSourceAlpha;
         blendState.DestinationAlphaBlendFactor = GpuBlendFactor.OneMinusSourceAlpha;
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipeline))
         {
             return false;
         }
