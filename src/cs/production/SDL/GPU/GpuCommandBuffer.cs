@@ -195,7 +195,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
         ThrowIfSubmitted();
 
         var handle = SDL_BeginGPUCopyPass(HandleTyped);
-        var copyPass = new GpuCopyPass(Device, (IntPtr)handle, this);
+        var copyPass = new GpuCopyPass(Device, handle, this);
         return copyPass;
     }
 

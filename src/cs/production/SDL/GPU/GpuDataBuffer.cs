@@ -9,7 +9,7 @@ namespace bottlenoselabs.SDL;
 [PublicAPI]
 public sealed unsafe class GpuDataBuffer : GpuResource<SDL_GPUBuffer>
 {
-    internal GpuDataBuffer(GpuDevice device, IntPtr handle)
+    internal GpuDataBuffer(GpuDevice device, SDL_GPUBuffer* handle)
         : base(device, handle)
     {
     }

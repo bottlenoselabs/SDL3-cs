@@ -63,7 +63,7 @@ public sealed unsafe class GpuTexture : GpuResource<SDL_GPUTexture>
 
     internal GpuTexture(
         GpuDevice device,
-        IntPtr handle,
+        SDL_GPUTexture* handle,
         GpuTextureType type,
         GpuTextureFormat format,
         int width,

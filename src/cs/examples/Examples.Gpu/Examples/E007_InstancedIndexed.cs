@@ -24,14 +24,14 @@ public sealed class E007_InstancedIndex : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("PositionColorInstanced.vert"), out var vertexShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("PositionColorInstanced.vert"),  Device, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, out var fragmentShader))
         {
             return false;
         }
@@ -44,7 +44,7 @@ public sealed class E007_InstancedIndex : ExampleGpu
         pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
         pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipeline))
         {
             return false;
         }

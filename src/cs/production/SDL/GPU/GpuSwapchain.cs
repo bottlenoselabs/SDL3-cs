@@ -42,10 +42,9 @@ public sealed unsafe class GpuSwapchain : Disposable
 
         // NOTE: Swapchain texture handles are managed by the driver backend.
         //  Width and height are subject to change on the fly as the window could resize, so they are zero here.
-        var handle = IntPtr.Zero;
         Texture = new GpuTexture(
             device,
-            handle,
+            null,
             GpuTextureType.TwoDimensional,
             format,
             0,

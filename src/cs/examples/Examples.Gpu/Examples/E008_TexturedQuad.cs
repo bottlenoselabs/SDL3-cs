@@ -34,17 +34,14 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("TexturedQuad.vert"), out var vertexShader))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("TexturedQuad.vert"),  Device, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem,
-                GetShaderFilePath("TexturedQuad.frag"),
-                out var fragmentShader,
-                samplerCount: 1))
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("TexturedQuad.frag"), Device, out var fragmentShader))
         {
             return false;
         }
@@ -57,7 +54,7 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         pipelineDescriptor.SetVertexBufferDescription<VertexPositionTexture>();
         pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipeline))
         {
             return false;
         }
