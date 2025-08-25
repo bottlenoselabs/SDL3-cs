@@ -98,6 +98,73 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     }
 
     /// <summary>
+    ///     Begins a compute pass.
+    /// </summary>
+    /// <param name="storageTextureBindings">TODO.</param>
+    /// <param name="storageBufferBindings">TODO 2.</param>
+    /// <returns>A pooled <see cref="GpuComputePass" /> instance.</returns>
+    public GpuComputePass BeginComputePass(
+        in ReadOnlySpan<GpuStorageTextureReadWriteBinding> storageTextureBindings,
+        in ReadOnlySpan<GpuStorageBufferReadWriteBinding> storageBufferBindings)
+    {
+        ThrowIfSubmitted();
+
+        var storageTextureBindingsArray =
+            stackalloc SDL_GPUStorageTextureReadWriteBinding[storageTextureBindings.Length];
+        for (var i = 0; i < storageTextureBindings.Length; i++)
+        {
+            var src = storageTextureBindings[i];
+            ref var dst = ref storageTextureBindingsArray[i];
+            dst.texture = (SDL_GPUTexture*)src.Texture.Handle;
+            dst.mip_level = src.MipLevel;
+            dst.layer = src.Layer;
+            dst.cycle = src.Cycle;
+        }
+
+        var storageBufferBindingsArray
+            = stackalloc SDL_GPUStorageBufferReadWriteBinding[storageBufferBindings.Length];
+        for (var i = 0; i < storageBufferBindings.Length; i++)
+        {
+            var src = storageBufferBindings[i];
+            ref var dst = ref storageBufferBindingsArray[i];
+            dst.buffer = (SDL_GPUBuffer*)src.Buffer.Handle;
+            dst.cycle = src.Cycle;
+        }
+
+        var handle = SDL_BeginGPUComputePass(
+            _handle,
+            storageTextureBindingsArray,
+            (uint)storageTextureBindings.Length,
+            storageBufferBindingsArray,
+            (uint)storageBufferBindings.Length);
+        if (handle == null)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_BeginGPUComputePass));
+            throw new InvalidOperationException();
+        }
+
+        var renderPass = Device.PoolComputePass.GetOrCreate()!;
+        renderPass.Handle = handle;
+        renderPass.CommandBuffer = this;
+        return renderPass;
+    }
+
+    /// <summary>
+    ///     Pushes data to a uniform slot on the command buffer.
+    /// </summary>
+    /// <param name="startIndex">Index of the uniform slot to push data to.</param>
+    /// <param name="data">An array of <see cref="GpuTexture"/> and <see cref="GpuSampler"/> pairs to bind.</param>
+    /// <typeparam name="T">Data type. It must respect std140 layout conventions.</typeparam>
+    public void PushComputeUniformData<T>(int startIndex, in T data)
+        where T : unmanaged
+    {
+        fixed (T* dataPtr = &data)
+        {
+            SDL_PushGPUComputeUniformData(_handle, (uint)startIndex, dataPtr, (uint)sizeof(T));
+        }
+    }
+
+    /// <summary>
     ///     Begins a render pass.
     /// </summary>
     /// <param name="depthStencilTargetInfo">The depth-stencil render-target to use in the render pass.</param>

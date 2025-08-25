@@ -1,6 +1,8 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace bottlenoselabs.SDL;
 
 /// <summary>
@@ -10,6 +12,7 @@ namespace bottlenoselabs.SDL;
 public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
 {
     internal readonly Pool<GpuRenderPass> PoolRenderPass;
+    internal readonly Pool<GpuComputePass> PoolComputePass;
     internal readonly ArenaNativeAllocator Allocator;
 
     private readonly ILogger<GpuDevice> _logger;
@@ -146,6 +149,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
 
         _poolCommandBuffer = new Pool<GpuCommandBuffer>(_logger, () => new GpuCommandBuffer(this), "GpuCommandBuffers");
         PoolRenderPass = new Pool<GpuRenderPass>(_logger, () => new GpuRenderPass(this), "GpuRenderPasses");
+        PoolComputePass = new Pool<GpuComputePass>(_logger, () => new GpuComputePass(this), "GpuComputePasses");
 
         SupportedShaderFormats = (GpuShaderFormats)(uint)SDL_GetGPUShaderFormats(HandleTyped);
 
@@ -326,6 +330,60 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     }
 
     /// <summary>
+    ///     Attempts to create a new <see cref="GpuComputePipeline" /> instance.
+    /// </summary>
+    /// <param name="options">The parameters for creating the pipeline.</param>
+    /// <param name="pipeline">
+    ///     If successful, a new <see cref="GpuComputePipeline" /> instance; otherwise, <c>null</c>.
+    /// </param>
+    /// <returns><c>true</c> if the pipeline was successfully created; otherwise, <c>false</c>.</returns>
+    /// <exception cref="InvalidOperationException">The shader format or shader code is <c>null</c>.</exception>
+    public bool TryCreateComputePipeline(
+        GpuComputePipelineOptions options,
+        out GpuComputePipeline? pipeline)
+    {
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (options.ShaderFormat == null)
+        {
+            throw new InvalidOperationException("Shader format can not be null.");
+        }
+
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (options.ShaderCode is not {} shaderCode)
+        {
+            throw new InvalidOperationException("Shader code can not be null.");
+        }
+
+        fixed (byte* code = shaderCode.AsSpan())
+        {
+            var info = default(SDL_GPUComputePipelineCreateInfo);
+            info.format = (uint)options.ShaderFormat;
+            info.code = code;
+            info.code_size = (ulong)shaderCode.Length;
+            info.entrypoint = options.Allocator.AllocateCString(options.EntryPoint);
+            info.num_samplers = (uint)options.SamplersCount;
+            info.num_readwrite_storage_textures = (uint)options.ReadWriteStorageTexturesCount;
+            info.num_readonly_storage_textures = (uint)options.ReadOnlyStorageTexturesCount;
+            info.num_readwrite_storage_buffers = (uint)options.ReadWriteStorageBuffersCount;
+            info.num_readonly_storage_buffers = (uint)options.ReadOnlyStorageBuffersCount;
+            info.threadcount_x = (uint)options.ThreadCountX;
+            info.threadcount_y = (uint)options.ThreadCountY;
+            info.threadcount_z = (uint)options.ThreadCountZ;
+
+            var handle = SDL_CreateGPUComputePipeline(HandleTyped, &info);
+            if (handle == null)
+            {
+                Error.NativeFunctionFailed(nameof(SDL_CreateGPUShader));
+                pipeline = null;
+                return false;
+            }
+
+            pipeline = new GpuComputePipeline(this, (IntPtr)handle);
+            return true;
+        }
+    }
+
+    /// <summary>
     ///     Attempts to create a new <see cref="GpuGraphicsPipeline" /> instance.
     /// </summary>
     /// <param name="options">The parameters for creating the pipeline.</param>
@@ -490,7 +548,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     ///     If successful, a new <see cref="GpuTransferBuffer" /> instance; otherwise, <c>null</c>.
     /// </param>
     /// <returns><c>true</c> if the transfer buffer was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateTransferBuffer(int size, out GpuTransferBuffer? transferBuffer)
+    public bool TryCreateTransferBuffer(int size, [NotNullWhen(true)] out GpuTransferBuffer? transferBuffer)
     {
         var transferBufferCreateInfo = default(SDL_GPUTransferBufferCreateInfo);
         transferBufferCreateInfo.usage = SDL_GPUTransferBufferUsage.SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
@@ -604,6 +662,21 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         return true;
     }
 
+    internal void EndComputePassTryInternal(GpuComputePass computePass)
+    {
+        if (computePass.Handle == null)
+        {
+            return;
+        }
+
+        computePass.CommandBuffer.ThrowIfSubmitted();
+
+        var handle = computePass.Handle;
+        computePass.Handle = null;
+        computePass.CommandBuffer = null!;
+        SDL_EndGPUComputePass(handle);
+    }
+
     internal void EndRenderPassTryInternal(GpuRenderPass renderPass)
     {
         if (renderPass.Handle == null)
@@ -623,6 +696,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     protected override void Dispose(bool isDisposing)
     {
         PoolRenderPass.Dispose();
+        PoolComputePass.Dispose();
         _poolCommandBuffer.Dispose();
 
         SDL_DestroyGPUDevice(HandleTyped);
