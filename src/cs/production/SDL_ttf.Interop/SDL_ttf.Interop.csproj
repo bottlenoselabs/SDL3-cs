@@ -7,6 +7,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>bottlenoselabs.Interop</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- NuGet -->

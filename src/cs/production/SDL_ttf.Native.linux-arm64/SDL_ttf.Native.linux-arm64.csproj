@@ -1,33 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+    <PlatformTarget>arm64</PlatformTarget>
+    <NativeLibraryFileName>libSDL3_ttf.so</NativeLibraryFileName>
+  </PropertyGroup>
+  <Import Project="../NativeLibrary.props" />
+
   <!-- MSBuild settings -->
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput> <!-- No C# assemblies to include -->
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems> <!-- Don't include .cs files -->
-    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
-    <PlatformTarget>arm64</PlatformTarget>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
   <!-- NuGet -->
   <PropertyGroup>
     <PackageDescription>The native `SDL_ttf` library (SDL3_ttf) file (libSDL3_ttf.so) for the `linux-arm64` target framework moniker (TFM).</PackageDescription>
   </PropertyGroup>
-
-  <!-- Dynamic link library -->
-  <PropertyGroup>
-    <NativeLibraryFileName>libSDL3_ttf.so</NativeLibraryFileName>
-    <NativeLibraryFilePath>$(LibraryDirectoryPath)/$(RuntimeIdentifier)/$(NativeLibraryFileName)</NativeLibraryFilePath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="$(NativeLibraryFilePath)"
-      PackagePath="runtimes\$(RuntimeIdentifier)\native\"
-      Condition="Exists('$(NativeLibraryFilePath)')">
-      <Link>%(Filename)%(Extension)</Link>
-      <Pack>true</Pack>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
 </Project>
