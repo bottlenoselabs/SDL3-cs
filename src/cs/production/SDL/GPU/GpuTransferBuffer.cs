@@ -14,7 +14,7 @@ public sealed unsafe class GpuTransferBuffer : GpuResource<SDL_GPUTransferBuffer
     /// </summary>
     public int Size { get; }
 
-    internal GpuTransferBuffer(GpuDevice device, IntPtr handle, int size)
+    internal GpuTransferBuffer(GpuDevice device, SDL_GPUTransferBuffer* handle, int size)
         : base(device, handle)
     {
         Size = size;

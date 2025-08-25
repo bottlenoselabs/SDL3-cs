@@ -21,8 +21,8 @@ public class GpuResource<T> : NativeHandleTyped<T>
     /// </remarks>
     public GpuDevice Device { get; private set; }
 
-    internal unsafe GpuResource(GpuDevice device, IntPtr handle)
-        : base((T*)handle)
+    internal unsafe GpuResource(GpuDevice device, T* handle)
+        : base(handle)
     {
         Device = device;
     }

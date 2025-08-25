@@ -67,7 +67,8 @@ public sealed unsafe class FileSystem : Disposable
     }
 
     /// <summary>
-    ///     Attempts to load a file as an image given the specified file path.
+    ///     Attempts to load a file as an image and create a new <see cref="Surface" /> instance given the specified
+    ///     file path.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
@@ -130,7 +131,8 @@ public sealed unsafe class FileSystem : Disposable
     }
 
     /// <summary>
-    ///     Attempts to load a file as a font given the specified file path and point size.
+    ///     Attempts to load a file as a font and create a new <see cref="Font" /> instance given the specified file
+    ///     path and point size.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
@@ -167,6 +169,94 @@ public sealed unsafe class FileSystem : Disposable
         }
 
         font = new Font((IntPtr)fontPointer);
+        return true;
+    }
+
+    /// <summary>
+    ///     Attempts to load a file as a graphics shader and create a new <see cref="GpuGraphicsShader" /> instance
+    ///     using the specified file path.
+    /// </summary>
+    /// <param name="filePath">
+    ///     The path to the file. If the path is relative, it is assumed to be relative to
+    ///     <see cref="AppContext.BaseDirectory" />.
+    /// </param>
+    /// <param name="device">The <see cref="GpuDevice" /> instance.</param>
+    /// <param name="shader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
+    /// <param name="samplerCount">The number of samplers used in the shader.</param>
+    /// <param name="uniformBufferCount">The number of uniform buffers used in the shader.</param>
+    /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
+    public bool TryLoadGraphicsShader(
+        string filePath,
+        GpuDevice device,
+        out GpuGraphicsShader? shader,
+        int samplerCount = 0,
+        int uniformBufferCount = 0)
+    {
+        if (!TryLoadFile(filePath, out var file))
+        {
+            shader = null;
+            return false;
+        }
+
+        using var options = new GpuGraphicsShaderOptions();
+        options.SamplerCount = samplerCount;
+        options.UniformBufferCount = uniformBufferCount;
+        if (!options.TrySetFromFile(file))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        if (!device.TryCreateGraphicsShader(options, out shader))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        file.Dispose();
+        return true;
+    }
+
+    /// <summary>
+    ///     Attempts to load a file as a compute shader and create a new <see cref="GpuComputeShader" /> instance
+    ///     using the specified file path.
+    /// </summary>
+    /// <param name="filePath">
+    ///     The path to the file. If the path is relative, it is assumed to be relative to
+    ///     <see cref="AppContext.BaseDirectory" />.
+    /// </param>
+    /// <param name="device">The <see cref="GpuDevice" /> instance.</param>
+    /// <param name="shader">If successful, a new <see cref="GpuComputeShader" /> instance; otherwise, <c>null</c>.</param>
+    /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
+    public bool TryLoadComputeShader(
+        string filePath,
+        GpuDevice device,
+        out GpuComputeShader? shader)
+    {
+        if (!TryLoadFile(filePath, out var file))
+        {
+            shader = null;
+            return false;
+        }
+
+        using var options = new GpuComputeShaderOptions();
+        if (!options.TrySetFromFile(file))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        if (!device.TryCreateComputeShader(options, out shader))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        file.Dispose();
         return true;
     }
 

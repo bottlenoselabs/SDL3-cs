@@ -22,9 +22,9 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public sealed class GpuSampler : GpuResource<SDL_GPUSampler>
+public sealed unsafe class GpuSampler : GpuResource<SDL_GPUSampler>
 {
-    internal GpuSampler(GpuDevice device, IntPtr handle)
+    internal GpuSampler(GpuDevice device, SDL_GPUSampler* handle)
         : base(device, handle)
     {
     }

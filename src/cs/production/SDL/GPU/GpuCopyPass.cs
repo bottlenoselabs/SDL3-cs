@@ -26,7 +26,7 @@ public unsafe class GpuCopyPass : GpuResource<SDL_GPUCopyPass>
     /// </remarks>
     public GpuCommandBuffer CommandBuffer { get; private set; }
 
-    internal GpuCopyPass(GpuDevice device, IntPtr handle, GpuCommandBuffer commandBuffer)
+    internal GpuCopyPass(GpuDevice device, SDL_GPUCopyPass* handle, GpuCommandBuffer commandBuffer)
         : base(device, handle)
     {
         CommandBuffer = commandBuffer;
