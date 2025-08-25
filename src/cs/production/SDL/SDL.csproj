@@ -6,13 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>bottlenoselabs.SDL</RootNamespace>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <!-- NuGet -->
   <PropertyGroup>
     <PackageDescription>C# wrapper ("safe" API) for the native `SDL` (SDL3) and `SDL_image` (SDL3_image) libraries.</PackageDescription>
   </PropertyGroup>
-
+  
   <!-- Project references -->
   <ItemGroup>
     <ProjectReference Include="../SDL.Interop/SDL.Interop.csproj" />
