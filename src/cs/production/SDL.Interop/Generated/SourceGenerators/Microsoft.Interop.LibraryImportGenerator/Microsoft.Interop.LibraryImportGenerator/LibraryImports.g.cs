@@ -1476,7 +1476,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetCameraPermissionState", ExactSpelling = true)]
-        public static extern partial int SDL_GetCameraPermissionState(global::bottlenoselabs.Interop.SDL.SDL_Camera* camera);
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_CameraPermissionState SDL_GetCameraPermissionState(global::bottlenoselabs.Interop.SDL.SDL_Camera* camera);
     }
 }
 namespace bottlenoselabs.Interop
