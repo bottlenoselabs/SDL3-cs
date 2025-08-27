@@ -3,6 +3,8 @@
 
 namespace bottlenoselabs.SDL;
 
+#pragma warning disable CA1024
+
 /// <summary>
 ///     Utility for dealing with SDL errors.
 /// </summary>
