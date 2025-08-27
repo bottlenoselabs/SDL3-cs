@@ -47,7 +47,7 @@ public class GpuGraphicsShaderOptions : GpuBaseShaderOptions
     }
 
     /// <summary>
-    ///     Sets the properties of a <see cref="GpuGraphicsShaderOptions" /> struct using a specified loaded file path
+    ///     Sets the properties of a <see cref="GpuGraphicsShaderOptions" /> instance using a specified loaded file path
     ///     of a graphics shader file.
     /// </summary>
     /// <param name="file">The loaded file of the graphics shader.</param>

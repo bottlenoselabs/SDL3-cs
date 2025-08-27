@@ -10,6 +10,51 @@ namespace bottlenoselabs.SDL;
 public class GpuComputeShaderOptions : GpuBaseShaderOptions
 {
     /// <summary>
+    ///     Gets or sets the number of samplers.
+    /// </summary>
+    public int SamplerCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of read-only storage textures.
+    /// </summary>
+    public int ReadOnlyStorageTextureCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of read-only storage buffers.
+    /// </summary>
+    public int ReadOnlyStorageBuffersCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of read-write storage textures.
+    /// </summary>
+    public int ReadWriteStorageTextureCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of read-write storage buffers.
+    /// </summary>
+    public int ReadWriteStorageBufferCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of uniform buffers.
+    /// </summary>
+    public int UniformBufferCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of threads in the X dimension.
+    /// </summary>
+    public int ThreadXCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of threads in the Y dimension.
+    /// </summary>
+    public int ThreadYCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of threads in the Z dimension.
+    /// </summary>
+    public int ThreadZCount { get; set; }
+
+    /// <summary>
     ///     Initializes a new instance of the <see cref="GpuComputeShaderOptions" /> class.
     /// </summary>
     /// <param name="allocator">
@@ -22,7 +67,7 @@ public class GpuComputeShaderOptions : GpuBaseShaderOptions
     }
 
     /// <summary>
-    ///     Sets the properties of a <see cref="GpuComputeShaderOptions" /> struct using a specified loaded file path
+    ///     Sets the properties of a <see cref="GpuComputeShaderOptions" /> instance using a specified loaded file path
     ///     of a compute shader file.
     /// </summary>
     /// <param name="file">The loaded file of the compute shader.</param>
@@ -39,5 +84,21 @@ public class GpuComputeShaderOptions : GpuBaseShaderOptions
         }
 
         return true;
+    }
+
+    /// <inheritdoc />
+    protected override void OnReset()
+    {
+        base.OnReset();
+
+        SamplerCount = 0;
+        ReadOnlyStorageTextureCount = 0;
+        ReadOnlyStorageBuffersCount = 0;
+        ReadWriteStorageTextureCount = 0;
+        ReadWriteStorageBufferCount = 0;
+        UniformBufferCount = 0;
+        ThreadXCount = 0;
+        ThreadYCount = 0;
+        ThreadZCount = 0;
     }
 }
