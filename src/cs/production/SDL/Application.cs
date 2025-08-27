@@ -172,6 +172,14 @@ public abstract unsafe partial class Application : Disposable
     protected abstract void OnKeyUp(in KeyboardEvent e);
 
     /// <summary>
+    ///     Called when an event is received from SDL.
+    /// </summary>
+    /// <param name="e">The event.</param>
+    protected virtual void OnEvent(in SDL_Event e)
+    {
+    }
+
+    /// <summary>
     ///     Called when the application determines it is time to update a frame. This is where your application would
     ///     update its state.
     /// </summary>
@@ -288,6 +296,8 @@ public abstract unsafe partial class Application : Disposable
                 break;
             }
         }
+
+        OnEvent(e);
     }
 
     private void HandleMouseMotionEvent(in SDL_MouseMotionEvent mouseMotionEvent)
