@@ -11,6 +11,10 @@ public abstract unsafe partial class Application : Disposable
 {
     private bool _isExiting;
     private volatile bool _isInBackground;
+    private ulong _previousTime;
+    private int _renderedFrameCount;
+    private TimeSpan _frameCounterAccumulatedTime;
+
     private readonly ILoggerFactory _loggerFactory;
 
     private readonly Dictionary<IntPtr, string> _keyNamesByPointer = new();
@@ -78,6 +82,7 @@ public abstract unsafe partial class Application : Disposable
 
         OnStart();
         Loop();
+        OnExit();
 
         TTF_Quit();
     }
@@ -209,26 +214,27 @@ public abstract unsafe partial class Application : Disposable
 
     private void Loop()
     {
-        var previousTime = SDL_GetPerformanceCounter();
-        var renderedFramesCount = 0;
-        var framesCountAccumulatedTime = TimeSpan.Zero;
+        _previousTime = SDL_GetPerformanceCounter();
 
         while (!_isExiting)
         {
-            PollEvents();
-            var deltaTime = AdvanceTime(ref previousTime);
-            OnUpdate(deltaTime);
+            Tick();
+        }
+    }
 
-            if (!_isInBackground)
-            {
-                OnDraw(deltaTime);
-                renderedFramesCount++;
-            }
+    private void Tick()
+    {
+        PollEvents();
+        var deltaTime = AdvanceTime();
+        OnUpdate(deltaTime);
 
-            CalculateFramesPerSecond(deltaTime, ref framesCountAccumulatedTime, ref renderedFramesCount);
+        if (!_isInBackground)
+        {
+            OnDraw(deltaTime);
+            _renderedFrameCount++;
         }
 
-        OnExit();
+        CalculateFramesPerSecond(deltaTime);
     }
 
     private void PollEvents()
@@ -240,31 +246,28 @@ public abstract unsafe partial class Application : Disposable
         }
     }
 
-    private static TimeSpan AdvanceTime(ref ulong previousTime)
+    private TimeSpan AdvanceTime()
     {
         var currentTime = SDL_GetPerformanceCounter();
-        var deltaTime = currentTime - previousTime;
-        previousTime = currentTime;
+        var deltaTime = currentTime - _previousTime;
+        _previousTime = currentTime;
         var deltaSeconds = (double)deltaTime / SDL_GetPerformanceFrequency();
         var deltaTicks = (long)(deltaSeconds * TimeSpan.TicksPerSecond);
         var timeAdvanced = new TimeSpan(deltaTicks);
         return timeAdvanced;
     }
 
-    private void CalculateFramesPerSecond(
-        TimeSpan deltaTime,
-        ref TimeSpan framesCounterAccumulatedTime,
-        ref int renderedFramesCount)
+    private void CalculateFramesPerSecond(TimeSpan deltaTime)
     {
-        framesCounterAccumulatedTime += deltaTime;
-        if (framesCounterAccumulatedTime < FramesCounterElapsedTime)
+        _frameCounterAccumulatedTime += deltaTime;
+        if (_frameCounterAccumulatedTime < FramesCounterElapsedTime)
         {
             return;
         }
 
-        framesCounterAccumulatedTime -= FramesCounterElapsedTime;
-        FramesPerSecond = renderedFramesCount;
-        renderedFramesCount = 0;
+        _frameCounterAccumulatedTime -= FramesCounterElapsedTime;
+        FramesPerSecond = _renderedFrameCount;
+        _renderedFrameCount = 0;
     }
 
     private void HandleEvent(in SDL_Event e)
@@ -490,6 +493,17 @@ public abstract unsafe partial class Application : Disposable
             case SDL_EventType.SDL_EVENT_WILL_ENTER_FOREGROUND:
             {
                 Interlocked.Exchange(ref app._isInBackground, false);
+                break;
+            }
+
+            case SDL_EventType.SDL_EVENT_WINDOW_EXPOSED:
+            {
+                var isLiveResize = e->window.data1 == 1;
+                if (isLiveResize)
+                {
+                    app.Tick();
+                }
+
                 break;
             }
         }
