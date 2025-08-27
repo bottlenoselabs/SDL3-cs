@@ -293,6 +293,15 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         createInfo.code_size = (ulong)options.DataSize;
         createInfo.entrypoint = options.Allocator.AllocateCString(options.EntryPoint);
         createInfo.format = (uint)options.Format;
+        createInfo.num_samplers = (uint)options.SamplerCount;
+        createInfo.num_readonly_storage_textures = (uint)options.ReadOnlyStorageTextureCount;
+        createInfo.num_readonly_storage_buffers = (uint)options.ReadOnlyStorageBuffersCount;
+        createInfo.num_readwrite_storage_textures = (uint)options.ReadWriteStorageTextureCount;
+        createInfo.num_readwrite_storage_buffers = (uint)options.ReadWriteStorageBufferCount;
+        createInfo.num_uniform_buffers = (uint)options.UniformBufferCount;
+        createInfo.threadcount_x = (uint)options.ThreadXCount;
+        createInfo.threadcount_y = (uint)options.ThreadYCount;
+        createInfo.threadcount_z = (uint)options.ThreadZCount;
 
         var handle = SDL_CreateGPUComputePipeline(HandleTyped, &createInfo);
         if (handle == null)
