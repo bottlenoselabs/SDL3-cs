@@ -26,14 +26,16 @@ public sealed class E003_BasicTriangle : ExampleGpu
             return false;
         }
 
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
         if (!FileSystem.TryLoadGraphicsShader(
-                GetShaderFilePath("RawTriangle.vert"),  Device, out var vertexShader))
+                GetShaderFilePath("RawTriangle.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
         if (!FileSystem.TryLoadGraphicsShader(
-                GetShaderFilePath("SolidColor.frag"), Device, out var fragmentShader))
+                GetShaderFilePath("SolidColor.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }

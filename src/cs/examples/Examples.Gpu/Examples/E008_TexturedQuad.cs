@@ -34,14 +34,17 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
         if (!FileSystem.TryLoadGraphicsShader(
-                GetShaderFilePath("TexturedQuad.vert"),  Device, out var vertexShader))
+                GetShaderFilePath("TexturedQuad.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
+        fragmentShaderOptions.SamplerCount = 1;
         if (!FileSystem.TryLoadGraphicsShader(
-                GetShaderFilePath("TexturedQuad.frag"), Device, out var fragmentShader))
+                GetShaderFilePath("TexturedQuad.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }
