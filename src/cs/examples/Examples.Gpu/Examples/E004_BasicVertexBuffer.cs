@@ -19,14 +19,16 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
             return false;
         }
 
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
         if (!FileSystem.TryLoadGraphicsShader(
-                GetShaderFilePath("PositionColor.vert"),  Device, out var vertexShader))
+                GetShaderFilePath("PositionColor.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
         if (!FileSystem.TryLoadGraphicsShader(
-                GetShaderFilePath("SolidColor.frag"), Device, out var fragmentShader))
+                GetShaderFilePath("SolidColor.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }

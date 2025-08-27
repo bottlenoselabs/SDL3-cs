@@ -66,26 +66,6 @@ public class GpuComputeShaderOptions : GpuBaseShaderOptions
     {
     }
 
-    /// <summary>
-    ///     Sets the properties of a <see cref="GpuComputeShaderOptions" /> instance using a specified loaded file path
-    ///     of a compute shader file.
-    /// </summary>
-    /// <param name="file">The loaded file of the compute shader.</param>
-    /// <returns>
-    ///     <c>true</c> if the options was successfully set using the <paramref name="file" />; otherwise,
-    ///     <c>false</c>.
-    /// </returns>
-    /// <exception cref="InvalidOperationException"><paramref name="file" /> has no data.</exception>
-    public override bool TrySetFromFile(File file)
-    {
-        if (!base.TrySetFromFile(file))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
     /// <inheritdoc />
     protected override void OnReset()
     {

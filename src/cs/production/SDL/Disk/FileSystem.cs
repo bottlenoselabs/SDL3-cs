@@ -181,16 +181,14 @@ public sealed unsafe class FileSystem : Disposable
     ///     <see cref="AppContext.BaseDirectory" />.
     /// </param>
     /// <param name="device">The <see cref="GpuDevice" /> instance.</param>
+    /// <param name="options">The <see cref="GpuGraphicsShaderOptions" /> instance.</param>
     /// <param name="shader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
-    /// <param name="samplerCount">The number of samplers used in the shader.</param>
-    /// <param name="uniformBufferCount">The number of uniform buffers used in the shader.</param>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
     public bool TryLoadGraphicsShader(
         string filePath,
         GpuDevice device,
-        out GpuGraphicsShader? shader,
-        int samplerCount = 0,
-        int uniformBufferCount = 0)
+        GpuGraphicsShaderOptions options,
+        out GpuGraphicsShader? shader)
     {
         if (!TryLoadFile(filePath, out var file))
         {
@@ -198,9 +196,6 @@ public sealed unsafe class FileSystem : Disposable
             return false;
         }
 
-        using var options = new GpuGraphicsShaderOptions();
-        options.SamplerCount = samplerCount;
-        options.UniformBufferCount = uniformBufferCount;
         if (!options.TrySetFromFile(file))
         {
             shader = null;
@@ -228,11 +223,13 @@ public sealed unsafe class FileSystem : Disposable
     ///     <see cref="AppContext.BaseDirectory" />.
     /// </param>
     /// <param name="device">The <see cref="GpuDevice" /> instance.</param>
+    /// <param name="options">The <see cref="GpuComputeShaderOptions" /> instance.</param>
     /// <param name="shader">If successful, a new <see cref="GpuComputeShader" /> instance; otherwise, <c>null</c>.</param>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
     public bool TryLoadComputeShader(
         string filePath,
         GpuDevice device,
+        GpuComputeShaderOptions options,
         out GpuComputeShader? shader)
     {
         if (!TryLoadFile(filePath, out var file))
@@ -241,7 +238,6 @@ public sealed unsafe class FileSystem : Disposable
             return false;
         }
 
-        using var options = new GpuComputeShaderOptions();
         if (!options.TrySetFromFile(file))
         {
             shader = null;
