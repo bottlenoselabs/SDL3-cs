@@ -61,6 +61,12 @@ public sealed class WindowOptions : BaseOptions
     public bool IsEnabledCreateRenderer { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value indicating whether the window attempts to match the native pixel density of the display.
+    ///     Default is <c>false</c>.
+    /// </summary>
+    public bool IsEnabledHighPixelDensity { get; set; }
+
+    /// <summary>
     ///     Initializes a new instance of the <see cref="WindowOptions" /> class.
     /// </summary>
     /// <param name="allocator">
@@ -81,5 +87,6 @@ public sealed class WindowOptions : BaseOptions
         IsResizable = true;
         IsStartingMaximized = false;
         IsEnabledCreateSurface = false;
+        IsEnabledHighPixelDensity = false;
     }
 }
