@@ -477,7 +477,6 @@ public abstract unsafe partial class Application : Disposable
     private static CBool OnEventWatch(void* userData, SDL_Event* e)
     {
         // NOTE: We may be on different thread than the main thread.
-        // NOTE: The return value is ignored for SDL_AddEventWatch. Thus, we always return false.
 
         var app = Current;
 
@@ -498,9 +497,13 @@ public abstract unsafe partial class Application : Disposable
 
             case SDL_EventType.SDL_EVENT_WINDOW_EXPOSED:
             {
-                var isLiveResize = e->window.data1 == 1;
-                if (isLiveResize)
+                // NOTE: We are on the main thread.
+
+                var isWindowResizing = e->window.data1 == 1;
+                if (isWindowResizing)
                 {
+                    // NOTE: If ANY window is resizing, then we tick the WHOLE application. Perhaps it would be better
+                    //  to tick only the specific window that is resizing instead.
                     app.Tick();
                 }
 
@@ -508,6 +511,7 @@ public abstract unsafe partial class Application : Disposable
             }
         }
 
+        // NOTE: The return value is ignored for SDL_AddEventWatch. Thus, we always return false.
         return false;
     }
 }
