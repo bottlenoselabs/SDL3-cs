@@ -23,8 +23,8 @@ public sealed class E010_Clear3DSlice : ExampleGpu
         textureOptions.Format = Window.Swapchain!.TextureFormat;
         textureOptions.Width = 64;
         textureOptions.Height = 64;
-        textureOptions.LayerCountOrDepth = 4;
-        textureOptions.MipmapLevelCount = 1;
+        textureOptions.LayersCountOrDepth = 4;
+        textureOptions.MipmapLevelsCount = 1;
         textureOptions.Usage = GpuTextureUsages.ColorRenderTarget | GpuTextureUsages.Sampler;
         if (!Device.TryCreateTexture(textureOptions, out _texture3D))
         {
@@ -93,7 +93,7 @@ public sealed class E010_Clear3DSlice : ExampleGpu
 
         for (var i = 0; i < 4; i += 1)
         {
-            var destinationX = (i % 2) * (swapchainTexture!.Width / 2);
+            var destinationX = (i % 2) * (swapchainTexture.Width / 2);
             var destinationY = (i > 1) ? (swapchainTexture.Height / 2) : 0;
 
             var blitInfo = default(GpuBlitInfo);

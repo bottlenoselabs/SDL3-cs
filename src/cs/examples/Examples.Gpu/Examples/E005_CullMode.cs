@@ -46,33 +46,33 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         }
 
         // Create pipelines
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionColor>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionColor>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
         var pipelineCount = ModeNames.Length;
         _pipelines = new GpuGraphicsPipeline[pipelineCount];
         for (var i = 0; i < pipelineCount; i += 1)
         {
-            pipelineDescriptor.RasterizerState.CullMode = (GpuGraphicsPipelineCullMode)(i % 3);
-            pipelineDescriptor.RasterizerState.FrontFace = i > 2 ?
+            graphicsPipelineOptions.RasterizerState.CullMode = (GpuGraphicsPipelineCullMode)(i % 3);
+            graphicsPipelineOptions.RasterizerState.FrontFace = i > 2 ?
                 GpuGraphicsPipelineFrontFace.Clockwise :
                 GpuGraphicsPipelineFrontFace.CounterClockwise;
 
-            if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelines[i]))
+            if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipelines[i]))
             {
                 return false;
             }
         }
 
         // Clean up shader resources
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         // Create the vertex buffers. They're the same except for the vertex order.
         if (!Device.TryCreateDataBuffer<VertexPositionColor>(3, out _vertexBufferCw))
@@ -86,12 +86,12 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         }
 
         // To get data into the vertex buffer, we have to use a transfer buffer
-        if (!Device.TryCreateTransferBuffer(sizeof(VertexPositionColor) * 6, out var transferBuffer))
+        if (!Device.TryCreateUploadTransferBuffer(sizeof(VertexPositionColor) * 6, out var transferBuffer))
         {
             return false;
         }
 
-        var transBufferSpan = transferBuffer!.MapAsSpan();
+        var transBufferSpan = transferBuffer.MapAsSpan();
         var data = MemoryMarshal.Cast<byte, VertexPositionColor>(transBufferSpan);
 
         // clockwise vertices
@@ -199,14 +199,14 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         }
 
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
-        renderTargetInfoColor.Texture = swapchainTexture!;
+        renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
         renderPass.BindPipeline(_pipelines[_currentModeIndex]);
 
-        var swapchainTextureHalfWidth = swapchainTexture!.Width / 2;
+        var swapchainTextureHalfWidth = swapchainTexture.Width / 2;
         var viewport1 = new GpuViewport
         {
             X = 0, Y = 0, Width = swapchainTextureHalfWidth, Height = swapchainTexture.Height

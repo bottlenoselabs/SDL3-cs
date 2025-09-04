@@ -30,16 +30,16 @@ public sealed class E006_BasicStencil : ExampleGpu
             return true;
         }
 
-        var textureDescriptor = new GpuTextureOptions();
-        textureDescriptor.Type = GpuTextureType.TwoDimensional;
-        textureDescriptor.Width = Window.SizeInPixels.Width;
-        textureDescriptor.Height = Window.SizeInPixels.Height;
-        textureDescriptor.LayerCountOrDepth = 1;
-        textureDescriptor.MipmapLevelCount = 1;
-        textureDescriptor.SampleCount = 1;
-        textureDescriptor.Format = depthStencilFormat;
-        textureDescriptor.Usage = GpuTextureUsages.DepthStencilRenderTarget;
-        if (!Device.TryCreateTexture(textureDescriptor, out _textureDepthStencilTarget))
+        var textureOptions = new GpuTextureOptions();
+        textureOptions.Type = GpuTextureType.TwoDimensional;
+        textureOptions.Width = Window.SizeInPixels.Width;
+        textureOptions.Height = Window.SizeInPixels.Height;
+        textureOptions.LayersCountOrDepth = 1;
+        textureOptions.MipmapLevelsCount = 1;
+        textureOptions.SamplesCount = 1;
+        textureOptions.Format = depthStencilFormat;
+        textureOptions.Usage = GpuTextureUsages.DepthStencilRenderTarget;
+        if (!Device.TryCreateTexture(textureOptions, out _textureDepthStencilTarget))
         {
             Console.Error.WriteLine("Failed to create texture!");
             return false;
@@ -59,18 +59,18 @@ public sealed class E006_BasicStencil : ExampleGpu
             return false;
         }
 
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionColor>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionColor>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        pipelineDescriptor.IsEnabledDepthStencilRenderTarget = true;
-        pipelineDescriptor.DepthStencilRenderTargetFormat = depthStencilFormat;
+        graphicsPipelineOptions.IsEnabledDepthStencilRenderTarget = true;
+        graphicsPipelineOptions.DepthStencilRenderTargetFormat = depthStencilFormat;
 
-        var depthStencilState = pipelineDescriptor.DepthStencilState;
+        var depthStencilState = graphicsPipelineOptions.DepthStencilState;
         depthStencilState.IsEnabledStencilTest = true;
         depthStencilState.WriteMask = 0xFF;
         var frontStencilState = depthStencilState.FrontStencilState;
@@ -84,7 +84,7 @@ public sealed class E006_BasicStencil : ExampleGpu
         backStencilState.PassOp = GpuStencilOp.Keep;
         backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
-        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelineMasker))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipelineMasker))
         {
             return false;
         }
@@ -102,25 +102,25 @@ public sealed class E006_BasicStencil : ExampleGpu
         backStencilState.PassOp = GpuStencilOp.Keep;
         backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
-        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipelineMaskee))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipelineMaskee))
         {
             return false;
         }
 
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         if (!Device.TryCreateDataBuffer<VertexPositionColor>(6, out _vertexBuffer))
         {
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(VertexPositionColor.SizeOf * 6, out var transferBuffer))
+        if (!Device.TryCreateUploadTransferBuffer(VertexPositionColor.SizeOf * 6, out var transferBuffer))
         {
             return false;
         }
 
-        var transferBufferSpan = transferBuffer!.MapAsSpan();
+        var transferBufferSpan = transferBuffer.MapAsSpan();
         var data = MemoryMarshal.Cast<byte, VertexPositionColor>(transferBufferSpan);
 
         data[0].Position = new Vector3(-0.5f, -0.5f, 0);

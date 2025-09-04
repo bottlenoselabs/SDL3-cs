@@ -30,7 +30,7 @@ public sealed class E001_ClearScreen : ExampleGpu
         }
 
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
-        renderTargetInfoColor.Texture = swapchainTexture!;
+        renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = _clearColor;

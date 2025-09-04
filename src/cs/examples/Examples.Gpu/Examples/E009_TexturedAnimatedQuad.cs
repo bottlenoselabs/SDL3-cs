@@ -7,7 +7,7 @@ namespace Gpu.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
+public sealed class E009_TexturedAnimatedQuad : ExampleGpu
 {
     private GpuGraphicsPipeline? _pipeline;
     private GpuDataBuffer? _vertexBuffer;
@@ -48,15 +48,15 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
             return false;
         }
 
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionTexture>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionTexture>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionTexture>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionTexture>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        var blendState = pipelineDescriptor.ColorRenderTargets[0].BlendState;
+        var blendState = graphicsPipelineOptions.ColorRenderTargets[0].BlendState;
         blendState.IsEnabledBlend = true;
         blendState.AlphaBlendOp = SDL_GPUBlendOp.SDL_GPU_BLENDOP_ADD;
         blendState.ColorBlendOp = SDL_GPUBlendOp.SDL_GPU_BLENDOP_ADD;
@@ -64,36 +64,36 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         blendState.SourceAlphaBlendFactor = GpuBlendFactor.SourceAlpha;
         blendState.DestinationColorBlendFactor = GpuBlendFactor.OneMinusSourceAlpha;
         blendState.DestinationAlphaBlendFactor = GpuBlendFactor.OneMinusSourceAlpha;
-        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipeline))
         {
             return false;
         }
 
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
-        using var textureDescriptor = new GpuTextureOptions();
-        textureDescriptor.Type = GpuTextureType.TwoDimensional;
-        textureDescriptor.Format = GpuTextureFormat.R8G8B8A8_UNORM;
-        textureDescriptor.Width = surface!.Width;
-        textureDescriptor.Height = surface.Height;
-        textureDescriptor.LayerCountOrDepth = 1;
-        textureDescriptor.MipmapLevelCount = 1;
-        textureDescriptor.Usage = GpuTextureUsages.Sampler;
-        if (!Device.TryCreateTexture(textureDescriptor, out _texture))
+        using var textureOptions = new GpuTextureOptions();
+        textureOptions.Type = GpuTextureType.TwoDimensional;
+        textureOptions.Format = GpuTextureFormat.R8G8B8A8_UNORM;
+        textureOptions.Width = surface.Width;
+        textureOptions.Height = surface.Height;
+        textureOptions.LayersCountOrDepth = 1;
+        textureOptions.MipmapLevelsCount = 1;
+        textureOptions.Usage = GpuTextureUsages.Sampler;
+        if (!Device.TryCreateTexture(textureOptions, out _texture))
         {
             return false;
         }
 
         // PointClamp
-        var samplerDescriptor = new GpuSamplerOptions();
-        samplerDescriptor.MinificationFilterMode = GpuSamplerFilterMode.Nearest;
-        samplerDescriptor.MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
-        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
-        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
-        if (!Device.TryCreateSampler(samplerDescriptor, out _sampler))
+        var samplerOptions = new GpuSamplerOptions();
+        samplerOptions.MinificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerOptions.MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerOptions.MipMapMode = GpuSamplerMipmapMode.Nearest;
+        samplerOptions.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
+        if (!Device.TryCreateSampler(samplerOptions, out _sampler))
         {
             return false;
         }
@@ -108,16 +108,16 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(
-                (sizeof(VertexPositionTexture) * 4) + (sizeof(ushort) * 6),
+        if (!Device.TryCreateUploadTransferBuffer(
+                (VertexPositionTexture.SizeOf * 4) + (sizeof(ushort) * 6),
                 out var transferBufferVertexIndex))
         {
             return false;
         }
 
-        var vertexIndexSpan = transferBufferVertexIndex!.MapAsSpan();
+        var vertexIndexSpan = transferBufferVertexIndex.MapAsSpan();
         var vertexData = MemoryMarshal.Cast<byte, VertexPositionTexture>(
-            vertexIndexSpan[..(sizeof(VertexPositionTexture) * 4)]);
+            vertexIndexSpan[..(VertexPositionTexture.SizeOf * 4)]);
 
         vertexData[0].Position = new Vector3(-0.5f, -0.5f, 0);
         vertexData[0].TextureCoordinates = new Vector2(0, 0);
@@ -132,7 +132,7 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         vertexData[3].TextureCoordinates = new Vector2(0, 1);
 
         var indexData = MemoryMarshal.Cast<byte, ushort>(
-            vertexIndexSpan[(sizeof(VertexPositionTexture) * 4)..]);
+            vertexIndexSpan[(VertexPositionTexture.SizeOf * 4)..]);
         indexData[0] = 0;
         indexData[1] = 1;
         indexData[2] = 2;
@@ -143,13 +143,18 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         transferBufferVertexIndex.Unmap();
 
         // Set up texture data
-        if (!Device.TryCreateTransferBuffer(surface.Width * surface.Height * 4, out var transferBufferTexture))
+        if (!Device.TryCreateUploadTransferBuffer(surface.Width * surface.Height * 4, out var transferBufferTexture))
         {
             return false;
         }
 
-        var dataTexturePointer = transferBufferTexture!.MapAsPointer();
-        NativeMemory.Copy((void*)surface.DataPointer, (void*)dataTexturePointer, (UIntPtr)transferBufferTexture.Size);
+        var dataTexturePointer = transferBufferTexture.MapAsPointer();
+
+        unsafe
+        {
+            NativeMemory.Copy((void*)surface.DataPointer, (void*)dataTexturePointer, (UIntPtr)transferBufferTexture.Size);
+        }
+
         transferBufferTexture.Unmap();
 
         var uploadCommandBuffer = Device.GetCommandBuffer();
@@ -160,10 +165,10 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
             0,
             _vertexBuffer,
             0,
-            sizeof(VertexPositionTexture) * 4);
+            VertexPositionTexture.SizeOf * 4);
         copyPass.UploadToDataBuffer(
             transferBufferVertexIndex,
-            sizeof(VertexPositionTexture) * 4,
+            VertexPositionTexture.SizeOf * 4,
             _indexBuffer,
             0,
             sizeof(ushort) * 6);
@@ -219,13 +224,11 @@ public sealed unsafe class E009_TexturedAnimatedQuad : ExampleGpu
         renderPass.BindIndexBuffer(_indexBuffer);
         renderPass.BindFragmentSampler(_texture, _sampler);
 
-        Matrix4x4 transformMatrix;
         Rgba32F color;
 
         // Bottom-left
-        transformMatrix =
-            Matrix4x4.CreateRotationZ(_t) *
-            Matrix4x4.CreateTranslation(-0.5f, -0.5f, 0);
+        var transformMatrix = Matrix4x4.CreateRotationZ(_t) *
+                              Matrix4x4.CreateTranslation(-0.5f, -0.5f, 0);
         commandBuffer.PushVertexShaderUniformMatrix(transformMatrix);
         color.R = 1.0f;
         color.G = 0.5f + ((float)Math.Sin(_t) * 0.5f);

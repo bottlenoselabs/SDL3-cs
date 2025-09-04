@@ -38,21 +38,21 @@ public sealed class E007_InstancedIndex : ExampleGpu
             return false;
         }
 
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionColor>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionColor>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipeline))
         {
             return false;
         }
 
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         if (!Device.TryCreateDataBuffer<VertexPositionColor>(9, out _vertexBuffer))
         {
@@ -64,13 +64,13 @@ public sealed class E007_InstancedIndex : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(
+        if (!Device.TryCreateUploadTransferBuffer(
                 (VertexPositionColor.SizeOf * 9) + (sizeof(ushort) * 6), out var transferBuffer))
         {
             return false;
         }
 
-        var transferBufferSpan = transferBuffer!.MapAsSpan();
+        var transferBufferSpan = transferBuffer.MapAsSpan();
         var vertexData = MemoryMarshal.Cast<byte, VertexPositionColor>(
             transferBufferSpan[..(VertexPositionColor.SizeOf * 9)]);
 
