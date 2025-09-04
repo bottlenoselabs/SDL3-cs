@@ -1,0 +1,19 @@
+is_global = true
+
+# Microsoft Rules
+## Description: Microsoft code analysis rules for C# projects.
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0046.severity = none
+dotnet_diagnostic.IDE0059.severity = none
+dotnet_diagnostic.IDE0072.severity = none
+dotnet_diagnostic.IDE0160.severity = none
+dotnet_diagnostic.IDE0210.severity = none
+dotnet_diagnostic.CA1001.severity = none
+dotnet_diagnostic.CA1515.severity = none
+dotnet_diagnostic.CA1707.severity = none
+
+# StyleCop Rules
+## Description: StyleCop code analysis rules for C# projects.
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1602.severity = none
+dotnet_diagnostic.SA1649.severity = none

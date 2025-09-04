@@ -1,0 +1,64 @@
+<Project>
+
+  <Import Project="../Directory.Build.props" />
+
+  <!-- NuGet -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- Publish -->
+  <Target Name="DeleteFilesAfterPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <FilesToDelete Include="$(PublishDir)*.xml" />
+      <FilesToDelete Include="$(PublishDir)*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" />
+  </Target>
+
+  <!-- Native Libraries -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)'=='win-x64' Or '$(RuntimeIdentifier)'==''">
+    <ProjectReference Include="../../production/SDL.Native.win-x64/SDL.Native.win-x64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_image.Native.win-x64/SDL_image.Native.win-x64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_ttf.Native.win-x64/SDL_ttf.Native.win-x64.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)'=='win-arm64' Or '$(RuntimeIdentifier)'==''">
+    <ProjectReference Include="../../production/SDL.Native.win-arm64/SDL.Native.win-arm64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_image.Native.win-arm64/SDL_image.Native.win-arm64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_ttf.Native.win-arm64/SDL_ttf.Native.win-arm64.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)'=='osx-x64' Or '$(RuntimeIdentifier)'==''">
+    <ProjectReference Include="../../production/SDL.Native.osx-x64/SDL.Native.osx-x64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_image.Native.osx-x64/SDL_image.Native.osx-x64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_ttf.Native.osx-x64/SDL_ttf.Native.osx-x64.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'==''">
+    <ProjectReference Include="../../production/SDL.Native.osx-arm64/SDL.Native.osx-arm64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_image.Native.osx-arm64/SDL_image.Native.osx-arm64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_ttf.Native.osx-arm64/SDL_ttf.Native.osx-arm64.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)'=='linux-x64' Or '$(RuntimeIdentifier)'==''">
+    <ProjectReference Include="../../production/SDL.Native.linux-x64/SDL.Native.linux-x64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_image.Native.linux-x64/SDL_image.Native.linux-x64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_ttf.Native.linux-x64/SDL_ttf.Native.linux-x64.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)'=='linux-arm64' Or '$(RuntimeIdentifier)'==''">
+    <ProjectReference
+      Include="../../production/SDL.Native.linux-arm64/SDL.Native.linux-arm64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_image.Native.linux-arm64/SDL_image.Native.linux-arm64.csproj" />
+    <ProjectReference
+      Include="../../production/SDL_ttf.Native.linux-arm64/SDL_ttf.Native.linux-arm64.csproj" />
+  </ItemGroup>
+
+</Project>
