@@ -4524,7 +4524,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_hid_get_properties", ExactSpelling = true)]
-        public static extern partial int SDL_hid_get_properties(global::bottlenoselabs.Interop.SDL.SDL_hid_device* dev);
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_PropertiesID SDL_hid_get_properties(global::bottlenoselabs.Interop.SDL.SDL_hid_device* dev);
     }
 }
 namespace bottlenoselabs.Interop
