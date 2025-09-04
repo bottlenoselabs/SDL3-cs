@@ -209,6 +209,44 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     }
 
     /// <summary>
+    ///     Begins a compute pass.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="GpuComputePass.End" /> must be called before starting another compute pass, render pass, or
+    ///         copy pass.
+    ///     </para>
+    /// </remarks>
+    /// <param name="parameters">The compute pass parameters.</param>
+    /// <returns>A pooled <see cref="GpuComputePass" /> instance.</returns>
+    public GpuComputePass BeginComputePass(in GpuComputePassParameters parameters)
+    {
+        ThrowIfSubmitted();
+
+        var storageTextureBindings =
+            (SDL_GPUStorageTextureReadWriteBinding*)parameters.TextureWriteBindingsArray.ElementsPointer;
+        var storageTextureBindingsCount = (uint)parameters.TextureWriteBindingsArray.ElementsCount;
+        var storageDataBufferBindings =
+            (SDL_GPUStorageBufferReadWriteBinding*)parameters.DataBufferWriteBindingsArray.ElementsPointer;
+        var storageDataBufferBindingsCount = (uint)parameters.DataBufferWriteBindingsArray.ElementsCount;
+        var handle = SDL_BeginGPUComputePass(
+            HandleTyped,
+            storageTextureBindings,
+            storageTextureBindingsCount,
+            storageDataBufferBindings,
+            storageDataBufferBindingsCount);
+        if (handle == null)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_BeginGPUComputePass), isExceptionThrown: true);
+        }
+
+        var computePass = Device.PoolComputePass.GetOrCreate()!;
+        computePass.Handle = handle;
+        computePass.CommandBuffer = this;
+        return computePass;
+    }
+
+    /// <summary>
     ///     Pushes the specified <see cref="Matrix4x4" /> to a vertex shader uniform slot. Subsequent draw calls will
     ///     use this uniform data.
     /// </summary>

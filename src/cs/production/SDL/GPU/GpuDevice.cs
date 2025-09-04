@@ -12,6 +12,7 @@ namespace bottlenoselabs.SDL;
 public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
 {
     internal readonly Pool<GpuRenderPass> PoolRenderPass;
+    internal readonly Pool<GpuComputePass> PoolComputePass;
     internal readonly ArenaNativeAllocator Allocator;
 
     private readonly ILogger<GpuDevice> _logger;
@@ -146,8 +147,12 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             _ => throw new NotImplementedException($"GPU driver '{driverNameActual}'.")
         };
 
-        _poolCommandBuffer = new Pool<GpuCommandBuffer>(_logger, () => new GpuCommandBuffer(this), "GpuCommandBuffers");
-        PoolRenderPass = new Pool<GpuRenderPass>(_logger, () => new GpuRenderPass(this), "GpuRenderPasses");
+        _poolCommandBuffer = new Pool<GpuCommandBuffer>(
+            _logger, () => new GpuCommandBuffer(this), "GpuCommandBuffers");
+        PoolRenderPass = new Pool<GpuRenderPass>(
+            _logger, () => new GpuRenderPass(this), "GpuRenderPasses");
+        PoolComputePass = new Pool<GpuComputePass>(
+            _logger, () => new GpuComputePass(this), "GpuComputePass");
 
         SupportedShaderFormats = (GpuShaderFormats)(uint)SDL_GetGPUShaderFormats(HandleTyped);
 
@@ -296,14 +301,14 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         createInfo.entrypoint = options.Allocator.AllocateCString(options.EntryPoint);
         createInfo.format = (uint)options.Format;
         createInfo.num_samplers = (uint)options.SamplerCount;
-        createInfo.num_readonly_storage_textures = (uint)options.ReadOnlyStorageTextureCount;
+        createInfo.num_readonly_storage_textures = (uint)options.ReadOnlyStorageTexturesCount;
         createInfo.num_readonly_storage_buffers = (uint)options.ReadOnlyStorageBuffersCount;
-        createInfo.num_readwrite_storage_textures = (uint)options.ReadWriteStorageTextureCount;
-        createInfo.num_readwrite_storage_buffers = (uint)options.ReadWriteStorageBufferCount;
-        createInfo.num_uniform_buffers = (uint)options.UniformBufferCount;
-        createInfo.threadcount_x = (uint)options.ThreadXCount;
-        createInfo.threadcount_y = (uint)options.ThreadYCount;
-        createInfo.threadcount_z = (uint)options.ThreadZCount;
+        createInfo.num_readwrite_storage_textures = (uint)options.ReadWriteStorageTexturesCount;
+        createInfo.num_readwrite_storage_buffers = (uint)options.ReadWriteStorageBuffersCount;
+        createInfo.num_uniform_buffers = (uint)options.UniformBuffersCount;
+        createInfo.threadcount_x = (uint)options.ThreadsXCount;
+        createInfo.threadcount_y = (uint)options.ThreadsYCount;
+        createInfo.threadcount_z = (uint)options.ThreadsZCount;
 
         var handle = SDL_CreateGPUComputePipeline(HandleTyped, &createInfo);
         if (handle == null)
@@ -622,10 +627,26 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         SDL_EndGPURenderPass(handle);
     }
 
+    internal void EndComputePassTryInternal(GpuComputePass computePass)
+    {
+        if (computePass.Handle == null)
+        {
+            return;
+        }
+
+        computePass.CommandBuffer.ThrowIfSubmitted();
+
+        var handle = computePass.Handle;
+        computePass.Handle = null;
+        computePass.CommandBuffer = null!;
+        SDL_EndGPUComputePass(handle);
+    }
+
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
         PoolRenderPass.Dispose();
+        PoolComputePass.Dispose();
         _poolCommandBuffer.Dispose();
 
         SDL_DestroyGPUDevice(HandleTyped);
