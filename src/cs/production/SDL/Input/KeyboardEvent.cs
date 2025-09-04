@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines a keyboard event.
 /// </summary>
+[PublicAPI]
 public readonly record struct KeyboardEvent
 {
     /// <summary>

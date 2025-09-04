@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines the blend modes used for rendering options.
 /// </summary>
+[PublicAPI]
 [Flags]
 public enum BlendMode
 {

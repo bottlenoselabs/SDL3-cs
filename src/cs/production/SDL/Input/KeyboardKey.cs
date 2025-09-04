@@ -14,6 +14,7 @@ namespace bottlenoselabs.SDL;
 ///         keyboard nor the modifiers.
 ///     </para>
 /// </remarks>
+[PublicAPI]
 public enum KeyboardKey : uint
 {
     /// <summary>

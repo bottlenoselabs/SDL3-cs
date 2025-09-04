@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines a width and a height using 32-bit integer components.
 /// </summary>
+[PublicAPI]
 public record struct Size
 {
     /// <summary>

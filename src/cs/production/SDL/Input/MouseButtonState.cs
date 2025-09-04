@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines the state of the buttons on a mouse input device.
 /// </summary>
+[PublicAPI]
 [Flags]
 public enum MouseButtonState
 {

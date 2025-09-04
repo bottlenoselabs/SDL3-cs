@@ -14,6 +14,7 @@ namespace bottlenoselabs.SDL;
 ///         keyboard.
 ///     </para>
 /// </remarks>
+[PublicAPI]
 public enum KeyboardButton
 {
     /// <summary>

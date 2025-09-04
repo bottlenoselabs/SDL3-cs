@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines a mouse move event.
 /// </summary>
+[PublicAPI]
 public readonly record struct MouseMoveEvent
 {
     /// <summary>
