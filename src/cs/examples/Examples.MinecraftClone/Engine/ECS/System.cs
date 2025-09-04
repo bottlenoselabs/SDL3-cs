@@ -5,6 +5,8 @@ using System.Collections.Immutable;
 
 namespace Examples.MinecraftClone.Engine.ECS;
 
+#pragma warning disable CA1724
+
 public abstract class System
 {
     public World World { get; internal set; } = null!;

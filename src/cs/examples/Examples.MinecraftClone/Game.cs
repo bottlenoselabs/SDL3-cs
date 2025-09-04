@@ -17,8 +17,6 @@ public sealed class Game : Application
     private Window _window = null!;
     private GpuDevice _device = null!;
 
-    private CameraArcBall _arcBallCamera = null!;
-
     private World _world = null!;
 
     private Entity _camera;
@@ -33,8 +31,6 @@ public sealed class Game : Application
         gpuDeviceOptions.IsDebugMode = true;
         _device = CreateGpuDevice(gpuDeviceOptions);
         _ = _device.TryClaimWindow(_window);
-
-        _arcBallCamera = new CameraArcBall();
 
         _world = new World();
 
@@ -75,8 +71,6 @@ public sealed class Game : Application
             commandBuffer.Cancel();
             return;
         }
-
-        _renderer.Render(commandBuffer, swapchainTexture!);
 
         commandBuffer.Submit();
     }

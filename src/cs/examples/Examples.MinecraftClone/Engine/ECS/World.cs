@@ -3,13 +3,17 @@
 
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
+using bottlenoselabs.SDL;
 using Interop.Runtime;
 
 namespace Examples.MinecraftClone.Engine.ECS;
 
 public sealed class World : IDisposable
 {
+    internal readonly List<NativeArray> Columns = new();
+
     private const int MaximumEntityCount = 100;
+    private int _nextEntityIndex = 1;
 
     private readonly List<System> _systems = new();
 
@@ -17,8 +21,6 @@ public sealed class World : IDisposable
 
     private readonly Dictionary<Type, ComponentId> _registeredComponentsByType = [];
     private readonly HashSet<Type> _registeredSystemTypes = [];
-
-    internal readonly List<Column> Columns = new();
 
     public void Dispose()
     {
@@ -74,7 +76,7 @@ public sealed class World : IDisposable
         componentId = new ComponentId(componentIndex);
         _registeredComponentsByType.Add(componentType, componentId);
 
-        var column = Column.Allocate(_allocator, componentSize, MaximumEntityCount);
+        var column = NativeArray.Allocate(_allocator, componentSize, MaximumEntityCount);
         Columns.Add(column);
 
         return componentId;

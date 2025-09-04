@@ -3,6 +3,8 @@
 
 namespace Examples.MinecraftClone.Engine.ECS;
 
+#pragma warning disable CA1724
+
 public abstract class System<T1, T2> : System
 {
     public override void OnExecute(in Entity entity)

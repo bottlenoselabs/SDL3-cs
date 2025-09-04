@@ -43,4 +43,23 @@ public record struct NativeArray
 
         return result;
     }
+
+    /// <summary>
+    ///     Allocates memory for a <see cref="NativeArray" />.
+    /// </summary>
+    /// <param name="allocator">The allocator.</param>
+    /// <param name="stride">The element byte size.</param>
+    /// <param name="count">The number of elements.</param>
+    /// <returns>A <see cref="NativeArray" />.</returns>
+    public static NativeArray Allocate(
+        INativeAllocator allocator,
+        int stride,
+        int count)
+    {
+        var result = default(NativeArray);
+        result.ElementsPointer = allocator.Allocate(stride * count);
+        result.ElementStride = stride;
+        result.ElementsCount = count;
+        return result;
+    }
 }

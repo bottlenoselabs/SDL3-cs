@@ -110,15 +110,19 @@ public sealed class RenderSystem : System<CamerDrawComponent>
     private bool TryCreatePipeline()
     {
         var vertexShaderFilePath = Assets.Utility.GetShaderFilePath("Minecraft.vert");
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
+        vertexShaderOptions.UniformBufferCount = 1;
         if (!_fileSystem.TryLoadGraphicsShader(
-                vertexShaderFilePath, _device, out var vertexShader, uniformBufferCount: 1))
+                vertexShaderFilePath, _device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
+        fragmentShaderOptions.UniformBufferCount = 1;
         var fragmentShaderFilePath = Assets.Utility.GetShaderFilePath("Minecraft.frag");
         if (!_fileSystem.TryLoadGraphicsShader(
-                fragmentShaderFilePath, _device, out var fragmentShader, uniformBufferCount: 1))
+                fragmentShaderFilePath, _device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }
