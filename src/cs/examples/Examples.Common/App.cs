@@ -117,6 +117,7 @@ public sealed class App : Application
             if (!isSuccessfullyStarted)
             {
                 Console.Error.WriteLine("\nStarting example failed!");
+                _currentExample = null;
                 Exit();
                 return;
             }
