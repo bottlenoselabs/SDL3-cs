@@ -6,47 +6,87 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using bottlenoselabs.Interop;
 using bottlenoselabs.SDL;
-using Interop.Runtime;
+using Examples.MinecraftClone.ECS.Components;
+using Examples.MinecraftClone.Engine;
+using Examples.MinecraftClone.Engine.ECS;
 
-namespace Examples.MinecraftClone;
+namespace Examples.MinecraftClone.ECS.Systems.Draw;
 
-public sealed class Renderer : Disposable
+public sealed class RenderSystem : System<CamerDrawComponent>
 {
+    private readonly Window _window;
+    private readonly GpuDevice _device;
+    private readonly FileSystem _fileSystem;
+
     private GpuGraphicsPipeline? _pipeline;
     private GpuDataBuffer? _vertexBuffer;
     private GpuDataBuffer? _indexBuffer;
 
-    public GpuDevice Device { get; }
+    private bool _canRender;
 
-    public CameraArcBall Camera { get; }
-
-    public Renderer(
-        GpuDevice device,
-        GpuSwapchain swapchain,
+    public RenderSystem(
+        World world,
+        Window window,
         FileSystem fileSystem,
-        CameraArcBall camera)
+        GpuDevice device)
+        : base()
     {
-        Device = device;
-        Camera = camera;
+        _window = window;
+        _fileSystem = fileSystem;
+        _device = device;
+    }
 
-        if (!TryCreatePipeline(fileSystem, swapchain))
+    public override void OnStart()
+    {
+        if (!TryCreatePipeline())
         {
+            _canRender = false;
             return;
         }
 
         if (!TryCreateVertexBuffer())
         {
+            _canRender = false;
             return;
         }
 
         if (!TryCreateIndexBuffer())
         {
+            _canRender = false;
             return;
         }
+
+        _canRender = true;
     }
 
-    public void Render(GpuCommandBuffer commandBuffer, GpuTexture swapchainTexture)
+    public override void OnStop()
     {
+        _pipeline?.Dispose();
+        _pipeline = null!;
+
+        _vertexBuffer?.Dispose();
+        _vertexBuffer = null!;
+
+        _indexBuffer?.Dispose();
+        _indexBuffer = null!;
+    }
+
+    protected override void OnExecute(
+        in Entity entity,
+        ref CamerDrawComponent camera)
+    {
+        if (!_canRender)
+        {
+            return;
+        }
+
+        var commandBuffer = _device.GetCommandBuffer();
+        if (!commandBuffer.TryGetSwapchainTexture(_window, out var swapchainTexture))
+        {
+            commandBuffer.Cancel();
+            return;
+        }
+
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
@@ -59,9 +99,7 @@ public sealed class Renderer : Disposable
         renderPass.BindIndexBuffer(_indexBuffer);
 
         var modelMatrix = Matrix4x4.Identity;
-        var viewMatrix = Camera.GetViewMatrix();
-        var projectionMatrix = Camera.GetProjectionMatrix(swapchainTexture.Width, swapchainTexture.Height);
-        var modelViewProjectionMatrix = modelMatrix * viewMatrix * projectionMatrix;
+        var modelViewProjectionMatrix = modelMatrix * camera.ViewProjectionMatrix;
         commandBuffer.PushVertexShaderUniformMatrix(modelViewProjectionMatrix);
         commandBuffer.PushFragmentShaderUniformColor(Rgba32F.White);
         renderPass.DrawPrimitivesIndexed(36, 1, 0, 0, 0);
@@ -69,30 +107,18 @@ public sealed class Renderer : Disposable
         renderPass.End();
     }
 
-    protected override void Dispose(bool isDisposing)
-    {
-        _pipeline?.Dispose();
-        _pipeline = null!;
-
-        _vertexBuffer?.Dispose();
-        _vertexBuffer = null!;
-
-        _indexBuffer?.Dispose();
-        _indexBuffer = null!;
-    }
-
-    private bool TryCreatePipeline(FileSystem fileSystem, GpuSwapchain swapchain)
+    private bool TryCreatePipeline()
     {
         var vertexShaderFilePath = Assets.Utility.GetShaderFilePath("Minecraft.vert");
-        if (!Device.TryCreateShaderFromFile(
-                fileSystem, vertexShaderFilePath, out var vertexShader, uniformBufferCount: 1))
+        if (!_fileSystem.TryLoadGraphicsShader(
+                vertexShaderFilePath, _device, out var vertexShader, uniformBufferCount: 1))
         {
             return false;
         }
 
         var fragmentShaderFilePath = Assets.Utility.GetShaderFilePath("Minecraft.frag");
-        if (!Device.TryCreateShaderFromFile(
-                fileSystem, fragmentShaderFilePath, out var fragmentShader, uniformBufferCount: 1))
+        if (!_fileSystem.TryLoadGraphicsShader(
+                fragmentShaderFilePath, _device, out var fragmentShader, uniformBufferCount: 1))
         {
             return false;
         }
@@ -105,9 +131,9 @@ public sealed class Renderer : Disposable
         pipelineDescriptor.RasterizerState.CullMode = GpuGraphicsPipelineCullMode.Back;
         pipelineDescriptor.SetVertexAttributes<Vertex>();
         pipelineDescriptor.SetVertexBufferDescription<Vertex>();
-        pipelineDescriptor.SetRenderTargetColor(swapchain);
+        pipelineDescriptor.SetRenderTargetColor(_window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!_device.TryCreateGraphicsPipeline(pipelineDescriptor, out _pipeline))
         {
             Console.Error.WriteLine("Failed to create fill pipeline!");
             return false;
@@ -124,12 +150,12 @@ public sealed class Renderer : Disposable
         const int vertexCount = 24;
         var bufferSize = Unsafe.SizeOf<Vertex>() * vertexCount;
 
-        if (!Device.TryCreateDataBuffer<Vertex>(vertexCount, out _vertexBuffer))
+        if (!_device.TryCreateDataBuffer<Vertex>(vertexCount, out _vertexBuffer))
         {
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(bufferSize, out var transferBuffer))
+        if (!_device.TryCreateUploadTransferBuffer(bufferSize, out var transferBuffer))
         {
             return false;
         }
@@ -276,7 +302,7 @@ public sealed class Renderer : Disposable
 
         transferBuffer.Unmap();
 
-        var uploadCommandBuffer = Device.GetCommandBuffer();
+        var uploadCommandBuffer = _device.GetCommandBuffer();
         var copyPass = uploadCommandBuffer.BeginCopyPass();
 
         copyPass.UploadToDataBuffer(
@@ -312,12 +338,12 @@ public sealed class Renderer : Disposable
         const int indexCount = 36;
         var bufferSize = Unsafe.SizeOf<ushort>() * indexCount;
 
-        if (!Device.TryCreateDataBuffer<ushort>(indexCount, out _indexBuffer))
+        if (!_device.TryCreateDataBuffer<ushort>(indexCount, out _indexBuffer))
         {
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(bufferSize, out var transferBuffer))
+        if (!_device.TryCreateUploadTransferBuffer(bufferSize, out var transferBuffer))
         {
             return false;
         }
@@ -328,7 +354,7 @@ public sealed class Renderer : Disposable
 
         transferBuffer.Unmap();
 
-        var uploadCommandBuffer = Device.GetCommandBuffer();
+        var uploadCommandBuffer = _device.GetCommandBuffer();
         var copyPass = uploadCommandBuffer.BeginCopyPass();
 
         copyPass.UploadToDataBuffer(

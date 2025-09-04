@@ -1,0 +1,22 @@
+// Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
+
+using Examples.MinecraftClone.Engine;
+
+namespace Examples.MinecraftClone.ECS.Components;
+
+public record struct CameraControlsComponent : IComponent
+{
+    public float Yaw;
+    public float Pitch;
+    public float Distance;
+    public float Sensitivity;
+
+    public CameraControlsComponent()
+    {
+        Yaw = 0;
+        Pitch = 0;
+        Distance = 0;
+        Sensitivity = 0.01f;
+    }
+}
