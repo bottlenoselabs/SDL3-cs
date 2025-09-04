@@ -26,7 +26,13 @@ public partial class Application
         _current = application;
 
         bottlenoselabs.Interop.SDL.Initialize();
+
+        // NOTE: This includes the first call to a native SDL library function.
+        //  If you get a DllNotFoundException here it means SDL native library could not be loaded.
+        //  One common mistake is that the file was not found on disk.
         application.Platform = GetNativePlatform();
+
+        SDL_SetLogPriorities(SDL_LogPriority.SDL_LOG_PRIORITY_DEBUG);
 
         SDL_image.Initialize();
         SDL_ttf.Initialize();

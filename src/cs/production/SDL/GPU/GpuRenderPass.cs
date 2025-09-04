@@ -212,7 +212,7 @@ public sealed unsafe class GpuRenderPass : Poolable<GpuRenderPass>
     }
 
     /// <summary>
-    ///     Ends a render pass.
+    ///     Ends the render pass.
     /// </summary>
     /// <exception cref="InvalidOperationException">The associated command buffer was submitted.</exception>
     public void End()

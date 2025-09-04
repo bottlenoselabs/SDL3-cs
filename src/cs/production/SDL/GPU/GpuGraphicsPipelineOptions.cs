@@ -82,8 +82,10 @@ public class GpuGraphicsPipelineOptions : BaseOptions
     /// <param name="swapchain">The swapchain.</param>
     public void SetRenderTargetColor(GpuSwapchain swapchain)
     {
-        var colorRenderTarget = new GpuGraphicsPipelineColorRenderTargetDescription();
-        colorRenderTarget.Format = swapchain.TextureFormat;
+        var colorRenderTarget = new GpuGraphicsPipelineColorRenderTargetDescription
+        {
+            Format = swapchain.TextureFormat
+        };
         ColorRenderTargets = [colorRenderTarget];
     }
 

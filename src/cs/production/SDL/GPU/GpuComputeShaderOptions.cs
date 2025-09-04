@@ -17,7 +17,7 @@ public class GpuComputeShaderOptions : GpuBaseShaderOptions
     /// <summary>
     ///     Gets or sets the number of read-only storage textures.
     /// </summary>
-    public int ReadOnlyStorageTextureCount { get; set; }
+    public int ReadOnlyStorageTexturesCount { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of read-only storage buffers.
@@ -27,32 +27,32 @@ public class GpuComputeShaderOptions : GpuBaseShaderOptions
     /// <summary>
     ///     Gets or sets the number of read-write storage textures.
     /// </summary>
-    public int ReadWriteStorageTextureCount { get; set; }
+    public int ReadWriteStorageTexturesCount { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of read-write storage buffers.
     /// </summary>
-    public int ReadWriteStorageBufferCount { get; set; }
+    public int ReadWriteStorageBuffersCount { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of uniform buffers.
     /// </summary>
-    public int UniformBufferCount { get; set; }
+    public int UniformBuffersCount { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of threads in the X dimension.
     /// </summary>
-    public int ThreadXCount { get; set; }
+    public int ThreadsXCount { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of threads in the Y dimension.
     /// </summary>
-    public int ThreadYCount { get; set; }
+    public int ThreadsYCount { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of threads in the Z dimension.
     /// </summary>
-    public int ThreadZCount { get; set; }
+    public int ThreadsZCount { get; set; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="GpuComputeShaderOptions" /> class.
@@ -72,13 +72,13 @@ public class GpuComputeShaderOptions : GpuBaseShaderOptions
         base.OnReset();
 
         SamplerCount = 0;
-        ReadOnlyStorageTextureCount = 0;
+        ReadOnlyStorageTexturesCount = 0;
         ReadOnlyStorageBuffersCount = 0;
-        ReadWriteStorageTextureCount = 0;
-        ReadWriteStorageBufferCount = 0;
-        UniformBufferCount = 0;
-        ThreadXCount = 0;
-        ThreadYCount = 0;
-        ThreadZCount = 0;
+        ReadWriteStorageTexturesCount = 0;
+        ReadWriteStorageBuffersCount = 0;
+        UniformBuffersCount = 0;
+        ThreadsXCount = 0;
+        ThreadsYCount = 0;
+        ThreadsZCount = 0;
     }
 }

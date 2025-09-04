@@ -39,7 +39,7 @@ public unsafe class GpuCopyPass : GpuResource<SDL_GPUCopyPass>
     /// <param name="transferBufferOffset">The starting byte of the data in the transfer buffer.</param>
     /// <param name="dataBuffer">The data buffer used as the destination.</param>
     /// <param name="dataBufferOffset">The starting byte within the data buffer to upload data to.</param>
-    /// <param name="dataBufferByteCount">The size in bytes of the data to upload to the data buffer.</param>
+    /// <param name="dataBufferBytesCount">The size in bytes of the data to upload to the data buffer.</param>
     /// <param name="isCycled">
     ///     If <c>true</c>, cycles the data buffer if it is already bound. If <c>false</c>, does not cycle the
     ///     data buffer, overwriting the data.
@@ -49,7 +49,7 @@ public unsafe class GpuCopyPass : GpuResource<SDL_GPUCopyPass>
         int transferBufferOffset,
         GpuDataBuffer? dataBuffer,
         int dataBufferOffset,
-        int dataBufferByteCount,
+        int dataBufferBytesCount,
         bool isCycled = false)
     {
         if (transferBuffer == null || dataBuffer == null)
@@ -64,7 +64,7 @@ public unsafe class GpuCopyPass : GpuResource<SDL_GPUCopyPass>
         var bufferDestinationRegion = default(SDL_GPUBufferRegion);
         bufferDestinationRegion.buffer = dataBuffer.HandleTyped;
         bufferDestinationRegion.offset = (uint)dataBufferOffset;
-        bufferDestinationRegion.size = (uint)dataBufferByteCount;
+        bufferDestinationRegion.size = (uint)dataBufferBytesCount;
 
         SDL_UploadToGPUBuffer(HandleTyped, &bufferSourceLocation, &bufferDestinationRegion, isCycled);
     }

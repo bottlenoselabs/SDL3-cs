@@ -1,6 +1,8 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace bottlenoselabs.SDL;
 
 /// <summary>
@@ -251,7 +253,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
     public bool TryCreateGraphicsShader(
         GpuGraphicsShaderOptions options,
-        out GpuGraphicsShader? graphicsShader)
+        [NotNullWhen(true)] out GpuGraphicsShader? graphicsShader)
     {
         SDL_GPUShaderCreateInfo info = default;
         info.code = (byte*)options.DataPointer;
@@ -286,7 +288,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
     public bool TryCreateComputeShader(
         GpuComputeShaderOptions options,
-        out GpuComputeShader? computeShader)
+        [NotNullWhen(true)] out GpuComputeShader? computeShader)
     {
         var createInfo = default(SDL_GPUComputePipelineCreateInfo);
         createInfo.code = (byte*)options.DataPointer;
@@ -324,7 +326,9 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// </param>
     /// <returns><c>true</c> if the pipeline was successfully created; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The vertex shader or fragment shader is <c>null</c>.</exception>
-    public bool TryCreateGraphicsPipeline(GpuGraphicsPipelineOptions options, out GpuGraphicsPipeline? pipeline)
+    public bool TryCreateGraphicsPipeline(
+        GpuGraphicsPipelineOptions options,
+        [NotNullWhen(true)] out GpuGraphicsPipeline? pipeline)
     {
         var info = default(SDL_GPUGraphicsPipelineCreateInfo);
 
@@ -442,7 +446,10 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// <param name="name">The optional name of the data buffer.</param>
     /// <typeparam name="TElement">The type of data buffer element.</typeparam>
     /// <returns><c>true</c> if the data buffer was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateDataBuffer<TElement>(int elementCount, out GpuDataBuffer? buffer, string? name = null)
+    public bool TryCreateDataBuffer<TElement>(
+        int elementCount,
+        [NotNullWhen(true)] out GpuDataBuffer? buffer,
+        string? name = null)
         where TElement : unmanaged
     {
         var bufferCreateInfo = default(SDL_GPUBufferCreateInfo);
@@ -480,7 +487,9 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     ///     If successful, a new <see cref="GpuTransferBuffer" /> instance; otherwise, <c>null</c>.
     /// </param>
     /// <returns><c>true</c> if the transfer buffer was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateTransferBuffer(int size, out GpuTransferBuffer? transferBuffer)
+    public bool TryCreateUploadTransferBuffer(
+        int size,
+        [NotNullWhen(true)] out GpuTransferBuffer? transferBuffer)
     {
         var transferBufferCreateInfo = default(SDL_GPUTransferBufferCreateInfo);
         transferBufferCreateInfo.usage = SDL_GPUTransferBufferUsage.SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
@@ -509,18 +518,20 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// </param>
     /// <returns><c>true</c> if the texture was successfully created; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentException">Sample count must be 1, 2, 4, 8.</exception>
-    public bool TryCreateTexture(GpuTextureOptions options, out GpuTexture? texture)
+    public bool TryCreateTexture(
+        GpuTextureOptions options,
+        [NotNullWhen(true)] out GpuTexture? texture)
     {
         var textureCreateInfo = default(SDL_GPUTextureCreateInfo);
         textureCreateInfo.type = (SDL_GPUTextureType)options.Type;
         textureCreateInfo.width = (uint)options.Width;
         textureCreateInfo.height = (uint)options.Height;
-        textureCreateInfo.layer_count_or_depth = (uint)options.LayerCountOrDepth;
-        textureCreateInfo.num_levels = (uint)options.MipmapLevelCount;
+        textureCreateInfo.layer_count_or_depth = (uint)options.LayersCountOrDepth;
+        textureCreateInfo.num_levels = (uint)options.MipmapLevelsCount;
         textureCreateInfo.format = (SDL_GPUTextureFormat)options.Format;
         textureCreateInfo.usage = (uint)options.Usage;
 
-        textureCreateInfo.sample_count = options.SampleCount switch
+        textureCreateInfo.sample_count = options.SamplesCount switch
         {
             0 => SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_1,
             1 => SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_1,
@@ -545,9 +556,9 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             options.Format,
             options.Width,
             options.Height,
-            options.LayerCountOrDepth,
-            options.MipmapLevelCount,
-            options.SampleCount,
+            options.LayersCountOrDepth,
+            options.MipmapLevelsCount,
+            options.SamplesCount,
             options.Usage);
 
         var nameCString = options.Allocator.AllocateCString(options.Name);
@@ -564,7 +575,9 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     ///     If successful, a new <see cref="GpuSampler" /> instance; otherwise, <c>null</c>.
     /// </param>
     /// <returns><c>true</c> if the sampler was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateSampler(GpuSamplerOptions options, out GpuSampler? sampler)
+    public bool TryCreateSampler(
+        GpuSamplerOptions options,
+        [NotNullWhen(true)] out GpuSampler? sampler)
     {
         var samplerCreateInfo = default(SDL_GPUSamplerCreateInfo);
         samplerCreateInfo.min_filter = (SDL_GPUFilter)options.MinificationFilterMode;

@@ -12,7 +12,7 @@ public abstract unsafe partial class Application : Disposable
     private bool _isExiting;
     private volatile bool _isInBackground;
     private ulong _previousTime;
-    private int _renderedFrameCount;
+    private int _renderedFramesCount;
     private TimeSpan _frameCounterAccumulatedTime;
 
     private readonly ILoggerFactory _loggerFactory;
@@ -231,7 +231,7 @@ public abstract unsafe partial class Application : Disposable
         if (!_isInBackground)
         {
             OnDraw(deltaTime);
-            _renderedFrameCount++;
+            _renderedFramesCount++;
         }
 
         CalculateFramesPerSecond(deltaTime);
@@ -266,8 +266,8 @@ public abstract unsafe partial class Application : Disposable
         }
 
         _frameCounterAccumulatedTime -= FramesCounterElapsedTime;
-        FramesPerSecond = _renderedFrameCount;
-        _renderedFrameCount = 0;
+        FramesPerSecond = _renderedFramesCount;
+        _renderedFramesCount = 0;
     }
 
     private void HandleEvent(in SDL_Event e)

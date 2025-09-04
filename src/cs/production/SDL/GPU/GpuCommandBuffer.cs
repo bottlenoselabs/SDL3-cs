@@ -1,7 +1,9 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace bottlenoselabs.SDL;
 
@@ -76,7 +78,9 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     ///         It is an error to acquire two swapchain textures from the same window using the same command buffer.
     ///     </para>
     /// </remarks>
-    public bool TryGetSwapchainTexture(Window window, out GpuTexture? swapchainTexture)
+    public bool TryGetSwapchainTexture(
+        Window window,
+        [NotNullWhen(true)] out GpuTexture? swapchainTexture)
     {
         ThrowIfSubmitted();
 
@@ -113,6 +117,12 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     /// <param name="depthStencilTargetInfo">The depth-stencil render-target to use in the render pass.</param>
     /// <param name="colorTargetInfos">The color render-targets to use in the render pass.</param>
     /// <returns>A pooled <see cref="GpuRenderPass" /> instance.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="GpuRenderPass.End" /> must be called before starting another render pass, compute pass, or
+    ///         copy pass.
+    ///     </para>
+    /// </remarks>
     public GpuRenderPass BeginRenderPass(
         in GpuRenderTargetInfoDepthStencil? depthStencilTargetInfo = null,
         params Span<GpuRenderTargetInfoColor> colorTargetInfos)
@@ -167,8 +177,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
             HandleTyped, colorTargetInfosPointer, (uint)colorTargetInfos.Length, depthStencilInfoPointer);
         if (handle == null)
         {
-            Error.NativeFunctionFailed(nameof(SDL_BeginGPURenderPass));
-            throw new InvalidOperationException();
+            Error.NativeFunctionFailed(nameof(SDL_BeginGPURenderPass), isExceptionThrown: true);
         }
 
         var renderPass = Device.PoolRenderPass.GetOrCreate()!;
@@ -185,7 +194,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     ///         All operations related to copying to or from buffers and textures take place inside a copy pass.
     ///     </para>
     ///     <para>
-    ///         <see cref="GpuCopyPass.End"/> must be called before starting another copy pass, render pass, or compute
+    ///         <see cref="GpuCopyPass.End" /> must be called before starting another copy pass, render pass, or compute
     ///         pass.
     ///     </para>
     /// </remarks>

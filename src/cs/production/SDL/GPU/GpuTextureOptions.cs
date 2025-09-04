@@ -43,17 +43,17 @@ public class GpuTextureOptions : BaseOptions
     ///     Gets or sets the layer count or depth of the texture. This value is treated as a layer count on 2D array
     ///     textures, and as a depth value on 3D textures.
     /// </summary>
-    public int LayerCountOrDepth { get; set; }
+    public int LayersCountOrDepth { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of mipmap levels in the texture.
     /// </summary>
-    public int MipmapLevelCount { get; set; }
+    public int MipmapLevelsCount { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of samples per texel. Only applies if the texture is used as a render-target.
     /// </summary>
-    public int SampleCount { get; set; }
+    public int SamplesCount { get; set; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="GpuTextureOptions" /> class.
@@ -76,8 +76,8 @@ public class GpuTextureOptions : BaseOptions
         Usage = GpuTextureUsages.None;
         Width = 1;
         Height = 1;
-        LayerCountOrDepth = 1;
-        MipmapLevelCount = 0;
-        SampleCount = 0;
+        LayersCountOrDepth = 1;
+        MipmapLevelsCount = 0;
+        SamplesCount = 0;
     }
 }

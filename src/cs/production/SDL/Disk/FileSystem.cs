@@ -1,6 +1,8 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace bottlenoselabs.SDL;
 
 /// <summary>
@@ -37,7 +39,9 @@ public sealed unsafe class FileSystem : Disposable
     ///         <see cref="TryLoadFile" /> is not thread safe.
     ///     </para>
     /// </remarks>
-    public bool TryLoadFile(string filePath, out File file)
+    public bool TryLoadFile(
+        string filePath,
+        out File file)
     {
         var fullFilePath = GetFullFilePath(filePath);
 
@@ -89,7 +93,7 @@ public sealed unsafe class FileSystem : Disposable
     /// </remarks>
     public bool TryLoadImage(
         string filePath,
-        out Surface? surface,
+        [NotNullWhen(true)] out Surface? surface,
         PixelFormat? desiredPixelFormat = null)
     {
         if (desiredPixelFormat != null &&
@@ -152,7 +156,7 @@ public sealed unsafe class FileSystem : Disposable
     /// </remarks>
     public bool TryLoadFont(
         string filePath,
-        out Font? font,
+        [NotNullWhen(true)] out Font? font,
         float pointSize)
     {
         var fullFilePath = GetFullFilePath(filePath);
@@ -188,7 +192,7 @@ public sealed unsafe class FileSystem : Disposable
         string filePath,
         GpuDevice device,
         GpuGraphicsShaderOptions options,
-        out GpuGraphicsShader? shader)
+        [NotNullWhen(true)] out GpuGraphicsShader? shader)
     {
         if (!TryLoadFile(filePath, out var file))
         {
@@ -230,7 +234,7 @@ public sealed unsafe class FileSystem : Disposable
         string filePath,
         GpuDevice device,
         GpuComputeShaderOptions options,
-        out GpuComputeShader? shader)
+        [NotNullWhen(true)] out GpuComputeShader? shader)
     {
         if (!TryLoadFile(filePath, out var file))
         {
