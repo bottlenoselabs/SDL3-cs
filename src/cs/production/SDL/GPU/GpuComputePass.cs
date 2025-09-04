@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///  TODO.
 /// </summary>
+[PublicAPI]
 public sealed unsafe class GpuComputePass : Poolable<GpuComputePass>
 {
 #pragma warning disable SA1401

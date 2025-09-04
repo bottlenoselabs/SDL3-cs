@@ -223,18 +223,36 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     {
         ThrowIfSubmitted();
 
-        var storageTextureBindings =
-            (SDL_GPUStorageTextureReadWriteBinding*)parameters.TextureWriteBindingsArray.ElementsPointer;
-        var storageTextureBindingsCount = (uint)parameters.TextureWriteBindingsArray.ElementsCount;
-        var storageDataBufferBindings =
-            (SDL_GPUStorageBufferReadWriteBinding*)parameters.DataBufferWriteBindingsArray.ElementsPointer;
-        var storageDataBufferBindingsCount = (uint)parameters.DataBufferWriteBindingsArray.ElementsCount;
+        var textureWriteBindingsCount = parameters.TextureWriteBindings.Length;
+        var textureWriteBindings =
+            stackalloc SDL_GPUStorageTextureReadWriteBinding[textureWriteBindingsCount];
+        for (var i = 0; i < textureWriteBindingsCount; i++)
+        {
+            ref var source = ref parameters.TextureWriteBindings[i];
+            ref var destination = ref textureWriteBindings[i];
+            destination.texture = source.Texture.HandleTyped;
+            destination.mip_level = (uint)source.MipMapLevelIndex;
+            destination.layer = (uint)source.LayerOrDepthIndex;
+            destination.cycle = source.IsCycled;
+        }
+
+        var dataBufferWriteBindingsCount = parameters.DataBufferWriteBindings.Length;
+        var dataBufferWriteBindings =
+            stackalloc SDL_GPUStorageBufferReadWriteBinding[dataBufferWriteBindingsCount];
+        for (var i = 0; i < dataBufferWriteBindingsCount; i++)
+        {
+            ref var source = ref parameters.DataBufferWriteBindings[i];
+            ref var destination = ref dataBufferWriteBindings[i];
+            destination.buffer = source.Buffer.HandleTyped;
+            destination.cycle = source.IsCycled;
+        }
+
         var handle = SDL_BeginGPUComputePass(
             HandleTyped,
-            storageTextureBindings,
-            storageTextureBindingsCount,
-            storageDataBufferBindings,
-            storageDataBufferBindingsCount);
+            textureWriteBindings,
+            (uint)textureWriteBindingsCount,
+            dataBufferWriteBindings,
+            (uint)dataBufferWriteBindingsCount);
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_BeginGPUComputePass), isExceptionThrown: true);

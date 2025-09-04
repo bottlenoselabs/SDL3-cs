@@ -124,13 +124,14 @@ public sealed class E011_BasicCompute : ExampleGpu
 
         copyPass.End();
 
-        var computePassParameters = default(GpuComputePassParameters);
-
-        var computePassBindingTextureWrite = default(GpuComputePassBindingTextureReadWrite);
-        computePassBindingTextureWrite.SetTexture(_texture);
-
-        computePassParameters.SetBindingsTextureWrite(computePassBindingTextureWrite);
-        var computePass = commandBuffer.BeginComputePass(computePassParameters);
+        var computePass = commandBuffer.BeginComputePass(
+            new GpuComputePassParameters
+            {
+                TextureWriteBindings =
+                [
+                    new GpuComputePassBindingTextureReadWrite { Texture = _texture }
+                ],
+            });
 
         computePass.BindShader(computeShader);
         computePass.Dispatch(

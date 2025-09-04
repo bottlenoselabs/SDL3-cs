@@ -3,41 +3,19 @@
 
 namespace bottlenoselabs.SDL;
 
-#pragma warning disable CA1815
-
 /// <summary>
-///     TODO.
+///  TODO.
 /// </summary>
 [PublicAPI]
-public record struct GpuComputePassParameters
+public ref struct GpuComputePassParameters
 {
     /// <summary>
-    ///     The native array of writeable storage texture bindings.
+    ///  TODO.
     /// </summary>
-    public NativeArray TextureWriteBindingsArray;
+    public Span<GpuComputePassBindingTextureReadWrite> TextureWriteBindings;
 
     /// <summary>
-    ///     The naive array of writeable storage data buffer bindings.
+    ///  TODO.
     /// </summary>
-    public NativeArray DataBufferWriteBindingsArray;
-
-    /// <summary>
-    ///     TODO.
-    /// </summary>
-    /// <param name="textureWriteBindings">The writable storage texture bindings.</param>
-    public void SetBindingsTextureWrite(
-        params Span<GpuComputePassBindingTextureReadWrite> textureWriteBindings)
-    {
-        TextureWriteBindingsArray = NativeArray.CreateFromSpan(textureWriteBindings);
-    }
-
-    /// <summary>
-    ///     TODO.
-    /// </summary>
-    /// <param name="dataBufferWriteBindings">The writeable storage data buffer bindings.</param>
-    public void SetDataBufferWriteBindings(
-        params Span<GpuComputePassBindingDataBufferReadWrite> dataBufferWriteBindings)
-    {
-        DataBufferWriteBindingsArray = NativeArray.CreateFromSpan(dataBufferWriteBindings);
-    }
+    public Span<GpuComputePassBindingDataBufferReadWrite> DataBufferWriteBindings;
 }

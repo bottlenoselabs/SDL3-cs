@@ -6,24 +6,16 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     TODO.
 /// </summary>
+[PublicAPI]
 public record struct GpuComputePassBindingDataBufferReadWrite
 {
     /// <summary>
     ///     TODO.
     /// </summary>
-    public nint Buffer;
+    public GpuDataBuffer Buffer;
 
     /// <summary>
     ///     TODO.
     /// </summary>
     public bool IsCycled;
-
-    /// <summary>
-    ///     TODO.
-    /// </summary>
-    /// <param name="buffer">The data buffer.</param>
-    public unsafe void SetBuffer(GpuDataBuffer buffer)
-    {
-        Buffer = (IntPtr)buffer.HandleTyped;
-    }
 }
