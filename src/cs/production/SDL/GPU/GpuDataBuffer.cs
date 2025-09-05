@@ -7,9 +7,9 @@ namespace bottlenoselabs.SDL;
 ///     Represents a GPU resource that holds data in video memory.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class GpuDataBuffer : GpuResource
+public sealed unsafe class GpuDataBuffer : GpuResource<SDL_GPUBuffer>
 {
-    internal GpuDataBuffer(GpuDevice device, IntPtr handle)
+    internal GpuDataBuffer(GpuDevice device, SDL_GPUBuffer* handle)
         : base(device, handle)
     {
     }
@@ -17,7 +17,7 @@ public sealed unsafe class GpuDataBuffer : GpuResource
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_ReleaseGPUBuffer((SDL_GPUDevice*)Device.Handle, (SDL_GPUBuffer*)Handle);
+        SDL_ReleaseGPUBuffer(Device.HandleTyped, HandleTyped);
         base.Dispose(isDisposing);
     }
 }

@@ -1,6 +1,8 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace bottlenoselabs.SDL;
 
 /// <summary>
@@ -37,7 +39,9 @@ public sealed unsafe class FileSystem : Disposable
     ///         <see cref="TryLoadFile" /> is not thread safe.
     ///     </para>
     /// </remarks>
-    public bool TryLoadFile(string filePath, out File file)
+    public bool TryLoadFile(
+        string filePath,
+        out File file)
     {
         var fullFilePath = GetFullFilePath(filePath);
 
@@ -67,7 +71,8 @@ public sealed unsafe class FileSystem : Disposable
     }
 
     /// <summary>
-    ///     Attempts to load a file as an image given the specified file path.
+    ///     Attempts to load a file as an image and create a new <see cref="Surface" /> instance given the specified
+    ///     file path.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
@@ -88,7 +93,7 @@ public sealed unsafe class FileSystem : Disposable
     /// </remarks>
     public bool TryLoadImage(
         string filePath,
-        out Surface? surface,
+        [NotNullWhen(true)] out Surface? surface,
         PixelFormat? desiredPixelFormat = null)
     {
         if (desiredPixelFormat != null &&
@@ -130,7 +135,8 @@ public sealed unsafe class FileSystem : Disposable
     }
 
     /// <summary>
-    ///     Attempts to load a file as a font given the specified file path and point size.
+    ///     Attempts to load a file as a font and create a new <see cref="Font" /> instance given the specified file
+    ///     path and point size.
     /// </summary>
     /// <param name="filePath">
     ///     The path to the file. If the path is relative, it is assumed to be relative to
@@ -150,7 +156,7 @@ public sealed unsafe class FileSystem : Disposable
     /// </remarks>
     public bool TryLoadFont(
         string filePath,
-        out Font? font,
+        [NotNullWhen(true)] out Font? font,
         float pointSize)
     {
         var fullFilePath = GetFullFilePath(filePath);
@@ -167,6 +173,90 @@ public sealed unsafe class FileSystem : Disposable
         }
 
         font = new Font((IntPtr)fontPointer);
+        return true;
+    }
+
+    /// <summary>
+    ///     Attempts to load a file as a graphics shader and create a new <see cref="GpuGraphicsShader" /> instance
+    ///     using the specified file path.
+    /// </summary>
+    /// <param name="filePath">
+    ///     The path to the file. If the path is relative, it is assumed to be relative to
+    ///     <see cref="AppContext.BaseDirectory" />.
+    /// </param>
+    /// <param name="device">The <see cref="GpuDevice" /> instance.</param>
+    /// <param name="options">The <see cref="GpuGraphicsShaderOptions" /> instance.</param>
+    /// <param name="shader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
+    /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
+    public bool TryLoadGraphicsShader(
+        string filePath,
+        GpuDevice device,
+        GpuGraphicsShaderOptions options,
+        [NotNullWhen(true)] out GpuGraphicsShader? shader)
+    {
+        if (!TryLoadFile(filePath, out var file))
+        {
+            shader = null;
+            return false;
+        }
+
+        if (!options.TrySetFromFile(file))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        if (!device.TryCreateGraphicsShader(options, out shader))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        file.Dispose();
+        return true;
+    }
+
+    /// <summary>
+    ///     Attempts to load a file as a compute shader and create a new <see cref="GpuComputeShader" /> instance
+    ///     using the specified file path.
+    /// </summary>
+    /// <param name="filePath">
+    ///     The path to the file. If the path is relative, it is assumed to be relative to
+    ///     <see cref="AppContext.BaseDirectory" />.
+    /// </param>
+    /// <param name="device">The <see cref="GpuDevice" /> instance.</param>
+    /// <param name="options">The <see cref="GpuComputeShaderOptions" /> instance.</param>
+    /// <param name="shader">If successful, a new <see cref="GpuComputeShader" /> instance; otherwise, <c>null</c>.</param>
+    /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
+    public bool TryLoadComputeShader(
+        string filePath,
+        GpuDevice device,
+        GpuComputeShaderOptions options,
+        [NotNullWhen(true)] out GpuComputeShader? shader)
+    {
+        if (!TryLoadFile(filePath, out var file))
+        {
+            shader = null;
+            return false;
+        }
+
+        if (!options.TrySetFromFile(file))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        if (!device.TryCreateComputeShader(options, out shader))
+        {
+            shader = null;
+            file.Dispose();
+            return false;
+        }
+
+        file.Dispose();
         return true;
     }
 

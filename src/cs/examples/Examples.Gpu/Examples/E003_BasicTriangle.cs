@@ -26,59 +26,61 @@ public sealed class E003_BasicTriangle : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("RawTriangle.vert"), out var vertexShader))
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("RawTriangle.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }
 
         // Create the pipeline
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineFill))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipelineFill))
         {
             Console.Error.WriteLine("Failed to create fill pipeline!");
             return false;
         }
 
-        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Line;
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineLine))
+        graphicsPipelineOptions.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Line;
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipelineLine))
         {
             Console.Error.WriteLine("Failed to create line pipeline!");
             return false;
         }
 
         // Clean up shader resources
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         _viewportSmall = new()
         {
-            X = Window.Width / 4.0f,
-            Y = Window.Height / 4.0f,
-            Width = Window.Width / 2.0f,
-            Height = Window.Height / 2.0f,
+            X = Window.Size.Width / 4.0f,
+            Y = Window.Size.Height / 4.0f,
+            Width = Window.Size.Width / 2.0f,
+            Height = Window.Size.Height / 2.0f,
             MinDepth = 0.1f,
             MaxDepth = 1.0f
         };
 
         _rectangleScissor = new()
         {
-            X = Window.Width / 2,
-            Y = Window.Height / 2,
-            Width = Window.Width / 2,
-            Height = Window.Height / 2
+            X = Window.Size.Width / 2,
+            Y = Window.Size.Height / 2,
+            Width = Window.Size.Width / 2,
+            Height = Window.Size.Height / 2
         };
 
         // Finally, print instructions!
@@ -99,7 +101,7 @@ public sealed class E003_BasicTriangle : ExampleGpu
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.Key)
+        switch (e.Button)
         {
             case KeyboardButton.Left:
             {
@@ -135,8 +137,8 @@ public sealed class E003_BasicTriangle : ExampleGpu
         }
 
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
-        renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.Texture = swapchainTexture;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);

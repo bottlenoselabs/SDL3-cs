@@ -1,33 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Native Library -->
+  <PropertyGroup>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <NativeLibraryFileName>libSDL3.so</NativeLibraryFileName>
+  </PropertyGroup>
+  <Import Project="../NativeLibrary.props" />
+
   <!-- MSBuild settings -->
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput> <!-- No C# assemblies to include -->
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems> <!-- Don't include .cs files -->
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-    <PlatformTarget>x64</PlatformTarget>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
   <!-- NuGet -->
   <PropertyGroup>
     <PackageDescription>The native `SDL` library (SDL3) file (libSDL3.so) for the `linux-x64` target framework moniker (TFM).</PackageDescription>
   </PropertyGroup>
-
-  <!-- Dynamic link library -->
-  <PropertyGroup>
-    <NativeLibraryFileName>libSDL3.so</NativeLibraryFileName>
-    <NativeLibraryFilePath>$(LibraryDirectoryPath)/$(RuntimeIdentifier)/$(NativeLibraryFileName)</NativeLibraryFilePath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="$(NativeLibraryFilePath)"
-      PackagePath="runtimes\$(RuntimeIdentifier)\native\"
-      Condition="Exists('$(NativeLibraryFilePath)')">
-      <Link>%(Filename)%(Extension)</Link>
-      <Pack>true</Pack>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
 </Project>

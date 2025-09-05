@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines a keyboard event.
 /// </summary>
+[PublicAPI]
 public readonly record struct KeyboardEvent
 {
     /// <summary>
@@ -14,23 +15,30 @@ public readonly record struct KeyboardEvent
     public readonly Window Window;
 
     /// <summary>
-    ///     The <see cref="bottlenoselabs.SDL.KeyboardButton" /> associated with the event.
+    ///     The <see cref="KeyboardButton" /> associated with the event.
     /// </summary>
-    public readonly KeyboardButton Key;
+    public readonly KeyboardButton Button;
 
     /// <summary>
-    ///     Determines whether the <see cref="Key" /> associated with the event is pressed down.
+    ///     The <see cref="KeyboardKey" /> associated with the event.
+    /// </summary>
+    public readonly KeyboardKey Key;
+
+    /// <summary>
+    ///     Determines whether the <see cref="Button" /> associated with the event is pressed down.
     /// </summary>
     public readonly bool IsDown;
 
     /// <summary>
-    ///     Determines whether the <see cref="Key" /> associated with the event has been pressed down continuously.
+    ///     Determines whether the <see cref="Button" /> associated with the event has been pressed down continuously.
     /// </summary>
     public readonly bool IsRepeat;
 
-    internal KeyboardEvent(Window window, KeyboardButton key, bool isDown, bool isRepeat)
+    internal KeyboardEvent(
+        Window window, KeyboardButton button, KeyboardKey key, bool isDown, bool isRepeat)
     {
         Window = window;
+        Button = button;
         Key = key;
         IsDown = isDown;
         IsRepeat = isRepeat;

@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines a mouse move event.
 /// </summary>
+[PublicAPI]
 public readonly record struct MouseMoveEvent
 {
     /// <summary>
@@ -18,10 +19,22 @@ public readonly record struct MouseMoveEvent
     /// </summary>
     public readonly Vector2 Position;
 
+    /// <summary>
+    ///     The change in position of the mouse at the time of the event.
+    /// </summary>
+    public readonly Vector2 PositionDelta;
+
+    /// <summary>
+    ///     The button state of the mouse at the time of the event.
+    /// </summary>
+    public readonly MouseButtonState ButtonState;
+
     internal MouseMoveEvent(
-        Window window, Vector2 position)
+        Window window, Vector2 position, Vector2 positionDelta, MouseButtonState buttonState)
     {
         Window = window;
         Position = position;
+        PositionDelta = positionDelta;
+        ButtonState = buttonState;
     }
 }

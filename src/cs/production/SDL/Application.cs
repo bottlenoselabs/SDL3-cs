@@ -11,7 +11,15 @@ public abstract unsafe partial class Application : Disposable
 {
     private bool _isExiting;
     private volatile bool _isInBackground;
+    private ulong _previousTime;
+    private int _renderedFramesCount;
+    private TimeSpan _frameCounterAccumulatedTime;
+
     private readonly ILoggerFactory _loggerFactory;
+
+    private readonly Dictionary<IntPtr, string> _keyNamesByPointer = new();
+
+    private static readonly TimeSpan FramesCounterElapsedTime = TimeSpan.FromSeconds(1);
 
     /// <summary>
     ///     Gets the logger of the application.
@@ -36,22 +44,14 @@ public abstract unsafe partial class Application : Disposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="Application" /> class.
     /// </summary>
-    /// <param name="loggerFactory">
-    ///     The optional logger factory. If <c>null</c>, a console logger factory is created with
-    ///     minimum log level of <see cref="LogLevel.Warning" />.
-    /// </param>
-    protected Application(ILoggerFactory? loggerFactory = null)
+    /// <param name="options">The application options.</param>
+    protected Application(ApplicationOptions? options = null)
     {
-        _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Warning);
-        });
+        options ??= new ApplicationOptions();
+        _loggerFactory = options.LoggerFactory!;
 
         Logger = _loggerFactory.CreateLogger<Application>();
-
         Error.LoggerNativeFunction = _loggerFactory.CreateLogger("Interop");
-
         FileSystem = new FileSystem(_loggerFactory.CreateLogger<FileSystem>());
     }
 
@@ -82,6 +82,7 @@ public abstract unsafe partial class Application : Disposable
 
         OnStart();
         Loop();
+        OnExit();
 
         TTF_Quit();
     }
@@ -134,42 +135,56 @@ public abstract unsafe partial class Application : Disposable
     /// <summary>
     ///     Called when the application is starting.
     /// </summary>
-    protected abstract void OnStart();
+    protected virtual void OnStart()
+    {
+    }
 
     /// <summary>
     ///     Called when the application is exiting.
     /// </summary>
-    protected abstract void OnExit();
+    protected virtual void OnExit()
+    {
+    }
 
     /// <summary>
     ///     Called when the mouse moves.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnMouseMove(in MouseMoveEvent e);
+    protected virtual void OnMouseMove(in MouseMoveEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a mouse button is pressed down.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnMouseDown(in MouseButtonEvent e);
+    protected virtual void OnMouseDown(in MouseButtonEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a mouse button is released.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnMouseUp(in MouseButtonEvent e);
+    protected virtual void OnMouseUp(in MouseButtonEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a keyboard key is pressed down.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnKeyDown(in KeyboardEvent e);
+    protected virtual void OnKeyDown(in KeyboardEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when a keyboard key is released.
     /// </summary>
     /// <param name="e">The event.</param>
-    protected abstract void OnKeyUp(in KeyboardEvent e);
+    protected virtual void OnKeyUp(in KeyboardEvent e)
+    {
+    }
 
     /// <summary>
     ///     Called when an event is received from SDL.
@@ -184,37 +199,42 @@ public abstract unsafe partial class Application : Disposable
     ///     update its state.
     /// </summary>
     /// <param name="deltaTime">The time passed since the last call to <see cref="OnUpdate" />.</param>
-    protected abstract void OnUpdate(TimeSpan deltaTime);
+    protected virtual void OnUpdate(TimeSpan deltaTime)
+    {
+    }
 
     /// <summary>
     ///     Called when the application determines it is time to draw a frame. This is where your application would
     ///     perform rendering.
     /// </summary>
     /// <param name="deltaTime">The time passed since the last call to <see cref="OnDraw" />.</param>
-    protected abstract void OnDraw(TimeSpan deltaTime);
+    protected virtual void OnDraw(TimeSpan deltaTime)
+    {
+    }
 
     private void Loop()
     {
-        var previousTime = SDL_GetPerformanceCounter();
-        var renderedFramesCount = 0;
-        var framesCountAccumulatedTime = TimeSpan.Zero;
+        _previousTime = SDL_GetPerformanceCounter();
 
         while (!_isExiting)
         {
-            PollEvents();
-            var timeAdvanced = AdvanceTime(ref previousTime);
-            OnUpdate(timeAdvanced);
+            Tick();
+        }
+    }
 
-            if (!_isInBackground)
-            {
-                OnDraw(timeAdvanced);
-                renderedFramesCount++;
-            }
+    private void Tick()
+    {
+        PollEvents();
+        var deltaTime = AdvanceTime();
+        OnUpdate(deltaTime);
 
-            CalculateFramesPerSecond(timeAdvanced, ref framesCountAccumulatedTime, ref renderedFramesCount);
+        if (!_isInBackground)
+        {
+            OnDraw(deltaTime);
+            _renderedFramesCount++;
         }
 
-        OnExit();
+        CalculateFramesPerSecond(deltaTime);
     }
 
     private void PollEvents()
@@ -226,31 +246,28 @@ public abstract unsafe partial class Application : Disposable
         }
     }
 
-    private static TimeSpan AdvanceTime(ref ulong previousTime)
+    private TimeSpan AdvanceTime()
     {
         var currentTime = SDL_GetPerformanceCounter();
-        var deltaTime = currentTime - previousTime;
-        previousTime = currentTime;
+        var deltaTime = currentTime - _previousTime;
+        _previousTime = currentTime;
         var deltaSeconds = (double)deltaTime / SDL_GetPerformanceFrequency();
         var deltaTicks = (long)(deltaSeconds * TimeSpan.TicksPerSecond);
         var timeAdvanced = new TimeSpan(deltaTicks);
         return timeAdvanced;
     }
 
-    private void CalculateFramesPerSecond(
-        TimeSpan timeAdvanced,
-        ref TimeSpan framesCounterAccumulatedTime,
-        ref int renderedFramesCount)
+    private void CalculateFramesPerSecond(TimeSpan deltaTime)
     {
-        var framesCounterElapsedTime = TimeSpan.FromSeconds(1);
-
-        framesCounterAccumulatedTime += timeAdvanced;
-        if (framesCounterAccumulatedTime >= framesCounterElapsedTime)
+        _frameCounterAccumulatedTime += deltaTime;
+        if (_frameCounterAccumulatedTime < FramesCounterElapsedTime)
         {
-            framesCounterAccumulatedTime -= framesCounterElapsedTime;
-            FramesPerSecond = renderedFramesCount;
-            renderedFramesCount = 0;
+            return;
         }
+
+        _frameCounterAccumulatedTime -= FramesCounterElapsedTime;
+        FramesPerSecond = _renderedFramesCount;
+        _renderedFramesCount = 0;
     }
 
     private void HandleEvent(in SDL_Event e)
@@ -261,6 +278,14 @@ public abstract unsafe partial class Application : Disposable
             case SDL_EventType.SDL_EVENT_QUIT:
             {
                 _isExiting = true;
+                break;
+            }
+
+            case SDL_EventType.SDL_EVENT_WINDOW_RESIZED:
+            {
+                var windowId = (int)e.window.windowID.Data;
+                var window = WindowsById[windowId];
+                window.OnResize();
                 break;
             }
 
@@ -302,23 +327,27 @@ public abstract unsafe partial class Application : Disposable
 
     private void HandleMouseMotionEvent(in SDL_MouseMotionEvent mouseMotionEvent)
     {
-        if (!WindowsById.TryGetValue(mouseMotionEvent.windowID, out var window))
+        var windowId = (int)mouseMotionEvent.windowID.Data;
+        if (!WindowsById.TryGetValue(windowId, out var window))
         {
             // NOTE: Window must be created outside of managed C# code.
             window = null!;
         }
 
         var position = new Vector2(mouseMotionEvent.x, mouseMotionEvent.y);
-        var e = new MouseMoveEvent(window, position);
+        var positionDelta = new Vector2(mouseMotionEvent.xrel, mouseMotionEvent.yrel);
+        var mouseButtonState = (MouseButtonState)mouseMotionEvent.state.Data;
+        var e = new MouseMoveEvent(window, position, positionDelta, mouseButtonState);
 
         OnMouseMove(e);
     }
 
     private void HandleMouseButtonEvent(in SDL_MouseButtonEvent mouseButtonEvent)
     {
+        var windowId = (int)mouseButtonEvent.windowID.Data;
         var isDown = (bool)mouseButtonEvent.down;
 
-        if (!WindowsById.TryGetValue(mouseButtonEvent.windowID, out var window))
+        if (!WindowsById.TryGetValue(windowId, out var window))
         {
             // NOTE: Window must be created outside of managed C# code.
             window = null!;
@@ -365,17 +394,29 @@ public abstract unsafe partial class Application : Disposable
 
     private void HandleKeyboardEvent(SDL_KeyboardEvent keyboardEvent)
     {
+        var nameC = SDL_GetKeyName(keyboardEvent.key);
+
+        // NOTE: It's assumed that pointers for key names are constant
+        if (!_keyNamesByPointer.TryGetValue(nameC.Pointer, out var name))
+        {
+            name = CString.ToString(nameC);
+            _keyNamesByPointer.Add(nameC.Pointer, name);
+        }
+
         var isDown = (bool)keyboardEvent.down;
         var isRepeat = (bool)keyboardEvent.repeat;
 
-        if (!WindowsById.TryGetValue(keyboardEvent.windowID, out var window))
+        var windowId = (int)keyboardEvent.windowID.Data;
+        if (!WindowsById.TryGetValue(windowId, out var window))
         {
             // NOTE: Window must be created outside of managed C# code.
             window = null!;
         }
 
+        var key = (KeyboardKey)keyboardEvent.key.Data;
+
         // NOTE: Scancode Key is for keyboard layout independent buttons. Virtual keys are for layout dependent buttons.
-        var key = keyboardEvent.scancode switch
+        var button = keyboardEvent.scancode switch
         {
             SDL_Scancode.SDL_SCANCODE_LEFT => KeyboardButton.Left,
             SDL_Scancode.SDL_SCANCODE_RIGHT => KeyboardButton.Right,
@@ -420,7 +461,7 @@ public abstract unsafe partial class Application : Disposable
             _ => KeyboardButton.Unknown
         };
 
-        var e = new KeyboardEvent(window, key, isDown, isRepeat);
+        var e = new KeyboardEvent(window, button, key, isDown, isRepeat);
 
         if (isDown)
         {
@@ -436,7 +477,6 @@ public abstract unsafe partial class Application : Disposable
     private static CBool OnEventWatch(void* userData, SDL_Event* e)
     {
         // NOTE: We may be on different thread than the main thread.
-        // NOTE: The return value is ignored for SDL_AddEventWatch. Thus, we always return false.
 
         var app = Current;
 
@@ -454,8 +494,24 @@ public abstract unsafe partial class Application : Disposable
                 Interlocked.Exchange(ref app._isInBackground, false);
                 break;
             }
+
+            case SDL_EventType.SDL_EVENT_WINDOW_EXPOSED:
+            {
+                // NOTE: We are on the main thread.
+
+                var isWindowResizing = e->window.data1 == 1;
+                if (isWindowResizing)
+                {
+                    // NOTE: If ANY window is resizing, then we tick the WHOLE application. Perhaps it would be better
+                    //  to tick only the specific window that is resizing instead.
+                    app.Tick();
+                }
+
+                break;
+            }
         }
 
+        // NOTE: The return value is ignored for SDL_AddEventWatch. Thus, we always return false.
         return false;
     }
 }

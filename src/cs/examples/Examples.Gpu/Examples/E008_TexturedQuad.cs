@@ -7,7 +7,7 @@ namespace Gpu.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E008_TexturedQuad : ExampleGpu
+public sealed class E008_TexturedQuad : ExampleGpu
 {
     private static readonly string[] SamplerNames =
     [
@@ -34,36 +34,36 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("TexturedQuad.vert"), out var vertexShader))
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("TexturedQuad.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem,
-                GetShaderFilePath("TexturedQuad.frag"),
-                out var fragmentShader,
-                samplerCount: 1))
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
+        fragmentShaderOptions.SamplerCount = 1;
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("TexturedQuad.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }
 
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionTexture>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionTexture>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionTexture>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionTexture>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipeline))
         {
             return false;
         }
 
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         var imageFilePath = Path.Combine(AssetsDirectory, "Images", "ravioli.bmp");
         if (!FileSystem.TryLoadImage(
@@ -72,99 +72,99 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
-        var textureDescriptor = new GpuTextureOptions();
-        textureDescriptor.Name = "Ravioli Texture 🖼️";
-        textureDescriptor.Type = GpuTextureType.TwoDimensional;
-        textureDescriptor.Format = GpuTextureFormat.R8G8B8A8_UNORM;
-        textureDescriptor.Width = surface!.Width;
-        textureDescriptor.Height = surface.Height;
-        textureDescriptor.LayerCountOrDepth = 1;
-        textureDescriptor.MipmapLevelCount = 1;
-        textureDescriptor.Usage = GpuTextureUsages.Sampler;
+        var textureOptions = new GpuTextureOptions();
+        textureOptions.Name = "Ravioli Texture 🖼️";
+        textureOptions.Type = GpuTextureType.TwoDimensional;
+        textureOptions.Format = GpuTextureFormat.R8G8B8A8_UNORM;
+        textureOptions.Width = surface.Width;
+        textureOptions.Height = surface.Height;
+        textureOptions.LayersCountOrDepth = 1;
+        textureOptions.MipmapLevelsCount = 1;
+        textureOptions.Usage = GpuTextureUsages.Sampler;
 
-        if (!Device.TryCreateTexture(textureDescriptor, out _texture))
+        if (!Device.TryCreateTexture(textureOptions, out _texture))
         {
             return false;
         }
 
         // PointClamp
-        using var samplerDescriptor = new GpuSamplerOptions();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
-        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
-        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
-        if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[0]))
+        using var samplerOptions = new GpuSamplerOptions();
+        samplerOptions.MinificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerOptions.MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerOptions.MipMapMode = GpuSamplerMipmapMode.Nearest;
+        samplerOptions.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
+        if (!Device.TryCreateSampler(samplerOptions, out _samplers[0]))
         {
             return false;
         }
 
         // PointWrap
-        samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Nearest;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Nearest;
-        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Nearest;
-        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.Repeat;
-        if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[1]))
+        samplerOptions.Reset();
+        samplerOptions.MinificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerOptions.MagnificationFilterMode = GpuSamplerFilterMode.Nearest;
+        samplerOptions.MipMapMode = GpuSamplerMipmapMode.Nearest;
+        samplerOptions.AddressModeU = GpuSamplerAddressMode.Repeat;
+        samplerOptions.AddressModeV = GpuSamplerAddressMode.Repeat;
+        samplerOptions.AddressModeW = GpuSamplerAddressMode.Repeat;
+        if (!Device.TryCreateSampler(samplerOptions, out _samplers[1]))
         {
             return false;
         }
 
         // LinearClamp
-        samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
-        if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[2]))
+        samplerOptions.Reset();
+        samplerOptions.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerOptions.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
+        if (!Device.TryCreateSampler(samplerOptions, out _samplers[2]))
         {
             return false;
         }
 
         // LinearWrap
-        samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.Repeat;
-        if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[3]))
+        samplerOptions.Reset();
+        samplerOptions.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerOptions.AddressModeU = GpuSamplerAddressMode.Repeat;
+        samplerOptions.AddressModeV = GpuSamplerAddressMode.Repeat;
+        samplerOptions.AddressModeW = GpuSamplerAddressMode.Repeat;
+        if (!Device.TryCreateSampler(samplerOptions, out _samplers[3]))
         {
             return false;
         }
 
         // AnisotropicClamp
-        samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
-        samplerDescriptor.IsEnabledAnisotropy = true;
-        samplerDescriptor.MaximumAnisotropy = 4;
-        if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[4]))
+        samplerOptions.Reset();
+        samplerOptions.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerOptions.AddressModeU = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeV = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.AddressModeW = GpuSamplerAddressMode.ClampToEdge;
+        samplerOptions.IsEnabledAnisotropy = true;
+        samplerOptions.MaximumAnisotropy = 4;
+        if (!Device.TryCreateSampler(samplerOptions, out _samplers[4]))
         {
             return false;
         }
 
         // AnisotropicWrap
-        samplerDescriptor.Reset();
-        samplerDescriptor.MinificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MagnificationFilter = GpuSamplerFilter.Linear;
-        samplerDescriptor.MipMapMode = GpuSamplerMipmapMode.Linear;
-        samplerDescriptor.AddressModeU = GpuSamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeV = GpuSamplerAddressMode.Repeat;
-        samplerDescriptor.AddressModeW = GpuSamplerAddressMode.Repeat;
-        samplerDescriptor.IsEnabledAnisotropy = true;
-        samplerDescriptor.MaximumAnisotropy = 4;
-        if (!Device.TryCreateSampler(samplerDescriptor, out _samplers[5]))
+        samplerOptions.Reset();
+        samplerOptions.MinificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MagnificationFilterMode = GpuSamplerFilterMode.Linear;
+        samplerOptions.MipMapMode = GpuSamplerMipmapMode.Linear;
+        samplerOptions.AddressModeU = GpuSamplerAddressMode.Repeat;
+        samplerOptions.AddressModeV = GpuSamplerAddressMode.Repeat;
+        samplerOptions.AddressModeW = GpuSamplerAddressMode.Repeat;
+        samplerOptions.IsEnabledAnisotropy = true;
+        samplerOptions.MaximumAnisotropy = 4;
+        if (!Device.TryCreateSampler(samplerOptions, out _samplers[5]))
         {
             return false;
         }
@@ -180,16 +180,16 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(
-                (sizeof(VertexPositionTexture) * 4) + (sizeof(ushort) * 6),
+        if (!Device.TryCreateUploadTransferBuffer(
+                (VertexPositionTexture.SizeOf * 4) + (sizeof(ushort) * 6),
                 out var transferBufferVerticesAndIndices))
         {
             return false;
         }
 
-        var transferBufferVerticesAndIndicesSpan = transferBufferVerticesAndIndices!.MapAsSpan();
+        var transferBufferVerticesAndIndicesSpan = transferBufferVerticesAndIndices.MapAsSpan();
         var vertexData = MemoryMarshal.Cast<byte, VertexPositionTexture>(
-            transferBufferVerticesAndIndicesSpan[..(sizeof(VertexPositionTexture) * 4)]);
+            transferBufferVerticesAndIndicesSpan[..(VertexPositionTexture.SizeOf * 4)]);
 
         vertexData[0].Position = new Vector3(-1f, 1f, 0); // top-left
         vertexData[0].TextureCoordinates = new Vector2(0, 0);
@@ -204,7 +204,7 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         vertexData[3].TextureCoordinates = new Vector2(0, 4);
 
         var indexData = MemoryMarshal.Cast<byte, ushort>(
-            transferBufferVerticesAndIndicesSpan[(sizeof(VertexPositionTexture) * 4)..]);
+            transferBufferVerticesAndIndicesSpan[(VertexPositionTexture.SizeOf * 4)..]);
 
         indexData[0] = 0;
         indexData[1] = 1;
@@ -217,16 +217,20 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
         // Set up texture data
         var textureByteCount = surface.Width * surface.Height * 4;
-        if (!Device.TryCreateTransferBuffer(textureByteCount, out var transferBufferTexture))
+        if (!Device.TryCreateUploadTransferBuffer(textureByteCount, out var transferBufferTexture))
         {
             return false;
         }
 
-        var transferBufferTexturePointer = transferBufferTexture!.MapAsPointer();
-        NativeMemory.Copy(
-            (void*)surface.DataPointer,
-            (void*)transferBufferTexturePointer,
-            (UIntPtr)textureByteCount);
+        var transferBufferTexturePointer = transferBufferTexture.MapAsPointer();
+        unsafe
+        {
+            NativeMemory.Copy(
+                (void*)surface.DataPointer,
+                (void*)transferBufferTexturePointer,
+                (UIntPtr)textureByteCount);
+        }
+
         transferBufferTexture.Unmap();
 
         var uploadCommandBuffer = Device.GetCommandBuffer();
@@ -237,11 +241,11 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
             0,
             _vertexBuffer,
             0,
-            sizeof(VertexPositionTexture) * 4);
+            VertexPositionTexture.SizeOf * 4);
 
         copyPass.UploadToDataBuffer(
             transferBufferVerticesAndIndices,
-            sizeof(VertexPositionTexture) * 4,
+            VertexPositionTexture.SizeOf * 4,
             _indexBuffer,
             0,
             sizeof(ushort) * 6);
@@ -285,7 +289,7 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.Key)
+        switch (e.Button)
         {
             case KeyboardButton.Left:
             {
@@ -324,7 +328,7 @@ public sealed unsafe class E008_TexturedQuad : ExampleGpu
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
 

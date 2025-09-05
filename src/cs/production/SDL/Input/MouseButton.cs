@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines the buttons on a mouse input device.
 /// </summary>
+[PublicAPI]
 public enum MouseButton
 {
     /// <summary>

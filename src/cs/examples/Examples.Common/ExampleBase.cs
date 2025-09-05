@@ -19,10 +19,6 @@ public abstract class ExampleBase
 
     public string AssetsDirectory { get; protected init; }
 
-    public int ScreenWidth => Window.Width;
-
-    public int ScreenHeight => Window.Height;
-
     protected ExampleBase(
         bool isEnabledCreateSurface = false,
         bool isEnabledCreateRenderer2D = false)
@@ -64,9 +60,13 @@ public abstract class ExampleBase
     {
     }
 
-    public abstract void OnUpdate(TimeSpan deltaTime);
+    public virtual void OnUpdate(TimeSpan deltaTime)
+    {
+    }
 
-    public abstract void OnDraw(TimeSpan deltaTime);
+    public virtual void OnDraw(TimeSpan deltaTime)
+    {
+    }
 
     internal void Exit()
     {

@@ -4,8 +4,17 @@
 namespace bottlenoselabs.SDL;
 
 /// <summary>
-///     Defines the buttons on a keyboard input device.
+///     Defines the buttons on a keyboard based on the QWERTY (EN-US) keyboard layout.
 /// </summary>
+/// <remarks>
+///     <para>
+///         Use <see cref="KeyboardButton" /> for when you want the physical location of a key independent of the
+///         layout. For example, comparing the physical layout of a French keyboard and an English keyboard, the
+///         location of the keys "WASD" on the English keyboard would be same location for the "ZQSD" keys on the French
+///         keyboard.
+///     </para>
+/// </remarks>
+[PublicAPI]
 public enum KeyboardButton
 {
     /// <summary>

@@ -19,35 +19,37 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("PositionColor.vert"), out var vertexShader))
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("PositionColor.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }
 
         // Create the pipeline
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.RasterizerState.FillMode = GpuGraphicsPipelineFillMode.Fill;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionColor>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionColor>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipeline))
         {
             return false;
         }
 
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         if (!Device.TryCreateDataBuffer<VertexPositionColor>(
                 3, out _vertexBuffer))
@@ -56,12 +58,12 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
         }
 
         // To get data into the vertex buffer, we have to use a transfer buffer
-        if (!Device.TryCreateTransferBuffer(sizeof(VertexPositionColor) * 3, out var transferBuffer))
+        if (!Device.TryCreateUploadTransferBuffer(sizeof(VertexPositionColor) * 3, out var transferBuffer))
         {
             return false;
         }
 
-        var transferBufferSpan = transferBuffer!.MapAsSpan();
+        var transferBufferSpan = transferBuffer.MapAsSpan();
         var data = MemoryMarshal.Cast<byte, VertexPositionColor>(transferBufferSpan);
 
         data[0].Position = new Vector3(-1, -1, 0);
@@ -112,8 +114,8 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
         }
 
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
-        renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.Texture = swapchainTexture;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);

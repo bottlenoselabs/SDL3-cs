@@ -6,8 +6,10 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Represents a GPU resource.
 /// </summary>
+/// <typeparam name="T">The type of pointer.</typeparam>
 [PublicAPI]
-public class GpuResource : NativeHandle
+public class GpuResource<T> : NativeHandleTyped<T>
+    where T : unmanaged
 {
     /// <summary>
     ///     Gets the <see cref="GpuDevice" /> instance associated with the GPU resource.
@@ -19,7 +21,7 @@ public class GpuResource : NativeHandle
     /// </remarks>
     public GpuDevice Device { get; private set; }
 
-    internal GpuResource(GpuDevice device, IntPtr handle)
+    internal unsafe GpuResource(GpuDevice device, T* handle)
         : base(handle)
     {
         Device = device;

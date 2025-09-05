@@ -17,7 +17,7 @@ namespace bottlenoselabs.SDL;
 ///         the developer as they are fixed and non-configurable.
 ///     </para>
 ///     <para>
-///         To create a <see cref="GpuGraphicsPipeline" />, call <see cref="GpuDevice.TryCreatePipeline" /> with the
+///         To create a <see cref="GpuGraphicsPipeline" />, call <see cref="GpuDevice.TryCreateGraphicsPipeline" /> with the
 ///         specified <see cref="GpuGraphicsPipelineOptions" /> struct.
 ///     </para>
 ///     <para>
@@ -26,11 +26,9 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public sealed unsafe class GpuGraphicsPipeline : GpuResource
+public sealed unsafe class GpuGraphicsPipeline : GpuResource<SDL_GPUGraphicsPipeline>
 {
-    internal GpuGraphicsPipeline(
-        GpuDevice device,
-        IntPtr handle)
+    internal GpuGraphicsPipeline(GpuDevice device, SDL_GPUGraphicsPipeline* handle)
         : base(device, handle)
     {
     }
@@ -38,7 +36,7 @@ public sealed unsafe class GpuGraphicsPipeline : GpuResource
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_ReleaseGPUGraphicsPipeline((SDL_GPUDevice*)Device.Handle, (SDL_GPUGraphicsPipeline*)Handle);
+        SDL_ReleaseGPUGraphicsPipeline(Device.HandleTyped, HandleTyped);
         base.Dispose(isDisposing);
     }
 }

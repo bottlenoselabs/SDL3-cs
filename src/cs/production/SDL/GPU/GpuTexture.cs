@@ -8,7 +8,7 @@ namespace bottlenoselabs.SDL;
 ///     related information such as how many texels there are and how they are encoded and organized.
 /// </summary>
 [PublicAPI]
-public sealed unsafe class GpuTexture : GpuResource
+public sealed unsafe class GpuTexture : GpuResource<SDL_GPUTexture>
 {
     private readonly bool _isSwapchain;
 
@@ -37,24 +37,24 @@ public sealed unsafe class GpuTexture : GpuResource
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         <see cref="LayerCountOrDepth" /> is treated as a layer count on 2D array textures, and as a depth value
+    ///         <see cref="LayersCountOrDepth" /> is treated as a layer count on 2D array textures, and as a depth value
     ///         on 3D textures.
     ///     </para>
     /// </remarks>
-    public int LayerCountOrDepth { get; private set; }
+    public int LayersCountOrDepth { get; private set; }
 
     /// <summary>
     ///     Gets the number of mipmap levels of the texture.
     /// </summary>
-    public int MipMapLevelCount { get; private set; }
+    public int MipMapLevelsCount { get; private set; }
 
     /// <summary>
     ///     Gets the number of samples per texel of the render target texture.
     /// </summary>
     /// <remarks>
-    ///     <para><see cref="SampleCount" /> only applies if the texture is used as a render target.</para>
+    ///     <para><see cref="SamplesCount" /> only applies if the texture is used as a render target.</para>
     /// </remarks>
-    public int SampleCount { get; private set; }
+    public int SamplesCount { get; private set; }
 
     /// <summary>
     ///     Gets the usages of the texture.
@@ -63,12 +63,12 @@ public sealed unsafe class GpuTexture : GpuResource
 
     internal GpuTexture(
         GpuDevice device,
-        IntPtr handle,
+        SDL_GPUTexture* handle,
         GpuTextureType type,
         GpuTextureFormat format,
         int width,
         int height,
-        int layerCountOrDepth,
+        int layersCountOrDepth,
         int mipMapLevelCount,
         int sampleCount,
         GpuTextureUsages usages)
@@ -78,7 +78,7 @@ public sealed unsafe class GpuTexture : GpuResource
         Format = format;
         Width = width;
         Height = height;
-        LayerCountOrDepth = layerCountOrDepth;
+        LayersCountOrDepth = layersCountOrDepth;
         Usages = usages;
     }
 
@@ -96,11 +96,12 @@ public sealed unsafe class GpuTexture : GpuResource
     }
 
     internal void UpdateTextureSwapchain(
-        IntPtr handle,
+        SDL_GPUTexture* handle,
         int width,
         int height)
     {
-        Handle = handle;
+        Handle = (IntPtr)handle;
+        HandleTyped = handle;
         Width = width;
         Height = height;
     }
@@ -108,7 +109,7 @@ public sealed unsafe class GpuTexture : GpuResource
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
-        SDL_ReleaseGPUTexture((SDL_GPUDevice*)Device.Handle, (SDL_GPUTexture*)Handle);
+        SDL_ReleaseGPUTexture(Device.HandleTyped, HandleTyped);
         base.Dispose(isDisposing);
     }
 }

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Native Library -->
+  <PropertyGroup>
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+    <PlatformTarget>arm64</PlatformTarget>
+    <NativeLibraryFileName>libSDL3_image.so</NativeLibraryFileName>
+  </PropertyGroup>
+  <Import Project="../NativeLibrary.props" />
+
+  <!-- MSBuild settings -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <!-- NuGet -->
+  <PropertyGroup>
+    <PackageDescription>The native `SDL_image` library (SDL3_image) file (libSDL3_image.so) for the `linux-arm64` target framework moniker (TFM).</PackageDescription>
+  </PropertyGroup>
+
+</Project>

@@ -7,7 +7,7 @@ namespace Gpu.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E006_BasicStencil : ExampleGpu
+public sealed class E006_BasicStencil : ExampleGpu
 {
     private bool _isSupported = true;
     private GpuGraphicsPipeline? _pipelineMasker;
@@ -30,48 +30,47 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
             return true;
         }
 
-        int width, height;
-        SDL_GetWindowSizeInPixels((SDL_Window*)Window.Handle, &width, &height);
-
-        var textureDescriptor = new GpuTextureOptions();
-        textureDescriptor.Type = GpuTextureType.TwoDimensional;
-        textureDescriptor.Width = width;
-        textureDescriptor.Height = height;
-        textureDescriptor.LayerCountOrDepth = 1;
-        textureDescriptor.MipmapLevelCount = 1;
-        textureDescriptor.SampleCount = 1;
-        textureDescriptor.Format = depthStencilFormat;
-        textureDescriptor.Usage = GpuTextureUsages.DepthStencilRenderTarget;
-        if (!Device.TryCreateTexture(textureDescriptor, out _textureDepthStencilTarget))
+        var textureOptions = new GpuTextureOptions();
+        textureOptions.Type = GpuTextureType.TwoDimensional;
+        textureOptions.Width = Window.SizeInPixels.Width;
+        textureOptions.Height = Window.SizeInPixels.Height;
+        textureOptions.LayersCountOrDepth = 1;
+        textureOptions.MipmapLevelsCount = 1;
+        textureOptions.SamplesCount = 1;
+        textureOptions.Format = depthStencilFormat;
+        textureOptions.Usage = GpuTextureUsages.DepthStencilRenderTarget;
+        if (!Device.TryCreateTexture(textureOptions, out _textureDepthStencilTarget))
         {
             Console.Error.WriteLine("Failed to create texture!");
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("PositionColor.vert"), out var vertexShader))
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("PositionColor.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }
 
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionColor>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionColor>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        pipelineDescriptor.IsEnabledDepthStencilRenderTarget = true;
-        pipelineDescriptor.DepthStencilRenderTargetFormat = depthStencilFormat;
+        graphicsPipelineOptions.IsEnabledDepthStencilRenderTarget = true;
+        graphicsPipelineOptions.DepthStencilRenderTargetFormat = depthStencilFormat;
 
-        var depthStencilState = pipelineDescriptor.DepthStencilState;
+        var depthStencilState = graphicsPipelineOptions.DepthStencilState;
         depthStencilState.IsEnabledStencilTest = true;
         depthStencilState.WriteMask = 0xFF;
         var frontStencilState = depthStencilState.FrontStencilState;
@@ -85,7 +84,7 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         backStencilState.PassOp = GpuStencilOp.Keep;
         backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineMasker))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipelineMasker))
         {
             return false;
         }
@@ -103,25 +102,25 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         backStencilState.PassOp = GpuStencilOp.Keep;
         backStencilState.DepthFailOp = GpuStencilOp.Keep;
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipelineMaskee))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipelineMaskee))
         {
             return false;
         }
 
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         if (!Device.TryCreateDataBuffer<VertexPositionColor>(6, out _vertexBuffer))
         {
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(sizeof(VertexPositionColor) * 6, out var transferBuffer))
+        if (!Device.TryCreateUploadTransferBuffer(VertexPositionColor.SizeOf * 6, out var transferBuffer))
         {
             return false;
         }
 
-        var transferBufferSpan = transferBuffer!.MapAsSpan();
+        var transferBufferSpan = transferBuffer.MapAsSpan();
         var data = MemoryMarshal.Cast<byte, VertexPositionColor>(transferBufferSpan);
 
         data[0].Position = new Vector3(-0.5f, -0.5f, 0);
@@ -151,7 +150,7 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
             0,
             _vertexBuffer,
             0,
-            sizeof(VertexPositionColor) * 6);
+            VertexPositionColor.SizeOf * 6);
 
         copyPass.End();
         uploadCommandBuffer.Submit();
@@ -191,7 +190,7 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
 
         var depthStencil = default(GpuRenderTargetInfoDepthStencil);
@@ -199,9 +198,9 @@ public sealed unsafe class E006_BasicStencil : ExampleGpu
         depthStencil.IsTextureCycled = true;
         depthStencil.ClearDepth = 0;
         depthStencil.ClearStencil = 0;
-        depthStencil.LoadOp = GpuRenderTargetLoadOp.Clear;
+        depthStencil.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         depthStencil.StoreOp = GpuRenderTargetStoreOp.DontCare;
-        depthStencil.StencilLoadOp = GpuRenderTargetLoadOp.Clear;
+        depthStencil.StencilLoadOperation = GpuRenderTargetLoadOperation.Clear;
         depthStencil.StencilStoreOp = GpuRenderTargetStoreOp.DontCare;
 
         var renderPass = commandBuffer.BeginRenderPass(depthStencil, renderTargetInfoColor);

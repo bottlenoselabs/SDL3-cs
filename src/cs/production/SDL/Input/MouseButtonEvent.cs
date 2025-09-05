@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines a mouse button event.
 /// </summary>
+[PublicAPI]
 public readonly record struct MouseButtonEvent
 {
     /// <summary>

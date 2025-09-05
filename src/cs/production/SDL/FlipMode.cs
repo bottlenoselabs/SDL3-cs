@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Defines the flip modes for rendering surfaces and textures.
 /// </summary>
+[PublicAPI]
 public enum FlipMode
 {
     /// <summary>

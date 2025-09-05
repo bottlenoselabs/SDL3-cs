@@ -18,13 +18,13 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 ///     <para>
 ///         Texture filtering applies various techniques to determine the final color when texels don't align perfectly
-///         with the screen's or the render-target's pixels. See <see cref="GpuSamplerFilter" />.
+///         with the screen's or the render-target's pixels. See <see cref="GpuSamplerFilterMode" />.
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public sealed class GpuSampler : GpuResource
+public sealed unsafe class GpuSampler : GpuResource<SDL_GPUSampler>
 {
-    internal GpuSampler(GpuDevice device, IntPtr handle)
+    internal GpuSampler(GpuDevice device, SDL_GPUSampler* handle)
         : base(device, handle)
     {
     }

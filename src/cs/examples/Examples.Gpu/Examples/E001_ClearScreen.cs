@@ -9,8 +9,15 @@ namespace Gpu.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed class E001_ClearScreen : ExampleGpu
 {
+    private Rgba32F _clearColor = Rgba32F.Red;
+
     public override void OnUpdate(TimeSpan deltaTime)
     {
+        _clearColor.G += 0.01f;
+        if (_clearColor.G > 1.0f)
+        {
+            _clearColor.G = 0.0f;
+        }
     }
 
     public override void OnDraw(TimeSpan deltaTime)
@@ -23,10 +30,10 @@ public sealed class E001_ClearScreen : ExampleGpu
         }
 
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
-        renderTargetInfoColor.Texture = swapchainTexture!;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.Texture = swapchainTexture;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
-        renderTargetInfoColor.ClearColor = Rgba32F.CornflowerBlue;
+        renderTargetInfoColor.ClearColor = _clearColor;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
         // No rendering in this example!
         renderPass.End();

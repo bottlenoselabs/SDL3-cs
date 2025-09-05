@@ -13,7 +13,7 @@ public partial class Application
     /// </summary>
     public static Application Current => _current!;
 
-    internal static Dictionary<uint, Window> WindowsById = new();
+    internal static Dictionary<int, Window> WindowsById = new();
 
     internal static void Initialize(Application application)
     {
@@ -26,7 +26,9 @@ public partial class Application
         _current = application;
 
         bottlenoselabs.Interop.SDL.Initialize();
+
         application.Platform = GetNativePlatform();
+        SDL_SetLogPriorities(SDL_LogPriority.SDL_LOG_PRIORITY_DEBUG);
 
         SDL_image.Initialize();
         SDL_ttf.Initialize();
@@ -34,6 +36,9 @@ public partial class Application
 
     private static Platform GetNativePlatform()
     {
+        // NOTE: This is the first call to a native SDL library function.
+        //  If you get a DllNotFoundException here it means SDL native library could not be loaded.
+        //  One common mistake is that the file was not found on disk.
         var platformCString = SDL_GetPlatform();
         if (platformCString.IsNull)
         {

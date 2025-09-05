@@ -55,7 +55,7 @@ public sealed class App : Application
 
     protected override void OnKeyDown(in KeyboardEvent e)
     {
-        if (e.Key == KeyboardButton.Number2)
+        if (e.Button == KeyboardButton.Number2)
         {
             _goToExampleIndex = _exampleIndex + 1;
             if (_goToExampleIndex >= _examplesCount)
@@ -63,7 +63,7 @@ public sealed class App : Application
                 _goToExampleIndex = 0;
             }
         }
-        else if (e.Key == KeyboardButton.Number1)
+        else if (e.Button == KeyboardButton.Number1)
         {
             _goToExampleIndex = _exampleIndex - 1;
             if (_goToExampleIndex < 0)
@@ -117,6 +117,7 @@ public sealed class App : Application
             if (!isSuccessfullyStarted)
             {
                 Console.Error.WriteLine("\nStarting example failed!");
+                _currentExample = null;
                 Exit();
                 return;
             }

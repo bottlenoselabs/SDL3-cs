@@ -6,6 +6,7 @@ namespace bottlenoselabs.SDL;
 /// <summary>
 ///     Represents a font.
 /// </summary>
+[PublicAPI]
 public sealed unsafe class Font : NativeHandleTyped<TTF_Font>
 {
     internal Font(IntPtr handle)

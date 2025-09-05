@@ -11,7 +11,7 @@ namespace LazyFoo.Examples;
 // ReSharper disable once InconsistentNaming
 public sealed class E017_MouseEvents : ExampleLazyFoo
 {
-    private Texture _textureSpriteSheet = null!;
+    private Texture? _textureSpriteSheet;
 
     private readonly RectangleF[] _spriteSourceRectangles = new RectangleF[4];
 
@@ -34,8 +34,8 @@ public sealed class E017_MouseEvents : ExampleLazyFoo
     public E017_MouseEvents()
         : base("17 - Mouse Events", isEnabledCreateRenderer2D: true)
     {
-        var screenWidth = Window.Width;
-        var screenHeight = Window.Height;
+        var screenWidth = Window.Size.Width;
+        var screenHeight = Window.Size.Height;
         var screenHalfWidth = screenWidth * 0.5f;
         var screenHalfHeight = screenHeight * 0.5f;
 
@@ -70,6 +70,8 @@ public sealed class E017_MouseEvents : ExampleLazyFoo
 
     public override void OnExit()
     {
+        _textureSpriteSheet?.Dispose();
+        _textureSpriteSheet = null;
     }
 
     public override void OnMouseMove(in MouseMoveEvent e)
@@ -134,13 +136,16 @@ public sealed class E017_MouseEvents : ExampleLazyFoo
         renderer.DrawColor = Rgba8U.CornflowerBlue;
         renderer.Clear();
 
-        for (var i = 0; i < _sprites.Length; i++)
+        if (_textureSpriteSheet != null)
         {
-            ref var sprite = ref _sprites[i];
+            for (var i = 0; i < _sprites.Length; i++)
+            {
+                ref var sprite = ref _sprites[i];
 
-            var sourceRectangle = _spriteSourceRectangles[(int)sprite.SpriteSheetIndex];
-            var destinationRectangle = sprite.Rectangle;
-            renderer.RenderTexture(_textureSpriteSheet, sourceRectangle, destinationRectangle);
+                var sourceRectangle = _spriteSourceRectangles[(int)sprite.SpriteSheetIndex];
+                var destinationRectangle = sprite.Rectangle;
+                renderer.RenderTexture(_textureSpriteSheet, sourceRectangle, destinationRectangle);
+            }
         }
 
         renderer.Present();

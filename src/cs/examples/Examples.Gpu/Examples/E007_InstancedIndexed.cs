@@ -7,7 +7,7 @@ namespace Gpu.Examples;
 
 [UsedImplicitly]
 // ReSharper disable once InconsistentNaming
-public sealed unsafe class E007_InstancedIndex : ExampleGpu
+public sealed class E007_InstancedIndex : ExampleGpu
 {
     private GpuGraphicsPipeline? _pipeline;
     private GpuDataBuffer? _vertexBuffer;
@@ -24,33 +24,35 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("PositionColorInstanced.vert"), out var vertexShader))
+        var vertexShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("PositionColorInstanced.vert"), Device, vertexShaderOptions, out var vertexShader))
         {
             return false;
         }
 
-        if (!Device.TryCreateShaderFromFile(
-                FileSystem, GetShaderFilePath("SolidColor.frag"), out var fragmentShader))
+        var fragmentShaderOptions = new GpuGraphicsShaderOptions();
+        if (!FileSystem.TryLoadGraphicsShader(
+                GetShaderFilePath("SolidColor.frag"), Device, fragmentShaderOptions, out var fragmentShader))
         {
             return false;
         }
 
-        using var pipelineDescriptor = new GpuGraphicsPipelineOptions();
-        pipelineDescriptor.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
-        pipelineDescriptor.VertexShader = vertexShader;
-        pipelineDescriptor.FragmentShader = fragmentShader;
-        pipelineDescriptor.SetVertexAttributes<VertexPositionColor>();
-        pipelineDescriptor.SetVertexBufferDescription<VertexPositionColor>();
-        pipelineDescriptor.SetRenderTargetColor(Window.Swapchain!);
+        using var graphicsPipelineOptions = new GpuGraphicsPipelineOptions();
+        graphicsPipelineOptions.PrimitiveType = GpuGraphicsPipelineVertexPrimitiveType.TriangleList;
+        graphicsPipelineOptions.VertexShader = vertexShader;
+        graphicsPipelineOptions.FragmentShader = fragmentShader;
+        graphicsPipelineOptions.SetVertexAttributes<VertexPositionColor>();
+        graphicsPipelineOptions.SetVertexBufferDescription<VertexPositionColor>();
+        graphicsPipelineOptions.SetRenderTargetColor(Window.Swapchain!);
 
-        if (!Device.TryCreatePipeline(pipelineDescriptor, out _pipeline))
+        if (!Device.TryCreateGraphicsPipeline(graphicsPipelineOptions, out _pipeline))
         {
             return false;
         }
 
-        vertexShader?.Dispose();
-        fragmentShader?.Dispose();
+        vertexShader.Dispose();
+        fragmentShader.Dispose();
 
         if (!Device.TryCreateDataBuffer<VertexPositionColor>(9, out _vertexBuffer))
         {
@@ -62,15 +64,15 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateTransferBuffer(
-                (sizeof(VertexPositionColor) * 9) + (sizeof(ushort) * 6), out var transferBuffer))
+        if (!Device.TryCreateUploadTransferBuffer(
+                (VertexPositionColor.SizeOf * 9) + (sizeof(ushort) * 6), out var transferBuffer))
         {
             return false;
         }
 
-        var transferBufferSpan = transferBuffer!.MapAsSpan();
+        var transferBufferSpan = transferBuffer.MapAsSpan();
         var vertexData = MemoryMarshal.Cast<byte, VertexPositionColor>(
-            transferBufferSpan[..(sizeof(VertexPositionColor) * 9)]);
+            transferBufferSpan[..(VertexPositionColor.SizeOf * 9)]);
 
         vertexData[0].Position = new Vector3(-1f, -1f, 0);
         vertexData[0].Color = Rgba8U.Red;
@@ -100,7 +102,7 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
         vertexData[8].Color = Rgba8U.White;
 
         var indexData = MemoryMarshal.Cast<byte, ushort>(
-            transferBufferSpan[(sizeof(VertexPositionColor) * 9)..]);
+            transferBufferSpan[(VertexPositionColor.SizeOf * 9)..]);
 
         for (var i = 0; i < 6; i += 1)
         {
@@ -117,11 +119,11 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
             0,
             _vertexBuffer,
             0,
-            sizeof(VertexPositionColor) * 9);
+            VertexPositionColor.SizeOf * 9);
 
         copyPass.UploadToDataBuffer(
             transferBuffer,
-            sizeof(VertexPositionColor) * 9,
+            VertexPositionColor.SizeOf * 9,
             _indexBuffer,
             0,
             sizeof(ushort) * 6);
@@ -148,7 +150,7 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
 
     public override void OnKeyDown(in KeyboardEvent e)
     {
-        switch (e.Key)
+        switch (e.Button)
         {
             case KeyboardButton.Left:
             {
@@ -189,7 +191,7 @@ public sealed unsafe class E007_InstancedIndex : ExampleGpu
         var renderTargetInfoColor = default(GpuRenderTargetInfoColor);
         renderTargetInfoColor.Texture = swapchainTexture;
         renderTargetInfoColor.ClearColor = Rgba32F.Black;
-        renderTargetInfoColor.LoadOp = GpuRenderTargetLoadOp.Clear;
+        renderTargetInfoColor.LoadOperation = GpuRenderTargetLoadOperation.Clear;
         renderTargetInfoColor.StoreOp = GpuRenderTargetStoreOp.Store;
         var renderPass = commandBuffer.BeginRenderPass(null, renderTargetInfoColor);
 

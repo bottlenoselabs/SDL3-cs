@@ -16,7 +16,7 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public struct GpuGraphicsPipelineVertexBufferDescription
+public record struct GpuGraphicsPipelineVertexBufferDescription
 {
     /// <summary>
     ///     The binding slot of the vertex buffer.

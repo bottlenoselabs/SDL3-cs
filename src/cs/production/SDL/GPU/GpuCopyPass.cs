@@ -14,7 +14,7 @@ namespace bottlenoselabs.SDL;
 ///     </para>
 /// </remarks>
 [PublicAPI]
-public unsafe class GpuCopyPass : GpuResource
+public unsafe class GpuCopyPass : GpuResource<SDL_GPUCopyPass>
 {
     /// <summary>
     ///     Gets the <see cref="CommandBuffer" /> instance associated with the render pass.
@@ -26,7 +26,7 @@ public unsafe class GpuCopyPass : GpuResource
     /// </remarks>
     public GpuCommandBuffer CommandBuffer { get; private set; }
 
-    internal GpuCopyPass(GpuDevice device, IntPtr handle, GpuCommandBuffer commandBuffer)
+    internal GpuCopyPass(GpuDevice device, SDL_GPUCopyPass* handle, GpuCommandBuffer commandBuffer)
         : base(device, handle)
     {
         CommandBuffer = commandBuffer;
@@ -39,7 +39,7 @@ public unsafe class GpuCopyPass : GpuResource
     /// <param name="transferBufferOffset">The starting byte of the data in the transfer buffer.</param>
     /// <param name="dataBuffer">The data buffer used as the destination.</param>
     /// <param name="dataBufferOffset">The starting byte within the data buffer to upload data to.</param>
-    /// <param name="dataBufferByteCount">The size in bytes of the data to upload to the data buffer.</param>
+    /// <param name="dataBufferBytesCount">The size in bytes of the data to upload to the data buffer.</param>
     /// <param name="isCycled">
     ///     If <c>true</c>, cycles the data buffer if it is already bound. If <c>false</c>, does not cycle the
     ///     data buffer, overwriting the data.
@@ -49,7 +49,7 @@ public unsafe class GpuCopyPass : GpuResource
         int transferBufferOffset,
         GpuDataBuffer? dataBuffer,
         int dataBufferOffset,
-        int dataBufferByteCount,
+        int dataBufferBytesCount,
         bool isCycled = false)
     {
         if (transferBuffer == null || dataBuffer == null)
@@ -58,15 +58,15 @@ public unsafe class GpuCopyPass : GpuResource
         }
 
         var bufferSourceLocation = default(SDL_GPUTransferBufferLocation);
-        bufferSourceLocation.transfer_buffer = (SDL_GPUTransferBuffer*)transferBuffer.Handle;
+        bufferSourceLocation.transfer_buffer = transferBuffer.HandleTyped;
         bufferSourceLocation.offset = (uint)transferBufferOffset;
 
         var bufferDestinationRegion = default(SDL_GPUBufferRegion);
-        bufferDestinationRegion.buffer = (SDL_GPUBuffer*)dataBuffer.Handle;
+        bufferDestinationRegion.buffer = dataBuffer.HandleTyped;
         bufferDestinationRegion.offset = (uint)dataBufferOffset;
-        bufferDestinationRegion.size = (uint)dataBufferByteCount;
+        bufferDestinationRegion.size = (uint)dataBufferBytesCount;
 
-        SDL_UploadToGPUBuffer((SDL_GPUCopyPass*)Handle, &bufferSourceLocation, &bufferDestinationRegion, isCycled);
+        SDL_UploadToGPUBuffer(HandleTyped, &bufferSourceLocation, &bufferDestinationRegion, isCycled);
     }
 
     /// <summary>
@@ -97,15 +97,14 @@ public unsafe class GpuCopyPass : GpuResource
         }
 
         var bufferSourceTexture = default(SDL_GPUTextureTransferInfo);
-        bufferSourceTexture.transfer_buffer = (SDL_GPUTransferBuffer*)transferBuffer.Handle;
+        bufferSourceTexture.transfer_buffer = transferBuffer.HandleTyped;
         bufferSourceTexture.offset = (uint)transferBufferOffset;
         var bufferDestinationTexture = default(SDL_GPUTextureRegion);
-        bufferDestinationTexture.texture = (SDL_GPUTexture*)texture.Handle;
+        bufferDestinationTexture.texture = (SDL_GPUTexture*)texture.HandleTyped;
         bufferDestinationTexture.w = (uint)textureWidth;
         bufferDestinationTexture.h = (uint)textureHeight;
         bufferDestinationTexture.d = (uint)textureDepth;
-        SDL_UploadToGPUTexture(
-            (SDL_GPUCopyPass*)Handle, &bufferSourceTexture, &bufferDestinationTexture, isCycled);
+        SDL_UploadToGPUTexture(HandleTyped, &bufferSourceTexture, &bufferDestinationTexture, isCycled);
     }
 
     /// <summary>
@@ -118,13 +117,13 @@ public unsafe class GpuCopyPass : GpuResource
             return;
         }
 
-        var handle = Handle;
-        if (handle == IntPtr.Zero)
+        var handle = HandleTyped;
+        if (handle == null)
         {
             return;
         }
 
-        SDL_EndGPUCopyPass((SDL_GPUCopyPass*)handle);
+        SDL_EndGPUCopyPass(handle);
     }
 
     /// <inheritdoc />

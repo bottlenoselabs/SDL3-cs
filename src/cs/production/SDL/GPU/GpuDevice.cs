@@ -1,6 +1,8 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace bottlenoselabs.SDL;
 
 /// <summary>
@@ -10,6 +12,7 @@ namespace bottlenoselabs.SDL;
 public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
 {
     internal readonly Pool<GpuRenderPass> PoolRenderPass;
+    internal readonly Pool<GpuComputePass> PoolComputePass;
     internal readonly ArenaNativeAllocator Allocator;
 
     private readonly ILogger<GpuDevice> _logger;
@@ -144,8 +147,12 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             _ => throw new NotImplementedException($"GPU driver '{driverNameActual}'.")
         };
 
-        _poolCommandBuffer = new Pool<GpuCommandBuffer>(_logger, () => new GpuCommandBuffer(this), "GpuCommandBuffers");
-        PoolRenderPass = new Pool<GpuRenderPass>(_logger, () => new GpuRenderPass(this), "GpuRenderPasses");
+        _poolCommandBuffer = new Pool<GpuCommandBuffer>(
+            _logger, () => new GpuCommandBuffer(this), "GpuCommandBuffers");
+        PoolRenderPass = new Pool<GpuRenderPass>(
+            _logger, () => new GpuRenderPass(this), "GpuRenderPasses");
+        PoolComputePass = new Pool<GpuComputePass>(
+            _logger, () => new GpuComputePass(this), "GpuComputePass");
 
         SupportedShaderFormats = (GpuShaderFormats)(uint)SDL_GetGPUShaderFormats(HandleTyped);
 
@@ -247,9 +254,11 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     ///     Attempts to create a new <see cref="GpuGraphicsShader" /> instance.
     /// </summary>
     /// <param name="options">The parameters for creating the shader.</param>
-    /// <param name="shader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
+    /// <param name="graphicsShader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateShader(GpuGraphicsShaderOptions options, out GpuGraphicsShader? shader)
+    public bool TryCreateGraphicsShader(
+        GpuGraphicsShaderOptions options,
+        [NotNullWhen(true)] out GpuGraphicsShader? graphicsShader)
     {
         SDL_GPUShaderCreateInfo info = default;
         info.code = (byte*)options.DataPointer;
@@ -267,61 +276,49 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         if (handle == null)
         {
             Error.NativeFunctionFailed(nameof(SDL_CreateGPUShader));
-            shader = null;
+            graphicsShader = null;
             return false;
         }
 
-        shader = new GpuGraphicsShader(
-            this, (IntPtr)handle, options.Format, options.Stage);
+        graphicsShader = new GpuGraphicsShader(
+            this, handle, options.Format, options.Stage);
         return true;
     }
 
     /// <summary>
-    ///     Attempts to create a new <see cref="GpuGraphicsShader" /> instance using the specified file path to the
-    ///     shader file.
+    ///     Attempts to create a new <see cref="GpuComputeShader" /> instance.
     /// </summary>
-    /// <param name="fileSystem">The <see cref="FileSystem" /> instance.</param>
-    /// <param name="filePath">
-    ///     The file path to the shader file. If the path is relative, it is assumed to be relative to
-    ///     <see cref="AppContext.BaseDirectory" />.
-    /// </param>
-    /// <param name="shader">If successful, a new <see cref="GpuGraphicsShader" /> instance; otherwise, <c>null</c>.</param>
-    /// <param name="samplerCount">The number of samplers used in the shader.</param>
-    /// <param name="uniformBufferCount">The number of uniform buffers used in the shader.</param>
+    /// <param name="options">The parameters for creating the shader.</param>
+    /// <param name="computeShader">If successful, a new <see cref="GpuComputeShader" /> instance; otherwise, <c>null</c>.</param>
     /// <returns><c>true</c> if the shader was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateShaderFromFile(
-        FileSystem fileSystem,
-        string filePath,
-        out GpuGraphicsShader? shader,
-        int samplerCount = 0,
-        int uniformBufferCount = 0)
+    public bool TryCreateComputeShader(
+        GpuComputeShaderOptions options,
+        [NotNullWhen(true)] out GpuComputeShader? computeShader)
     {
-#pragma warning disable CA2000
-        if (!fileSystem.TryLoadFile(filePath, out var file))
-#pragma warning restore CA2000
+        var createInfo = default(SDL_GPUComputePipelineCreateInfo);
+        createInfo.code = (byte*)options.DataPointer;
+        createInfo.code_size = (ulong)options.DataSize;
+        createInfo.entrypoint = options.Allocator.AllocateCString(options.EntryPoint);
+        createInfo.format = (uint)options.Format;
+        createInfo.num_samplers = (uint)options.SamplerCount;
+        createInfo.num_readonly_storage_textures = (uint)options.ReadOnlyStorageTexturesCount;
+        createInfo.num_readonly_storage_buffers = (uint)options.ReadOnlyStorageBuffersCount;
+        createInfo.num_readwrite_storage_textures = (uint)options.ReadWriteStorageTexturesCount;
+        createInfo.num_readwrite_storage_buffers = (uint)options.ReadWriteStorageBuffersCount;
+        createInfo.num_uniform_buffers = (uint)options.UniformBuffersCount;
+        createInfo.threadcount_x = (uint)options.ThreadsXCount;
+        createInfo.threadcount_y = (uint)options.ThreadsYCount;
+        createInfo.threadcount_z = (uint)options.ThreadsZCount;
+
+        var handle = SDL_CreateGPUComputePipeline(HandleTyped, &createInfo);
+        if (handle == null)
         {
-            shader = null;
+            Error.NativeFunctionFailed(nameof(SDL_CreateGPUComputePipeline));
+            computeShader = null;
             return false;
         }
 
-        using var descriptor = new GpuGraphicsShaderOptions();
-        descriptor.SamplerCount = samplerCount;
-        descriptor.UniformBufferCount = uniformBufferCount;
-        if (!descriptor.TrySetFromFile(file))
-        {
-            shader = null;
-            file.Dispose();
-            return false;
-        }
-
-        if (!TryCreateShader(descriptor, out shader))
-        {
-            shader = null;
-            file.Dispose();
-            return false;
-        }
-
-        file.Dispose();
+        computeShader = new GpuComputeShader(this, handle);
         return true;
     }
 
@@ -334,7 +331,9 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// </param>
     /// <returns><c>true</c> if the pipeline was successfully created; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The vertex shader or fragment shader is <c>null</c>.</exception>
-    public bool TryCreatePipeline(GpuGraphicsPipelineOptions options, out GpuGraphicsPipeline? pipeline)
+    public bool TryCreateGraphicsPipeline(
+        GpuGraphicsPipelineOptions options,
+        [NotNullWhen(true)] out GpuGraphicsPipeline? pipeline)
     {
         var info = default(SDL_GPUGraphicsPipelineCreateInfo);
 
@@ -436,7 +435,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             return false;
         }
 
-        pipeline = new GpuGraphicsPipeline(this, (IntPtr)handle);
+        pipeline = new GpuGraphicsPipeline(this, handle);
         return true;
     }
 
@@ -452,7 +451,10 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// <param name="name">The optional name of the data buffer.</param>
     /// <typeparam name="TElement">The type of data buffer element.</typeparam>
     /// <returns><c>true</c> if the data buffer was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateDataBuffer<TElement>(int elementCount, out GpuDataBuffer? buffer, string? name = null)
+    public bool TryCreateDataBuffer<TElement>(
+        int elementCount,
+        [NotNullWhen(true)] out GpuDataBuffer? buffer,
+        string? name = null)
         where TElement : unmanaged
     {
         var bufferCreateInfo = default(SDL_GPUBufferCreateInfo);
@@ -466,7 +468,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             return false;
         }
 
-        buffer = new GpuDataBuffer(this, (IntPtr)handle);
+        buffer = new GpuDataBuffer(this, handle);
 
         if (name != null)
         {
@@ -490,7 +492,9 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     ///     If successful, a new <see cref="GpuTransferBuffer" /> instance; otherwise, <c>null</c>.
     /// </param>
     /// <returns><c>true</c> if the transfer buffer was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateTransferBuffer(int size, out GpuTransferBuffer? transferBuffer)
+    public bool TryCreateUploadTransferBuffer(
+        int size,
+        [NotNullWhen(true)] out GpuTransferBuffer? transferBuffer)
     {
         var transferBufferCreateInfo = default(SDL_GPUTransferBufferCreateInfo);
         transferBufferCreateInfo.usage = SDL_GPUTransferBufferUsage.SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
@@ -505,7 +509,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         }
 
         transferBuffer = new GpuTransferBuffer(
-            this, (IntPtr)handle, (int)transferBufferCreateInfo.size);
+            this, handle, (int)transferBufferCreateInfo.size);
 
         return true;
     }
@@ -519,18 +523,20 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// </param>
     /// <returns><c>true</c> if the texture was successfully created; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentException">Sample count must be 1, 2, 4, 8.</exception>
-    public bool TryCreateTexture(GpuTextureOptions options, out GpuTexture? texture)
+    public bool TryCreateTexture(
+        GpuTextureOptions options,
+        [NotNullWhen(true)] out GpuTexture? texture)
     {
         var textureCreateInfo = default(SDL_GPUTextureCreateInfo);
         textureCreateInfo.type = (SDL_GPUTextureType)options.Type;
         textureCreateInfo.width = (uint)options.Width;
         textureCreateInfo.height = (uint)options.Height;
-        textureCreateInfo.layer_count_or_depth = (uint)options.LayerCountOrDepth;
-        textureCreateInfo.num_levels = (uint)options.MipmapLevelCount;
+        textureCreateInfo.layer_count_or_depth = (uint)options.LayersCountOrDepth;
+        textureCreateInfo.num_levels = (uint)options.MipmapLevelsCount;
         textureCreateInfo.format = (SDL_GPUTextureFormat)options.Format;
         textureCreateInfo.usage = (uint)options.Usage;
 
-        textureCreateInfo.sample_count = options.SampleCount switch
+        textureCreateInfo.sample_count = options.SamplesCount switch
         {
             0 => SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_1,
             1 => SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_1,
@@ -550,14 +556,14 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
 
         texture = new GpuTexture(
             this,
-            (IntPtr)handle,
+            handle,
             options.Type,
             options.Format,
             options.Width,
             options.Height,
-            options.LayerCountOrDepth,
-            options.MipmapLevelCount,
-            options.SampleCount,
+            options.LayersCountOrDepth,
+            options.MipmapLevelsCount,
+            options.SamplesCount,
             options.Usage);
 
         var nameCString = options.Allocator.AllocateCString(options.Name);
@@ -574,11 +580,13 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     ///     If successful, a new <see cref="GpuSampler" /> instance; otherwise, <c>null</c>.
     /// </param>
     /// <returns><c>true</c> if the sampler was successfully created; otherwise, <c>false</c>.</returns>
-    public bool TryCreateSampler(GpuSamplerOptions options, out GpuSampler? sampler)
+    public bool TryCreateSampler(
+        GpuSamplerOptions options,
+        [NotNullWhen(true)] out GpuSampler? sampler)
     {
         var samplerCreateInfo = default(SDL_GPUSamplerCreateInfo);
-        samplerCreateInfo.min_filter = (SDL_GPUFilter)options.MinificationFilter;
-        samplerCreateInfo.mag_filter = (SDL_GPUFilter)options.MagnificationFilter;
+        samplerCreateInfo.min_filter = (SDL_GPUFilter)options.MinificationFilterMode;
+        samplerCreateInfo.mag_filter = (SDL_GPUFilter)options.MagnificationFilterMode;
         samplerCreateInfo.mipmap_mode = (SDL_GPUSamplerMipmapMode)options.MipMapMode;
         samplerCreateInfo.address_mode_u = (SDL_GPUSamplerAddressMode)options.AddressModeU;
         samplerCreateInfo.address_mode_v = (SDL_GPUSamplerAddressMode)options.AddressModeV;
@@ -599,7 +607,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             return false;
         }
 
-        sampler = new GpuSampler(this, (IntPtr)handle);
+        sampler = new GpuSampler(this, handle);
 
         return true;
     }
@@ -619,10 +627,26 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         SDL_EndGPURenderPass(handle);
     }
 
+    internal void EndComputePassTryInternal(GpuComputePass computePass)
+    {
+        if (computePass.Handle == null)
+        {
+            return;
+        }
+
+        computePass.CommandBuffer.ThrowIfSubmitted();
+
+        var handle = computePass.Handle;
+        computePass.Handle = null;
+        computePass.CommandBuffer = null!;
+        SDL_EndGPUComputePass(handle);
+    }
+
     /// <inheritdoc />
     protected override void Dispose(bool isDisposing)
     {
         PoolRenderPass.Dispose();
+        PoolComputePass.Dispose();
         _poolCommandBuffer.Dispose();
 
         SDL_DestroyGPUDevice(HandleTyped);

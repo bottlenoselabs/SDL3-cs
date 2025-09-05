@@ -1,7 +1,9 @@
 // Copyright (c) Bottlenose Labs Inc. (https://github.com/bottlenoselabs). All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the Git repository root directory for full license information.
 
+using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace bottlenoselabs.SDL;
 
@@ -36,7 +38,6 @@ namespace bottlenoselabs.SDL;
 [PublicAPI]
 public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
 {
-    private SDL_GPUCommandBuffer* _handle;
     private bool _isSubmitted;
 
     /// <summary>
@@ -44,10 +45,21 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     /// </summary>
     public GpuDevice Device { get; }
 
+    /// <summary>
+    ///     Gets the unmanaged handle associated with the object instance.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="HandleTyped" /> is <c>null</c> when <see cref="Poolable{TSelf}.IsDisposed" /> is
+    ///         <c>true</c>.
+    ///     </para>
+    /// </remarks>
+    public SDL_GPUCommandBuffer* HandleTyped { get; private set; }
+
     internal GpuCommandBuffer(GpuDevice device)
     {
         Device = device;
-        _handle = null;
+        HandleTyped = null;
     }
 
     /// <summary>
@@ -66,7 +78,9 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     ///         It is an error to acquire two swapchain textures from the same window using the same command buffer.
     ///     </para>
     /// </remarks>
-    public bool TryGetSwapchainTexture(Window window, out GpuTexture? swapchainTexture)
+    public bool TryGetSwapchainTexture(
+        Window window,
+        [NotNullWhen(true)] out GpuTexture? swapchainTexture)
     {
         ThrowIfSubmitted();
 
@@ -75,7 +89,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
         uint height;
 
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(
-                _handle,
+                HandleTyped,
                 (SDL_Window*)window.Handle,
                 &textureSwapchainHandle,
                 &width,
@@ -93,7 +107,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
         }
 
         swapchainTexture = window.Swapchain!.Texture;
-        swapchainTexture.UpdateTextureSwapchain((IntPtr)textureSwapchainHandle, (int)width, (int)height);
+        swapchainTexture.UpdateTextureSwapchain(textureSwapchainHandle, (int)width, (int)height);
         return true;
     }
 
@@ -103,6 +117,12 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     /// <param name="depthStencilTargetInfo">The depth-stencil render-target to use in the render pass.</param>
     /// <param name="colorTargetInfos">The color render-targets to use in the render pass.</param>
     /// <returns>A pooled <see cref="GpuRenderPass" /> instance.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="GpuRenderPass.End" /> must be called before starting another render pass, compute pass, or
+    ///         copy pass.
+    ///     </para>
+    /// </remarks>
     public GpuRenderPass BeginRenderPass(
         in GpuRenderTargetInfoDepthStencil? depthStencilTargetInfo = null,
         params Span<GpuRenderTargetInfoColor> colorTargetInfos)
@@ -129,9 +149,9 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
             destination.cycle = source.IsTextureCycled;
             destination.clear_depth = source.ClearDepth;
             destination.clear_stencil = source.ClearStencil;
-            destination.load_op = (SDL_GPULoadOp)source.LoadOp;
+            destination.load_op = (SDL_GPULoadOp)source.LoadOperation;
             destination.store_op = (SDL_GPUStoreOp)source.StoreOp;
-            destination.stencil_load_op = (SDL_GPULoadOp)source.StencilLoadOp;
+            destination.stencil_load_op = (SDL_GPULoadOp)source.StencilLoadOperation;
             destination.stencil_store_op = (SDL_GPUStoreOp)source.StencilStoreOp;
         }
 
@@ -144,7 +164,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
             destination.mip_level = (uint)source.MipMapLevel;
             destination.layer_or_depth_plane = (uint)source.LayerOrDepthPlane;
             destination.clear_color = source.ClearColor;
-            destination.load_op = (SDL_GPULoadOp)source.LoadOp;
+            destination.load_op = (SDL_GPULoadOp)source.LoadOperation;
             destination.store_op = (SDL_GPUStoreOp)source.StoreOp;
             destination.resolve_texture = (SDL_GPUTexture*)(source.ResolveTexture?.Handle ?? IntPtr.Zero);
             destination.resolve_mip_level = (uint)source.ResolveMipMapLevel;
@@ -154,11 +174,10 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
         }
 
         var handle = SDL_BeginGPURenderPass(
-            _handle, colorTargetInfosPointer, (uint)colorTargetInfos.Length, depthStencilInfoPointer);
+            HandleTyped, colorTargetInfosPointer, (uint)colorTargetInfos.Length, depthStencilInfoPointer);
         if (handle == null)
         {
-            Error.NativeFunctionFailed(nameof(SDL_BeginGPURenderPass));
-            throw new InvalidOperationException();
+            Error.NativeFunctionFailed(nameof(SDL_BeginGPURenderPass), isExceptionThrown: true);
         }
 
         var renderPass = Device.PoolRenderPass.GetOrCreate()!;
@@ -175,7 +194,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     ///         All operations related to copying to or from buffers and textures take place inside a copy pass.
     ///     </para>
     ///     <para>
-    ///         <see cref="GpuCopyPass.End"/> must be called before starting another copy pass, render pass, or compute
+    ///         <see cref="GpuCopyPass.End" /> must be called before starting another copy pass, render pass, or compute
     ///         pass.
     ///     </para>
     /// </remarks>
@@ -184,9 +203,65 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     {
         ThrowIfSubmitted();
 
-        var handle = SDL_BeginGPUCopyPass(_handle);
-        var copyPass = new GpuCopyPass(Device, (IntPtr)handle, this);
+        var handle = SDL_BeginGPUCopyPass(HandleTyped);
+        var copyPass = new GpuCopyPass(Device, handle, this);
         return copyPass;
+    }
+
+    /// <summary>
+    ///     Begins a compute pass.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="GpuComputePass.End" /> must be called before starting another compute pass, render pass, or
+    ///         copy pass.
+    ///     </para>
+    /// </remarks>
+    /// <param name="parameters">The compute pass parameters.</param>
+    /// <returns>A pooled <see cref="GpuComputePass" /> instance.</returns>
+    public GpuComputePass BeginComputePass(in GpuComputePassParameters parameters)
+    {
+        ThrowIfSubmitted();
+
+        var textureWriteBindingsCount = parameters.TextureWriteBindings.Length;
+        var textureWriteBindings =
+            stackalloc SDL_GPUStorageTextureReadWriteBinding[textureWriteBindingsCount];
+        for (var i = 0; i < textureWriteBindingsCount; i++)
+        {
+            ref var source = ref parameters.TextureWriteBindings[i];
+            ref var destination = ref textureWriteBindings[i];
+            destination.texture = source.Texture.HandleTyped;
+            destination.mip_level = (uint)source.MipMapLevelIndex;
+            destination.layer = (uint)source.LayerOrDepthIndex;
+            destination.cycle = source.IsCycled;
+        }
+
+        var dataBufferWriteBindingsCount = parameters.DataBufferWriteBindings.Length;
+        var dataBufferWriteBindings =
+            stackalloc SDL_GPUStorageBufferReadWriteBinding[dataBufferWriteBindingsCount];
+        for (var i = 0; i < dataBufferWriteBindingsCount; i++)
+        {
+            ref var source = ref parameters.DataBufferWriteBindings[i];
+            ref var destination = ref dataBufferWriteBindings[i];
+            destination.buffer = source.Buffer.HandleTyped;
+            destination.cycle = source.IsCycled;
+        }
+
+        var handle = SDL_BeginGPUComputePass(
+            HandleTyped,
+            textureWriteBindings,
+            (uint)textureWriteBindingsCount,
+            dataBufferWriteBindings,
+            (uint)dataBufferWriteBindingsCount);
+        if (handle == null)
+        {
+            Error.NativeFunctionFailed(nameof(SDL_BeginGPUComputePass), isExceptionThrown: true);
+        }
+
+        var computePass = Device.PoolComputePass.GetOrCreate()!;
+        computePass.Handle = handle;
+        computePass.CommandBuffer = this;
+        return computePass;
     }
 
     /// <summary>
@@ -199,7 +274,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     {
         fixed (Matrix4x4* pointer = &matrix)
         {
-            SDL_PushGPUVertexUniformData(_handle, (uint)slotIndex, pointer, (uint)sizeof(Matrix4x4));
+            SDL_PushGPUVertexUniformData(HandleTyped, (uint)slotIndex, pointer, (uint)sizeof(Matrix4x4));
         }
     }
 
@@ -213,7 +288,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     {
         fixed (Rgba32F* pointer = &color)
         {
-            SDL_PushGPUFragmentUniformData(_handle, (uint)slotIndex, pointer, (uint)sizeof(Rgba32F));
+            SDL_PushGPUFragmentUniformData(HandleTyped, (uint)slotIndex, pointer, (uint)sizeof(Rgba32F));
         }
     }
 
@@ -230,14 +305,14 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     /// </remarks>
     public void Cancel()
     {
-        var result = SDL_CancelGPUCommandBuffer(_handle);
+        var result = SDL_CancelGPUCommandBuffer(HandleTyped);
         if (!result)
         {
             var errorMessage = Error.GetMessage();
             throw new InvalidOperationException(errorMessage);
         }
 
-        _handle = null;
+        HandleTyped = null;
         _ = TryToReturnToPool();
     }
 
@@ -250,6 +325,39 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
         _ = TryToReturnToPool();
     }
 
+    /// <summary>
+    ///     Blits from a source texture region to a destination texture region.
+    /// </summary>
+    /// <param name="info">The parameters for the blit.</param>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="BlitTexture" /> must not be called inside of any <see cref="BeginRenderPass" /> and
+    ///         <see cref="EndRenderPass" /> pair.
+    ///     </para>
+    /// </remarks>
+    public void BlitTexture(GpuBlitInfo info)
+    {
+        var blitInfo = default(SDL_GPUBlitInfo);
+        blitInfo.source.texture = info.Source.Texture.HandleTyped;
+        blitInfo.source.mip_level = (uint)info.Source.MipMapLevel;
+        blitInfo.source.layer_or_depth_plane = (uint)info.Source.LayerOrDepthPlane;
+        blitInfo.source.x = (uint)info.Source.Bounds.X;
+        blitInfo.source.y = (uint)info.Source.Bounds.Y;
+        blitInfo.source.w = (uint)info.Source.Bounds.Width;
+        blitInfo.source.h = (uint)info.Source.Bounds.Height;
+        blitInfo.destination.texture = info.Destination.Texture.HandleTyped;
+        blitInfo.destination.mip_level = (uint)info.Destination.MipMapLevel;
+        blitInfo.destination.layer_or_depth_plane = (uint)info.Destination.LayerOrDepthPlane;
+        blitInfo.destination.x = (uint)info.Destination.Bounds.X;
+        blitInfo.destination.y = (uint)info.Destination.Bounds.Y;
+        blitInfo.destination.w = (uint)info.Destination.Bounds.Width;
+        blitInfo.destination.h = (uint)info.Destination.Bounds.Height;
+        blitInfo.load_op = (SDL_GPULoadOp)info.LoadOperation;
+        blitInfo.filter = (SDL_GPUFilter)info.FilterMode;
+        blitInfo.cycle = info.IsDestinationTextureCycled;
+        SDL_BlitGPUTexture(HandleTyped, &blitInfo);
+    }
+
     internal void EndRenderPass(GpuRenderPass renderPass)
     {
         ThrowIfSubmitted();
@@ -258,7 +366,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
 
     internal void Set(SDL_GPUCommandBuffer* handle)
     {
-        _handle = handle;
+        HandleTyped = handle;
         _isSubmitted = false;
     }
 
@@ -280,7 +388,7 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
 
     private void SubmitCore()
     {
-        if (_handle == null)
+        if (HandleTyped == null)
         {
             return;
         }
@@ -292,12 +400,12 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
             return;
         }
 
-        var isSuccess = SDL_SubmitGPUCommandBuffer(_handle);
+        var isSuccess = SDL_SubmitGPUCommandBuffer(HandleTyped);
         if (!isSuccess)
         {
             Error.NativeFunctionFailed(nameof(SDL_SubmitGPUCommandBuffer));
         }
 
-        _handle = null;
+        HandleTyped = null;
     }
 }
