@@ -566,8 +566,11 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
             options.SamplesCount,
             options.Usage);
 
-        var nameCString = options.Allocator.AllocateCString(options.Name);
-        SDL_SetGPUTextureName(HandleTyped, handle, nameCString);
+        if (options.Name != null)
+        {
+            var nameCString = options.Allocator.AllocateCString(options.Name);
+            SDL_SetGPUTextureName(HandleTyped, handle, nameCString);
+        }
 
         return true;
     }
