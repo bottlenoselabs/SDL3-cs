@@ -110,7 +110,7 @@ public sealed class E006_BasicStencil : ExampleGpu
         vertexShader.Dispose();
         fragmentShader.Dispose();
 
-        if (!Device.TryCreateDataBuffer<VertexPositionColor>(6, out _vertexBuffer))
+        if (!Device.TryCreateDataBuffer<VertexPositionColor>(GpuBufferUsageFlags.Vertex, 6, out _vertexBuffer))
         {
             return false;
         }

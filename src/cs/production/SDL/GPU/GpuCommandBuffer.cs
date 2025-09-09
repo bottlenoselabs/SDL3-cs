@@ -265,6 +265,22 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     }
 
     /// <summary>
+    ///     Pushes the specified data to a vertex shader uniform slot. Subsequent draw calls will
+    ///     use this uniform data.
+    /// </summary>
+    /// <param name="data">TODO.</param>
+    /// <param name="startIndex">Index of the uniform slot to push data to.</param>
+    /// <typeparam name="T">Data type. It must respect std140 layout conventions.</typeparam>
+    public void PushVertexShaderUniformData<T>(in T data, int startIndex = 0)
+        where T : unmanaged
+    {
+        fixed (T* pointer = &data)
+        {
+            SDL_PushGPUVertexUniformData(HandleTyped, (uint)startIndex, pointer, (uint)sizeof(T));
+        }
+    }
+
+    /// <summary>
     ///     Pushes the specified <see cref="Matrix4x4" /> to a vertex shader uniform slot. Subsequent draw calls will
     ///     use this uniform data.
     /// </summary>
@@ -272,9 +288,22 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     /// <param name="slotIndex">The vertex shader uniform slot to push data to.</param>
     public void PushVertexShaderUniformMatrix(in Matrix4x4 matrix, int slotIndex = 0)
     {
-        fixed (Matrix4x4* pointer = &matrix)
+        PushVertexShaderUniformData(matrix, slotIndex);
+    }
+
+    /// <summary>
+    ///     Pushes the specified data to a fragment shader uniform slot. Subsequent draw calls will
+    ///     use this uniform data.
+    /// </summary>
+    /// <param name="data">TODO.</param>
+    /// <param name="startIndex">Index of the uniform slot to push data to.</param>
+    /// <typeparam name="T">Data type. It must respect std140 layout conventions.</typeparam>
+    public void PushFragmentShaderUniformData<T>(in T data, int startIndex = 0)
+        where T : unmanaged
+    {
+        fixed (T* pointer = &data)
         {
-            SDL_PushGPUVertexUniformData(HandleTyped, (uint)slotIndex, pointer, (uint)sizeof(Matrix4x4));
+            SDL_PushGPUFragmentUniformData(HandleTyped, (uint)startIndex, pointer, (uint)sizeof(T));
         }
     }
 
@@ -286,9 +315,21 @@ public sealed unsafe class GpuCommandBuffer : Poolable<GpuCommandBuffer>
     /// <param name="slotIndex">The fragment shader uniform slot to push data to.</param>
     public void PushFragmentShaderUniformColor(in Rgba32F color, int slotIndex = 0)
     {
-        fixed (Rgba32F* pointer = &color)
+        PushFragmentShaderUniformData(color, slotIndex);
+    }
+
+    /// <summary>
+    ///     Pushes data to a uniform slot on the command buffer.
+    /// </summary>
+    /// <param name="data">TODO.</param>
+    /// <param name="startIndex">Index of the uniform slot to push data to.</param>
+    /// <typeparam name="T">Data type. It must respect std140 layout conventions.</typeparam>
+    public void PushComputeShaderUniformData<T>(in T data, int startIndex = 0)
+        where T : unmanaged
+    {
+        fixed (T* pointer = &data)
         {
-            SDL_PushGPUFragmentUniformData(HandleTyped, (uint)slotIndex, pointer, (uint)sizeof(Rgba32F));
+            SDL_PushGPUComputeUniformData(HandleTyped, (uint)startIndex, pointer, (uint)sizeof(T));
         }
     }
 

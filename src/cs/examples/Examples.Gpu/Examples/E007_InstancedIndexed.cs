@@ -54,12 +54,12 @@ public sealed class E007_InstancedIndex : ExampleGpu
         vertexShader.Dispose();
         fragmentShader.Dispose();
 
-        if (!Device.TryCreateDataBuffer<VertexPositionColor>(9, out _vertexBuffer))
+        if (!Device.TryCreateDataBuffer<VertexPositionColor>(GpuBufferUsageFlags.Vertex, 9, out _vertexBuffer))
         {
             return false;
         }
 
-        if (!Device.TryCreateDataBuffer<ushort>(6, out _indexBuffer))
+        if (!Device.TryCreateDataBuffer<ushort>(GpuBufferUsageFlags.Index, 6, out _indexBuffer))
         {
             return false;
         }
