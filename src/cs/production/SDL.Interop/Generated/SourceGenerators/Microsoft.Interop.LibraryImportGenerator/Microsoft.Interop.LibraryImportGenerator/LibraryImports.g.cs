@@ -2267,6 +2267,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetGPUTextureFormatFromPixelFormat", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_GPUTextureFormat SDL_GetGPUTextureFormatFromPixelFormat(global::bottlenoselabs.Interop.SDL.SDL_PixelFormat format);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetGrabbedWindow", ExactSpelling = true)]
         public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Window* SDL_GetGrabbedWindow();
     }
@@ -2925,6 +2933,14 @@ namespace bottlenoselabs.Interop
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetPixelFormatForMasks", ExactSpelling = true)]
         public static extern partial global::bottlenoselabs.Interop.SDL.SDL_PixelFormat SDL_GetPixelFormatForMasks(int bpp, uint Rmask, uint Gmask, uint Bmask, uint Amask);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetPixelFormatFromGPUTextureFormat", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_PixelFormat SDL_GetPixelFormatFromGPUTextureFormat(global::bottlenoselabs.Interop.SDL.SDL_GPUTextureFormat format);
     }
 }
 namespace bottlenoselabs.Interop
