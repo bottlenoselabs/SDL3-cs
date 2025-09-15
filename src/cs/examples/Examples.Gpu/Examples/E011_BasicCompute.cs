@@ -95,7 +95,7 @@ public sealed class E011_BasicCompute : ExampleGpu
 
         var verticesCount = 6;
         var verticesBytesCount = VertexPositionTexture.SizeOf * verticesCount;
-        if (!Device.TryCreateDataBuffer<VertexPositionTexture>(verticesCount, out _vertexBuffer!))
+        if (!Device.TryCreateDataBuffer<VertexPositionTexture>(GpuBufferUsageFlags.Vertex, verticesCount, out _vertexBuffer!))
         {
             return false;
         }

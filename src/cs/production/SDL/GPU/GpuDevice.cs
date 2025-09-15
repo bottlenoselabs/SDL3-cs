@@ -152,7 +152,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
         PoolRenderPass = new Pool<GpuRenderPass>(
             _logger, () => new GpuRenderPass(this), "GpuRenderPasses");
         PoolComputePass = new Pool<GpuComputePass>(
-            _logger, () => new GpuComputePass(this), "GpuComputePass");
+            _logger, () => new GpuComputePass(this), "GpuComputePasses");
 
         SupportedShaderFormats = (GpuShaderFormats)(uint)SDL_GetGPUShaderFormats(HandleTyped);
 
@@ -442,6 +442,7 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// <summary>
     ///     Attempts to create a new <see cref="GpuDataBuffer" /> instance.
     /// </summary>
+    /// <param name="usage">How the buffer is intended to be used by the client.</param>
     /// <param name="elementCount">
     ///     The maximum number of <typeparamref name="TElement" /> elements the buffer can hold.
     /// </param>
@@ -452,13 +453,14 @@ public sealed unsafe class GpuDevice : NativeHandleTyped<SDL_GPUDevice>
     /// <typeparam name="TElement">The type of data buffer element.</typeparam>
     /// <returns><c>true</c> if the data buffer was successfully created; otherwise, <c>false</c>.</returns>
     public bool TryCreateDataBuffer<TElement>(
+        GpuBufferUsageFlags usage,
         int elementCount,
         [NotNullWhen(true)] out GpuDataBuffer? buffer,
         string? name = null)
         where TElement : unmanaged
     {
         var bufferCreateInfo = default(SDL_GPUBufferCreateInfo);
-        bufferCreateInfo.usage = SDL_GPU_BUFFERUSAGE_VERTEX;
+        bufferCreateInfo.usage = (uint)usage;
         bufferCreateInfo.size = (uint)(sizeof(TElement) * elementCount);
         var handle = SDL_CreateGPUBuffer(HandleTyped, &bufferCreateInfo);
         if (handle == null)
