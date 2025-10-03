@@ -644,7 +644,7 @@ namespace bottlenoselabs.Interop
     public static unsafe partial class SDL
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_CreateGPURenderer", ExactSpelling = true)]
-        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Renderer* SDL_CreateGPURenderer(global::bottlenoselabs.Interop.SDL.SDL_Window* window, global::bottlenoselabs.Interop.SDL.SDL_GPUShaderFormat format_flags, global::bottlenoselabs.Interop.SDL.SDL_GPUDevice** device);
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Renderer* SDL_CreateGPURenderer(global::bottlenoselabs.Interop.SDL.SDL_GPUDevice* device, global::bottlenoselabs.Interop.SDL.SDL_Window* window);
     }
 }
 namespace bottlenoselabs.Interop
@@ -2251,6 +2251,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetGPURendererDevice", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_GPUDevice* SDL_GetGPURendererDevice(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetGPUShaderFormats", ExactSpelling = true)]
         public static extern partial global::bottlenoselabs.Interop.SDL.SDL_GPUShaderFormat SDL_GetGPUShaderFormats(global::bottlenoselabs.Interop.SDL.SDL_GPUDevice* device);
     }
@@ -3613,6 +3621,14 @@ namespace bottlenoselabs.Interop
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetTextureColorModFloat", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_GetTextureColorModFloat(global::bottlenoselabs.Interop.SDL.SDL_Texture* texture, float* r, float* g, float* b);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_GetTexturePalette", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Palette* SDL_GetTexturePalette(global::bottlenoselabs.Interop.SDL.SDL_Texture* texture);
     }
 }
 namespace bottlenoselabs.Interop
@@ -6267,6 +6283,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetGPURenderState", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool SDL_SetGPURenderState(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, global::bottlenoselabs.Interop.SDL.SDL_GPURenderState* state);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetGPURenderStateFragmentUniforms", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_SetGPURenderStateFragmentUniforms(global::bottlenoselabs.Interop.SDL.SDL_GPURenderState* state, uint slot_index, void* data, uint length);
     }
@@ -6555,14 +6579,6 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
-        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetRenderGPUState", ExactSpelling = true)]
-        public static extern partial global::Interop.Runtime.CBool SDL_SetRenderGPUState(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, global::bottlenoselabs.Interop.SDL.SDL_GPURenderState* state);
-    }
-}
-namespace bottlenoselabs.Interop
-{
-    public static unsafe partial class SDL
-    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetRenderLogicalPresentation", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_SetRenderLogicalPresentation(global::bottlenoselabs.Interop.SDL.SDL_Renderer* renderer, int w, int h, global::bottlenoselabs.Interop.SDL.SDL_RendererLogicalPresentation mode);
     }
@@ -6733,6 +6749,14 @@ namespace bottlenoselabs.Interop
     {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetTextureColorModFloat", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_SetTextureColorModFloat(global::bottlenoselabs.Interop.SDL.SDL_Texture* texture, float r, float g, float b);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_SetTexturePalette", ExactSpelling = true)]
+        public static extern partial global::Interop.Runtime.CBool SDL_SetTexturePalette(global::bottlenoselabs.Interop.SDL.SDL_Texture* texture, global::bottlenoselabs.Interop.SDL.SDL_Palette* palette);
     }
 }
 namespace bottlenoselabs.Interop
