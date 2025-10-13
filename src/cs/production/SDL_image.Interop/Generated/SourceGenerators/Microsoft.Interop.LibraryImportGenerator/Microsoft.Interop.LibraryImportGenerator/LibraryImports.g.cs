@@ -107,6 +107,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL_image
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_GetClipboardImage", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Surface* IMG_GetClipboardImage();
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL_image
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3_image", EntryPoint = "IMG_isAVIF", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool IMG_isAVIF(global::bottlenoselabs.Interop.SDL.SDL_IOStream* src);
     }
