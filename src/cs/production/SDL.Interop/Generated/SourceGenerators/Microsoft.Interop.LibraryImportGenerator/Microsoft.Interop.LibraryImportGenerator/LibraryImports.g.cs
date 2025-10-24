@@ -6003,6 +6003,14 @@ namespace bottlenoselabs.Interop
 {
     public static unsafe partial class SDL
     {
+        [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_RotateSurface", ExactSpelling = true)]
+        public static extern partial global::bottlenoselabs.Interop.SDL.SDL_Surface* SDL_RotateSurface(global::bottlenoselabs.Interop.SDL.SDL_Surface* surface, float angle);
+    }
+}
+namespace bottlenoselabs.Interop
+{
+    public static unsafe partial class SDL
+    {
         [global::System.Runtime.InteropServices.DllImportAttribute("SDL3", EntryPoint = "SDL_RumbleGamepad", ExactSpelling = true)]
         public static extern partial global::Interop.Runtime.CBool SDL_RumbleGamepad(global::bottlenoselabs.Interop.SDL.SDL_Gamepad* gamepad, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms);
     }
