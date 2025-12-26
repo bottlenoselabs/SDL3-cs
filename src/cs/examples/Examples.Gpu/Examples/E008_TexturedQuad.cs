@@ -169,13 +169,12 @@ public sealed class E008_TexturedQuad : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateDataBuffer<VertexPositionTexture>(
-                4, out _vertexBuffer, "Ravioli Vertex Buffer 🥣"))
+        if (!Device.TryCreateDataBuffer<VertexPositionTexture>(GpuBufferUsageFlags.Vertex, 4, out _vertexBuffer, "Ravioli Vertex Buffer 🥣"))
         {
             return false;
         }
 
-        if (!Device.TryCreateDataBuffer<ushort>(6, out _indexBuffer))
+        if (!Device.TryCreateDataBuffer<ushort>(GpuBufferUsageFlags.Index, 6, out _indexBuffer))
         {
             return false;
         }

@@ -156,7 +156,7 @@ public sealed class RenderSystem : System<CameraDrawComponent>
         const int vertexCount = 24;
         var bufferSize = Unsafe.SizeOf<Vertex>() * vertexCount;
 
-        if (!_device.TryCreateDataBuffer<Vertex>(vertexCount, out _vertexBuffer))
+        if (!_device.TryCreateDataBuffer<Vertex>(GpuBufferUsageFlags.Vertex, vertexCount, out _vertexBuffer))
         {
             return false;
         }
@@ -344,7 +344,7 @@ public sealed class RenderSystem : System<CameraDrawComponent>
         const int indexCount = 36;
         var bufferSize = Unsafe.SizeOf<ushort>() * indexCount;
 
-        if (!_device.TryCreateDataBuffer<ushort>(indexCount, out _indexBuffer))
+        if (!_device.TryCreateDataBuffer<ushort>(GpuBufferUsageFlags.Index, indexCount, out _indexBuffer))
         {
             return false;
         }

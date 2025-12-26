@@ -98,12 +98,12 @@ public sealed class E009_TexturedAnimatedQuad : ExampleGpu
             return false;
         }
 
-        if (!Device.TryCreateDataBuffer<VertexPositionTexture>(4, out _vertexBuffer))
+        if (!Device.TryCreateDataBuffer<VertexPositionTexture>(GpuBufferUsageFlags.Vertex, 4, out _vertexBuffer))
         {
             return false;
         }
 
-        if (!Device.TryCreateDataBuffer<ushort>(6, out _indexBuffer))
+        if (!Device.TryCreateDataBuffer<ushort>(GpuBufferUsageFlags.Index, 6, out _indexBuffer))
         {
             return false;
         }

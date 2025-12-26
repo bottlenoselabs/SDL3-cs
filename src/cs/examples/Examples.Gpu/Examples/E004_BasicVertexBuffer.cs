@@ -51,8 +51,7 @@ public sealed unsafe class E004_BasicVertexBuffer : ExampleGpu
         vertexShader.Dispose();
         fragmentShader.Dispose();
 
-        if (!Device.TryCreateDataBuffer<VertexPositionColor>(
-                3, out _vertexBuffer))
+        if (!Device.TryCreateDataBuffer<VertexPositionColor>(GpuBufferUsageFlags.Vertex, 3, out _vertexBuffer))
         {
             return false;
         }

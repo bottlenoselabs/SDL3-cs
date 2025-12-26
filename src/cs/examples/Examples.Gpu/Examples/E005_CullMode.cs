@@ -75,12 +75,12 @@ public sealed unsafe class E005_CullMode : ExampleGpu
         fragmentShader.Dispose();
 
         // Create the vertex buffers. They're the same except for the vertex order.
-        if (!Device.TryCreateDataBuffer<VertexPositionColor>(3, out _vertexBufferCw))
+        if (!Device.TryCreateDataBuffer<VertexPositionColor>(GpuBufferUsageFlags.Vertex, 3, out _vertexBufferCw))
         {
             return false;
         }
 
-        if (!Device.TryCreateDataBuffer<VertexPositionColor>(3, out _vertexBufferCcw))
+        if (!Device.TryCreateDataBuffer<VertexPositionColor>(GpuBufferUsageFlags.Vertex, 3, out _vertexBufferCcw))
         {
             return false;
         }
